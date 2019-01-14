@@ -3,7 +3,7 @@
 /**
  * Module dependencies.
  */
-
+require('module-alias/register')
 let app = require('../app')
 let debug = require('debug')('server:server')
 let http = require('http')
