@@ -6,19 +6,19 @@ const chalk = require('chalk')
 const figlet = require('figlet')
 const log = (msg) => console.log(msg)
 const logInfo = (msg) => console.log(chalk.blue(msg))
-const logSuccess = (msg) => console.log(chalk.blue(msg))
+const logSuccess = (msg) => console.log(chalk.green(msg))
 const logError = (msg) => console.log(chalk.blue(msg))
 const randomFullName = require('random-fullName')
 
 const url = 'http://localhost:3001'
+let socket
 
 module.exports = function () {
 
   let params = minimist(process.argv.slice(2))
   let host = params.host
   let name = params.name || randomFullName()
-  /*  console.log('host', host)
-    console.log('name', name)*/
+  logInfo('Your default name is : ' + name)
 
   //figlet('Time Bomb', function(err, data) {
   //console.log(data)
@@ -38,13 +38,13 @@ module.exports = function () {
           type: 'input',
           message: 'what is the name your new instance ?',
         }]).then((answers) => {
-        request.post(url + '/games/create', {
+        request.post(url + '/games', {
             host: host,
-            name: answers.newGameName || 'instance game',
+          name: answers.newGameName || ('instance of ' + name),
           },
         ).then(
           data => {
-            logInfo('Info : Instance created with id : ' + data.uuid)
+            logSuccess('Instance created with id : ' + data.uuid)
             lobby(data.uuid)
           },
         )
@@ -70,24 +70,37 @@ module.exports = function () {
     }
   })
 
-  //});
+  function lobby (gameId) {
+    logInfo('Try to create to lobby with id : ' + gameId)
+    request.post(url + '/users', {
+        name: name,
+      },
+    ).then(
+      data => {
+        request.post(url + '/games/' + gameId + '/join', {
+            userId: data.uuid,
+          },
+        ).then(data => {
+          socket = io(url)
+          socket.on('connect', function () {
+            socket.emit('join game', gameId)
+            socket.on('broadcast user join game', function (data) {
+              logSuccess(data)
+            })
+          })
+        })
 
-  function lobby (uuid) {
-    logInfo('Info : Connected to lobby with id : ' + uuid)
-
-    let socket = io(url)
-
-    socket.on('connect', function () {
-      console.log('User connected')
-    })
-    socket.on('event', function (data) {
-      console.log(data)
-    })
-    socket.on('broadcast', function (data) {
-      console.log(data)
-    })
-    socket.on('disconnect', function () {
-      console.log('User disconnect')
-    })
+      },
+    )
   }
 }
+
+/*        socket.on('event', function (data) {
+          console.log(data)
+        })
+        socket.on('broadcast', function (data) {
+          console.log(data)
+        })
+        socket.on('disconnect', function () {
+          console.log('User disconnect')
+        })*/

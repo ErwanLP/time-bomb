@@ -1,4 +1,5 @@
 const GamesService = require('@services/GamesService')
+const UsersService = require('@services/UsersService')
 const uuidv4 = require('uuid/v4')
 
 module.exports.create = (req, res, next) => {
@@ -12,6 +13,21 @@ module.exports.create = (req, res, next) => {
       res.status(400).send(err)
     },
   )
+}
+
+module.exports.join = (req, res, next) => {
+  return UsersService.getById(req.body.userId).
+    then(user => GamesService.join(req.params.id, user)).
+    then(
+      (data) => {
+        console.log(data)
+        res.json(data)
+      },
+      (err) => {
+        console.error(err)
+        res.status(400).send(err)
+      },
+    )
 }
 
 module.exports.read = (req, res, next) => {

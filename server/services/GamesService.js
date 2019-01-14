@@ -15,3 +15,18 @@ module.exports.read = function () {
     resolve(gameList)
   })
 }
+
+module.exports.getById = function (id) {
+  return new Promise((resolve, reject) => {
+    resolve(gameList.find(u => u.uuid === id))
+  })
+}
+
+module.exports.join = function (gameId, user) {
+  return this.getById(gameId).then(
+    game => {
+      game.addUser(user)
+      return game
+    },
+  )
+}

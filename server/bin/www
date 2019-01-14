@@ -23,11 +23,13 @@ let server = http.createServer(app)
 
 const io = require('socket.io')(server)
 io.on('connection', function (socket) {
-  console.log('a user connected')
-  io.emit('broadcast', 'hi new user')
-  socket.on('disconnect', function () {
-    console.log('user disconnected')
+
+  socket.on('join game', function (room) {
+    socket.join(room)
+    io.sockets.in(room).
+      emit('broadcast user join game', 'new user in room ' + room)
   })
+
 })
 
 /**
