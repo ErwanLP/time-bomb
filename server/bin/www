@@ -7,6 +7,7 @@ require('module-alias/register')
 let app = require('../app')
 let debug = require('debug')('server:server')
 let http = require('http')
+const GameController = require('@controllers/GameController')
 
 /**
  * Get port from environment and store in Express.
@@ -21,15 +22,10 @@ app.set('port', port)
 
 let server = http.createServer(app)
 
+
 const io = require('socket.io')(server)
 io.on('connection', function (socket) {
-
-  socket.on('join game', function (room) {
-    socket.join(room)
-    io.sockets.in(room).
-      emit('broadcast user join game', 'new user in room ' + room)
-  })
-
+  socket.on('join_game', GameController.socketJoinGame.bind(null, socket, io))
 })
 
 /**

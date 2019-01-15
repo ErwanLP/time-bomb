@@ -18,7 +18,7 @@ module.exports = function () {
   let params = minimist(process.argv.slice(2))
   let host = params.host
   let name = params.name || randomFullName()
-  logInfo('Your default name is : ' + name)
+  logInfo('Your name is : ' + name)
 
   //figlet('Time Bomb', function(err, data) {
   //console.log(data)
@@ -40,12 +40,12 @@ module.exports = function () {
         }]).then((answers) => {
         request.post(url + '/games', {
             host: host,
-          name: answers.newGameName || ('instance of ' + name),
+          name: answers.newGameName || ('Instance of ' + name),
           },
         ).then(
-          data => {
-            logSuccess('Instance created with id : ' + data.uuid)
-            lobby(data.uuid)
+          game => {
+            logSuccess('Instance created with name : ' + game.name)
+            lobby(game)
           },
         )
       })
@@ -63,29 +63,32 @@ module.exports = function () {
               default: 1,
             }]).then((answers) => {
             let game = data.find((g) => g.name === answers.selectGame)
-            lobby(game.uuid)
+            lobby(game)
           })
         },
       )
     }
   })
 
-  function lobby (gameId) {
-    logInfo('Try to create to lobby with id : ' + gameId)
+  function lobby (game) {
+    logInfo('Try to connect to lobby : ' + game.name)
     request.post(url + '/users', {
         name: name,
       },
     ).then(
-      data => {
-        request.post(url + '/games/' + gameId + '/join', {
-            userId: data.uuid,
+      user => {
+        request.post(url + '/games/' + game.uuid + '/join', {
+          userId: user.uuid,
           },
-        ).then(data => {
+        ).then(() => {
           socket = io(url)
           socket.on('connect', function () {
-            socket.emit('join game', gameId)
-            socket.on('broadcast user join game', function (data) {
+            socket.emit('join_game', game.uuid, user.uuid)
+            socket.on('broadcast_user_join_game', data => {
               logSuccess(data)
+            })
+            socket.on('broadcast_list_user_in_game', data => {
+              logInfo(data)
             })
           })
         })

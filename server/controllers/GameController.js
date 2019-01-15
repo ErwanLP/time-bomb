@@ -41,3 +41,27 @@ module.exports.read = (req, res, next) => {
     },
   )
 }
+
+module.exports.socketJoinGame = (socket, io, gameId, userId) => {
+  Promise.all([UsersService.getById(userId), GamesService.getById(gameId)]).
+    then(data => {
+        [user, game] = data
+        if (user && game) {
+          socket.join(gameId)
+          io.sockets.in(gameId).
+            emit('broadcast_user_join_game', user.name +
+              ' join lobby of instance :  ' +
+              game.name)
+          let str = 'List of users : ' +
+            game.users.reduce((acc, val) => ((val ? acc + val.name : acc) + ' '),
+              '')
+          io.sockets.in(gameId).
+            emit('broadcast_list_user_in_game', str)
+        } else {
+          console.error('ERROR : game or user not found')
+          console.error(game, user)
+        }
+
+      },
+    )
+}
