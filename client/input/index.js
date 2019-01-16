@@ -20,15 +20,25 @@ module.exports.nameInstance = () => {
     }])
 }
 
-module.exports.selectGame = () => {
+module.exports.selectGame = (data) => {
   return inquirer.prompt([
     {
       name: 'selectGame',
       type: 'list',
       message: 'Select the game you want to join ?',
       choices: data ? data.map(game => game.name) : [''],
-      default: 1,
+      default: 0,
     }])
+}
+
+module.exports.confirmStartGame = (numberOfPlayer) => {
+  return inquirer.prompt([
+    {
+      name: 'confirmStartGame',
+      type: 'confirm',
+      message: 'Start game with ' + numberOfPlayer +
+      ' player(s) or waiting for more player ?',
+    }]).then(data => data.confirmStartGame)
 }
 
 

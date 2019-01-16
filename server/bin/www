@@ -25,7 +25,10 @@ let server = http.createServer(app)
 
 const io = require('socket.io')(server)
 io.on('connection', function (socket) {
-  socket.on('join_game', GameController.socketJoinGame.bind(null, socket, io))
+  socket.on('join_game',
+    GameController.socketJoinGameInstance.bind(null, socket, io))
+  socket.on('start_game',
+    GameController.socketStartGameInstance.bind(null, socket, io))
 })
 
 /**

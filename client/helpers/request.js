@@ -6,6 +6,7 @@ module.exports = {
       request.post({url: url, form: params},
         (err, httpResponse, body) => {
           if (err) {
+            console.error(err)
             reject(JSON.parse(err))
           } else {
             resolve(JSON.parse(body))
@@ -18,6 +19,7 @@ module.exports = {
       request.get({url: url},
         (err, httpResponse, body) => {
           if (err) {
+            console.error(err)
             reject(JSON.parse(err))
           } else {
             resolve(JSON.parse(body))
