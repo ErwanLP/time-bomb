@@ -57,7 +57,7 @@ module.exports = function () {
     socket.on('join_game_success', data => {
       logSuccess(data)
     })
-    socket.on('game_starting', data => {
+    socket.on('game_is_starting', data => {
       logSuccess('GAME START')
     })
     socket.on('ask_start_game', (numberOfPlayer) => {

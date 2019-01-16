@@ -57,7 +57,7 @@ module.exports.socketStartGameInstance = (socket, io, gameId) => {
           game.startGame().then(
             data => {
               io.sockets.in(gameId).
-                emit('game_starting', gameId)
+                emit('game_is_starting', gameId)
             },
             err => {
               // try to start 2 time a game
