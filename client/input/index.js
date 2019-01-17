@@ -37,7 +37,7 @@ module.exports.confirmStartGame = (numberOfPlayer) => {
       name: 'confirmStartGame',
       type: 'confirm',
       message: 'Start game with ' + numberOfPlayer +
-      ' player(s) or waiting for more player ?',
+      ' player(s) (or waiting for more player) ?',
     }]).then(data => data.confirmStartGame)
 }
 

@@ -5,7 +5,6 @@ const uuidv4 = require('uuid/v4')
 module.exports.create = (req, res, next) => {
   return GamesService.create(uuidv4(), req.body.name, req.body.userId).then(
     (data) => {
-      console.log(data)
       res.json(data)
     },
     (err) => {
@@ -32,15 +31,16 @@ module.exports.socketJoinGameInstance = (socket, io, gameId, userId) => {
     then(data => {
         [user, game] = data
         if (user && game) {
-          socket.join(gameId)
           game.addUser(user, socket)
-          let str = 'List of users : ' +
+          let listUser = 'List of users : ' +
             game.users.reduce(
               (acc, val) => ((val ? acc + val.name : acc) + ' - '),
               '')
           io.sockets.in(gameId).
-            emit('broadcast_list_user_in_game', str)
-          game.creator.socket.emit('ask_start_game', game.users.length)
+            emit('broadcast_list_user_in_game', listUser)
+          if (game.hasEnoughPlayer()) {
+            game.creator.socket.emit('ask_start_game', game.users.length)
+          }
         } else {
           console.error('ERROR : game or user not found')
           console.error(game, user)

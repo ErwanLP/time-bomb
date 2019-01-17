@@ -4,7 +4,6 @@ const uuidv4 = require('uuid/v4')
 module.exports.create = (req, res, next) => {
   return UsersService.create(uuidv4(), req.body.name).then(
     (data) => {
-      console.log(data)
       res.json(data)
     },
     (err) => {

@@ -2,8 +2,7 @@ var shuffle = require('shuffle-array')
 
 module.exports = class Game {
 
-  /*  static minPlayer = 4;
-    static maxPlayer = 8;*/
+
 
   constructor (uuid, name, userId) {
     this.name = name
@@ -14,10 +13,12 @@ module.exports = class Game {
     }
     this.users = []
     this.isStart = false
+    this.minPlayer = 2
+    this.maxPlayer = 8
   }
 
   addUser (user, socket) {
-    if (this.isStart === false) {
+    if (this.isStart === false && this.users.length < this.maxPlayer) {
       socket.join(this.uuid)
       this.users.push({
         uuid: user.uuid,
@@ -49,7 +50,7 @@ module.exports = class Game {
           this.users[userIndex].cards.push(card)
         })
         this.users.forEach((user, index) => {
-          user.socket.emit('info_game_user', JSON.stringify({
+          user.socket.emit('game_info_user', JSON.stringify({
             uuid: user.uuid,
             name: user.name,
             cards: user.cards,
@@ -119,5 +120,9 @@ module.exports = class Game {
     }
     shuffle(res)
     return res
+  }
+
+  hasEnoughPlayer () {
+    return this.users.length >= this.minPlayer
   }
 }
