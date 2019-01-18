@@ -7,6 +7,7 @@ const output = require('./output')
 const log = (msg) => console.log(msg)
 const logInfo = (msg) => console.log('\n' + chalk.blue(msg))
 const logSuccess = (msg) => console.log('\n' + chalk.green(msg))
+const logPlay = (msg) => console.log('\n' + chalk.yellow(msg))
 const logError = (msg) => console.log('\n' + chalk.red(msg))
 const randomFullName = require('random-fullName')
 const {table} = require('table')
@@ -70,18 +71,19 @@ module.exports = function () {
         })
       })
 
-      socket.on('game_is_starting', data => {
-        logSuccess('GAME START')
-      })
-
-      socket.on('game_info_user', data => {
-        console.log(data)
+      socket.on('game_user_info', data => {
         let info = JSON.parse(data)
-        console.log('\n' + chalk.yellow('Your role is : ' + info.role))
-        let cards = info.cards.map(c => c.type)
+        logPlay('Your role is : ' + info.me.role)
+        let cards = info.me.cards.map(c => c.type)
         let output = table([cards], {})
         console.log(output)
+        logPlay('Current player is  : ' + info.currentPlayer)
+      })
 
+      socket.on('game_user_play', data => {
+        console.log(data)
+        let info = JSON.parse(data)
+        input.pickCardSelectUser(info.users)
       })
 
       socket.on('disconnect', function () {
@@ -90,5 +92,19 @@ module.exports = function () {
 
     })
   })
+
+  let card = '┌─────────┐' + '\n' + '│░░░░░░░░░│' + '\n' + '│░░░░░░░░░│' +
+    '\n' + '│░░░░░░░░░│' + '\n' + '│░░░░░░░░░│' + '\n' + '│░░░░░░░░░│' + '\n' +
+    '│░░░░░░░░░│' + '\n' + '│░░░░░░░░░│' + '\n' + '└─────────┘' + '\n'
+  let output2 = table([[1, 2, 3], [card, card, card]], {
+    columnDefault: {
+      width: 18,
+      alignment: 'center',
+    },
+  })
+  console.log(output2)
+
+
+
 
 }

@@ -50,23 +50,9 @@ module.exports.socketJoinGameInstance = (socket, io, gameId, userId) => {
 }
 
 module.exports.socketStartGameInstance = (socket, io, gameId) => {
-  Promise.all([GamesService.getById(gameId)]).
-    then(data => {
-        [game] = data
-        if (game) {
-          game.startGame().then(
-            data => {
-              io.sockets.in(gameId).
-                emit('game_is_starting', gameId)
-            },
-            err => {
-              // try to start 2 time a game
-            },
-          )
-        } else {
-          console.error('ERROR : game found')
-          console.error(game)
-        }
+  return GamesService.getById(gameId).
+    then(game => {
+      return game.startGame()
       },
     )
 }

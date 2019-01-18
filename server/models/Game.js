@@ -2,8 +2,6 @@ var shuffle = require('shuffle-array')
 
 module.exports = class Game {
 
-
-
   constructor (uuid, name, userId) {
     this.name = name
     this.uuid = uuid
@@ -15,9 +13,11 @@ module.exports = class Game {
     this.isStart = false
     this.minPlayer = 2
     this.maxPlayer = 8
+    this.currentPlayerIndex = null
   }
 
   addUser (user, socket) {
+    // TODO check unic name in users
     if (this.isStart === false && this.users.length < this.maxPlayer) {
       socket.join(this.uuid)
       this.users.push({
@@ -36,10 +36,26 @@ module.exports = class Game {
     }
   }
 
+  getNextCurrentPlayer () {
+    if (this.currentPlayerIndex === null) {
+      this.currentPlayerIndex = Math.floor(Math.random() * this.users.length)
+      // returns a random integer from 0 to 99
+    } else {
+      this.currentPlayerIndex++
+      if (this.currentPlayerIndex === this.users.length) {
+        this.currentPlayerIndex = 0
+      }
+    }
+    this.users.forEach((user, index) => {
+      user.isCurrentPlayer = index === this.currentPlayerIndex
+    })
+  }
+
   startGame () {
     return new Promise((resolve, reject) => {
       if (this.isStart === false) {
         this.isStart = true
+        this.getNextCurrentPlayer()
         let roles = this.createListOfRole(this.users.length)
         this.users.forEach((user, index) => {
           user.role = roles[index].type
@@ -50,12 +66,28 @@ module.exports = class Game {
           this.users[userIndex].cards.push(card)
         })
         this.users.forEach((user, index) => {
-          user.socket.emit('game_info_user', JSON.stringify({
-            uuid: user.uuid,
-            name: user.name,
-            cards: user.cards,
-            role: user.role,
+          user.socket.emit('game_user_info', JSON.stringify({
+            me: {
+              uuid: user.uuid,
+              name: user.name,
+              cards: user.cards,
+              role: user.role,
+            },
+            currentPlayer: this.users[this.currentPlayerIndex].name,
           }))
+
+          if (user.isCurrentPlayer) {
+            user.socket.emit('game_user_play', JSON.stringify({
+              users: this.users.map(user => {
+                return {
+                  uuid: user.uuid,
+                  name: user.name,
+                  isCurrentPlayer: user.isCurrentPlayer,
+                  cardsLength: user.cards.length,
+                }
+              }),
+            }))
+          }
         })
         resolve()
       } else {

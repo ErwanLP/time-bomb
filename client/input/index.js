@@ -41,6 +41,18 @@ module.exports.confirmStartGame = (numberOfPlayer) => {
     }]).then(data => data.confirmStartGame)
 }
 
+module.exports.pickCardSelectUser = (users) => {
+  return inquirer.prompt([
+    {
+      name: 'pickCardSelectUser',
+      type: 'list',
+      message: 'Which player would you like to take a card ?',
+      choices: users ? users.filter(user => !user.isCurrentPlayer).
+        map(user => user.name + ' (' + user.cardsLength + ' cards)') : [''],
+      default: 0,
+    }])
+}
+
 
 
 
