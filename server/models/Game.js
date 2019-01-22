@@ -14,6 +14,8 @@ module.exports = class Game {
     this.minPlayer = 2
     this.maxPlayer = 8
     this.currentPlayerIndex = null
+    this.cardPicked = []
+    this.handleNumber = null
   }
 
   addUser (user, socket) {
@@ -36,15 +38,12 @@ module.exports = class Game {
     }
   }
 
-  getNextCurrentPlayer () {
-    if (this.currentPlayerIndex === null) {
+  setCurrentPlayer (userId) {
+    if (userId === null) {
       this.currentPlayerIndex = Math.floor(Math.random() * this.users.length)
       // returns a random integer from 0 to 99
     } else {
-      this.currentPlayerIndex++
-      if (this.currentPlayerIndex === this.users.length) {
-        this.currentPlayerIndex = 0
-      }
+      this.currentPlayerIndex = this.users.findIndex(u => u.uuid === userId)
     }
     this.users.forEach((user, index) => {
       user.isCurrentPlayer = index === this.currentPlayerIndex
@@ -52,57 +51,68 @@ module.exports = class Game {
   }
 
   startGame () {
-    return new Promise((resolve, reject) => {
-      if (this.isStart === false) {
-        this.isStart = true
-        this.getNextCurrentPlayer()
-        let roles = this.createListOfRole(this.users.length)
-        this.users.forEach((user, index) => {
-          user.role = roles[index].type
-        })
-        let cards = this.createListOfCable(this.users.length)
-        cards.forEach((card, index) => {
-          let userIndex = index % this.users.length
-          this.users[userIndex].cards.push(card)
-        })
-        this.users.forEach((user, index) => {
-          user.socket.emit('game_user_info', JSON.stringify({
-            me: {
+    if (this.isStart === false) {
+      this.isStart = true
+      this.handleNumber = 1
+      this.setCurrentPlayer(null)
+      this.users.forEach((user, index) => user.role = this.createListOfRole(
+        this.users.length)[index].type)
+      this.giveCardToUser(this.createListOfCable(this.users.length))
+    }
+  }
+
+  startNewHandle () {
+
+  }
+
+  giveCardToUser (cards) {
+    cards.forEach((card, index) => {
+      let userIndex = index % this.users.length
+      this.users[userIndex].cards.push(card)
+    })
+  }
+
+  sendInfoToUser () {
+    this.users.forEach((user, index) => {
+      user.socket.emit('game_user_info', JSON.stringify({
+        me: {
+          uuid: user.uuid,
+          name: user.name,
+          cards: user.cards,
+          role: user.role,
+        },
+        currentPlayer: this.users[this.currentPlayerIndex].name,
+      }))
+
+      if (user.isCurrentPlayer) {
+        user.socket.emit('game_user_play', JSON.stringify({
+          users: this.users.map(user => {
+            return {
               uuid: user.uuid,
               name: user.name,
-              cards: user.cards,
-              role: user.role,
-            },
-            currentPlayer: this.users[this.currentPlayerIndex].name,
-          }))
-
-          if (user.isCurrentPlayer) {
-            user.socket.emit('game_user_play', JSON.stringify({
-              users: this.users.map(user => {
-                return {
-                  uuid: user.uuid,
-                  name: user.name,
-                  isCurrentPlayer: user.isCurrentPlayer,
-                  cardsLength: user.cards.length,
-                }
-              }),
-            }))
-          }
-          shuffle(user.cards)
-        })
-        resolve()
-      } else {
-        reject()
+              isCurrentPlayer: user.isCurrentPlayer,
+              cardsLength: user.cards.length,
+            }
+          }),
+        }))
       }
+      shuffle(user.cards)
     })
+
   }
 
   pickCard (userToId, index) {
     let userTo = this.users.find(u => u.uuid === userToId)
     if (userTo) {
-      let card = userTo.cards[index]
+      let card = userTo.cards.splice(index, 1)
+      this.cardPicked.push(card)
+      this.setCurrentPlayer(userToId)
       return card
     }
+  }
+
+  isEndOfHandle () {
+    return false
   }
 
   createListOfRole (nbOfPlayer) {

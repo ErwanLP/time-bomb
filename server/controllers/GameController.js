@@ -51,7 +51,11 @@ module.exports.socketJoinGameInstance = (socket, io, gameId, userId) => {
 
 module.exports.socketStartGameInstance = (socket, io, gameId) => {
   return GamesService.getById(gameId).
-    then(game => game.startGame())
+    then(game => {
+      game.startGame()
+      game.sendInfoToUser()
+    })
+
 }
 
 module.exports.socketPickCard = (
@@ -61,6 +65,12 @@ module.exports.socketPickCard = (
         let card = game.pickCard(userToId, index)
         io.sockets.in(gameId).
           emit('card_picked', JSON.stringify(card))
+
+      if (game.isEndOfHandle()) {
+        game.startNewHandle()
+      } else {
+        game.sendInfoToUser()
+      }
       },
     )
 }

@@ -3,7 +3,8 @@ const io = require('socket.io-client')
 const chalk = require('chalk')
 const figlet = require('figlet')
 const input = require('./input')
-const output = require('./output')
+const url = 'http://localhost:3003'
+const services = require('./services')(url)
 const log = (msg) => console.log(msg)
 const logInfo = (msg) => console.log('\n' + chalk.blue(msg))
 const logSuccess = (msg) => console.log('\n' + chalk.green(msg))
@@ -11,7 +12,6 @@ const logPlay = (msg) => console.log('\n' + chalk.yellow(msg))
 const logError = (msg) => console.log('\n' + chalk.red(msg))
 const randomFullName = require('random-fullName')
 const {table} = require('table')
-const url = 'http://localhost:3002'
 
 let currentGameId
 let localUserId
@@ -25,15 +25,15 @@ module.exports = function () {
   figlet('Time Bomb', function (err, data) {
     //console.log(data)
     logInfo('Your name is : ' + name)
-    output.ping().then(() => {
+    services.ping().then(() => {
       let socket = io(url)
-      output.createUser(name).then(user => {
+      services.createUser(name).then(user => {
         localUserId = user.uuid
         input.host().then((host) => {
           if (host === 'Host') {
             //create instance of game
             input.nameInstance().
-              then(newGameName => output.createGame(newGameName ||
+              then(newGameName => services.createGame(newGameName ||
                 ('Instance of ' + name), user).
                 then(game => {
                     logSuccess('Success to create instance with name : ' +
@@ -46,7 +46,7 @@ module.exports = function () {
               )
           } else {
             // see list of games
-            output.getGame().then(
+            services.getGame().then(
               games => {
                 input.selectGame(games).then((game) => {
                   logInfo('Try to connect to lobby : ' + game.name)
@@ -103,7 +103,6 @@ module.exports = function () {
                   index)
               },
             )
-
           },
         )
       })
