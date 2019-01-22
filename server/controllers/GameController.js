@@ -51,8 +51,16 @@ module.exports.socketJoinGameInstance = (socket, io, gameId, userId) => {
 
 module.exports.socketStartGameInstance = (socket, io, gameId) => {
   return GamesService.getById(gameId).
+    then(game => game.startGame())
+}
+
+module.exports.socketPickCard = (
+  socket, io, gameId, userFromId, userToId, index) => {
+  return GamesService.getById(gameId).
     then(game => {
-      return game.startGame()
+        let card = game.pickCard(userToId, index)
+        io.sockets.in(gameId).
+          emit('card_picked', JSON.stringify(card))
       },
     )
 }

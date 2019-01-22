@@ -11,9 +11,13 @@ const logPlay = (msg) => console.log('\n' + chalk.yellow(msg))
 const logError = (msg) => console.log('\n' + chalk.red(msg))
 const randomFullName = require('random-fullName')
 const {table} = require('table')
-const url = 'http://localhost:3001'
+const url = 'http://localhost:3002'
 
-let currentGame
+let currentGameId
+let localUserId
+const card = '░░░░░░░░░' + '\n' + '░░░░░░░░░' +
+  '\n' + '░░░░░░░░░' + '\n' + '░░░░░░░░░' + '\n' + '░░░░░░░░░' + '\n' +
+  '░░░░░░░░░' + '\n' + '░░░░░░░░░'
 
 module.exports = function () {
   let params = minimist(process.argv.slice(2))
@@ -24,17 +28,18 @@ module.exports = function () {
     output.ping().then(() => {
       let socket = io(url)
       output.createUser(name).then(user => {
-        input.host().then((answers) => {
-          if (answers.host === 'Host') {
+        localUserId = user.uuid
+        input.host().then((host) => {
+          if (host === 'Host') {
             //create instance of game
             input.nameInstance().
-              then(answers => output.createGame(answers.newGameName ||
+              then(newGameName => output.createGame(newGameName ||
                 ('Instance of ' + name), user).
                 then(game => {
                     logSuccess('Success to create instance with name : ' +
                       game.name)
                     logInfo('Try to connect to lobby : ' + game.name)
-                    currentGame = game
+                  currentGameId = game.uuid
                     socket.emit('join_game', game.uuid, user.uuid)
                   },
                 ),
@@ -42,11 +47,10 @@ module.exports = function () {
           } else {
             // see list of games
             output.getGame().then(
-              data => {
-                input.selectGame(data).then((answers) => {
-                  let game = data.find((g) => g.name === answers.selectGame)
+              games => {
+                input.selectGame(games).then((game) => {
                   logInfo('Try to connect to lobby : ' + game.name)
-                  currentGame = game
+                  currentGameId = game.uuid
                   socket.emit('join_game', game.uuid, user.uuid)
                 })
               },
@@ -66,7 +70,7 @@ module.exports = function () {
       socket.on('ask_start_game', (numberOfPlayer) => {
         input.confirmStartGame(numberOfPlayer).then(bool => {
           if (bool === true) {
-            socket.emit('start_game', currentGame.uuid)
+            socket.emit('start_game', currentGameId)
           }
         })
       })
@@ -74,6 +78,7 @@ module.exports = function () {
       socket.on('game_user_info', data => {
         let info = JSON.parse(data)
         logPlay('Your role is : ' + info.me.role)
+        logPlay('Here is the list of your cards: ')
         let cards = info.me.cards.map(c => c.type)
         let output = table([cards], {})
         console.log(output)
@@ -81,9 +86,30 @@ module.exports = function () {
       })
 
       socket.on('game_user_play', data => {
-        console.log(data)
         let info = JSON.parse(data)
-        input.pickCardSelectUser(info.users)
+        input.pickCardSelectUser(info.users).then(
+          user => {
+            let hiddenCard = new Array(user.cardsLength).fill(card)
+            let output2 = table([hiddenCard.map((val, i) => i), hiddenCard], {
+              columnDefault: {
+                width: 16,
+                alignment: 'center',
+              },
+            })
+            console.log(output2)
+            input.pickCardSelectIndex(hiddenCard.map((val, i) => '' + i)).then(
+              index => {
+                socket.emit('pick_card', currentGameId, localUserId, user.uuid,
+                  index)
+              },
+            )
+
+          },
+        )
+      })
+
+      socket.on('card_picked', data => {
+        log(data)
       })
 
       socket.on('disconnect', function () {
@@ -92,19 +118,4 @@ module.exports = function () {
 
     })
   })
-
-  let card = '┌─────────┐' + '\n' + '│░░░░░░░░░│' + '\n' + '│░░░░░░░░░│' +
-    '\n' + '│░░░░░░░░░│' + '\n' + '│░░░░░░░░░│' + '\n' + '│░░░░░░░░░│' + '\n' +
-    '│░░░░░░░░░│' + '\n' + '│░░░░░░░░░│' + '\n' + '└─────────┘' + '\n'
-  let output2 = table([[1, 2, 3], [card, card, card]], {
-    columnDefault: {
-      width: 18,
-      alignment: 'center',
-    },
-  })
-  console.log(output2)
-
-
-
-
 }

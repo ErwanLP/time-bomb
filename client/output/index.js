@@ -1,6 +1,6 @@
 const request = require('./../helpers/request')
 
-const url = 'http://localhost:3001'
+const url = 'http://localhost:3002'
 const GAME_URL = '/games'
 const USER_URL = '/users'
 

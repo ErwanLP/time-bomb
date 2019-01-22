@@ -7,8 +7,8 @@ module.exports.host = () => {
       type: 'list',
       message: 'Join existing instance game or host your own instance of the game ?',
       choices: ['Join existing game', 'Host'],
-      default: 1,
-    }])
+      default: 0,
+    }]).then(data => data.host)
 }
 
 module.exports.nameInstance = () => {
@@ -17,18 +17,20 @@ module.exports.nameInstance = () => {
       name: 'newGameName',
       type: 'input',
       message: 'what is the name your new instance ?',
-    }])
+    }]).then(data => data.newGameName)
 }
 
-module.exports.selectGame = (data) => {
+module.exports.selectGame = (games) => {
   return inquirer.prompt([
     {
-      name: 'selectGame',
+      name: 'selectedGame',
       type: 'list',
       message: 'Select the game you want to join ?',
-      choices: data ? data.map(game => game.name) : [''],
+      choices: games ? games.map(game => game.name) : [''],
       default: 0,
-    }])
+    }]).
+    then(data => data.selectedGame).
+    then(selectedGame => games.find((g) => g.name === selectedGame))
 }
 
 module.exports.confirmStartGame = (numberOfPlayer) => {
@@ -50,12 +52,23 @@ module.exports.pickCardSelectUser = (users) => {
       choices: users ? users.filter(user => !user.isCurrentPlayer).
         map(user => user.name + ' (' + user.cardsLength + ' cards)') : [''],
       default: 0,
-    }])
+    }]).
+    then(data => data.pickCardSelectUser).
+    then(pickCardSelectUser => pickCardSelectUser.split(
+      new RegExp(' \\(\\d cards\\)'))[0]).
+    then(userName => users.find((u) => u.name === userName))
 }
 
-
-
-
-
+module.exports.pickCardSelectIndex = (arr) => {
+  return inquirer.prompt([
+    {
+      name: 'pickCardSelectIndex',
+      type: 'list',
+      message: 'Which card would you like to take ?',
+      choices: arr,
+      default: 0,
+    }]).
+    then(data => data.pickCardSelectIndex)
+}
 
 

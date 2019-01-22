@@ -5,7 +5,7 @@ let gameList = []
 module.exports.create = function (uuid, name, userId) {
   return new Promise((resolve, reject) => {
     let g = new Game(uuid, name, userId)
-    gameList.push(g)
+    gameList.unshift(g)
     resolve(g)
   })
 }

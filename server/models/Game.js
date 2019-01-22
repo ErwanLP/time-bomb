@@ -88,12 +88,21 @@ module.exports = class Game {
               }),
             }))
           }
+          shuffle(user.cards)
         })
         resolve()
       } else {
         reject()
       }
     })
+  }
+
+  pickCard (userToId, index) {
+    let userTo = this.users.find(u => u.uuid === userToId)
+    if (userTo) {
+      let card = userTo.cards[index]
+      return card
+    }
   }
 
   createListOfRole (nbOfPlayer) {
