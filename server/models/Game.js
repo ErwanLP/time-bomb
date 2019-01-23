@@ -16,6 +16,7 @@ module.exports = class Game {
     this.currentPlayerIndex = null
     this.cardPicked = []
     this.handleNumber = null
+    this.numberOfdefuseFound = null
   }
 
   addUser (user, socket) {
@@ -25,9 +26,8 @@ module.exports = class Game {
       this.users.push({
         uuid: user.uuid,
         name: user.name,
-        role: user.null,
+        role: null,
         socket: socket,
-        cards: [],
         isCreator: this.creator.uuid === user.uuid,
       })
       if (this.creator.uuid === user.uuid) {
@@ -54,18 +54,30 @@ module.exports = class Game {
     if (this.isStart === false) {
       this.isStart = true
       this.handleNumber = 1
+      this.numberOfdefuseFound = 0
       this.setCurrentPlayer(null)
-      this.users.forEach((user, index) => user.role = this.createListOfRole(
-        this.users.length)[index].type)
-      this.giveCardToUser(this.createListOfCable(this.users.length))
+      this.users.forEach((user, index) => {
+        user.role = this.createListOfRole(this.users.length)[index].type
+        user.socket.emit('game_user_role', user.role)
+      })
+      let cards = this.createCards(this.users.length)
+      shuffle(cards)
+      this.giveCardToUser(cards)
+      this.sendInfoToUser()
     }
   }
 
   startNewHandle () {
+    let cards = []
+    this.handleNumber++
+    this.users.forEach(user => cards = cards.concat(user.cards))
+    shuffle(cards)
+    this.giveCardToUser(cards)
 
   }
 
   giveCardToUser (cards) {
+    this.users.forEach(user => user.cards = [])
     cards.forEach((card, index) => {
       let userIndex = index % this.users.length
       this.users[userIndex].cards.push(card)
@@ -73,13 +85,12 @@ module.exports = class Game {
   }
 
   sendInfoToUser () {
-    this.users.forEach((user, index) => {
+    this.users.forEach(user => {
       user.socket.emit('game_user_info', JSON.stringify({
         me: {
           uuid: user.uuid,
           name: user.name,
           cards: user.cards,
-          role: user.role,
         },
         currentPlayer: this.users[this.currentPlayerIndex].name,
       }))
@@ -112,7 +123,7 @@ module.exports = class Game {
   }
 
   isEndOfHandle () {
-    return false
+    return this.cardPicked.length === this.handleNumber * this.users.length
   }
 
   createListOfRole (nbOfPlayer) {
@@ -140,7 +151,7 @@ module.exports = class Game {
     return res.slice(0, nbOfPlayer)
   }
 
-  createListOfCable (nbOfPlayer) {
+  createCards (nbOfPlayer) {
     function getNumberOfCableOfEachType () {
       if (nbOfPlayer === 2) return [7, 2, 1]
       if (nbOfPlayer === 3) return [11, 3, 1]
@@ -169,7 +180,6 @@ module.exports = class Game {
         type: 'Bomb',
       })
     }
-    shuffle(res)
     return res
   }
 

@@ -7,7 +7,12 @@ module.exports = {
         (err, httpResponse, body) => {
           if (err) {
             console.error(err)
-            reject(JSON.parse(err))
+            try {
+              let p = JSON.parse(err)
+              reject(p)
+            } catch (e) {
+              reject(err)
+            }
           } else {
             resolve(JSON.parse(body))
           }
@@ -20,7 +25,12 @@ module.exports = {
         (err, httpResponse, body) => {
           if (err) {
             console.error(err)
-            reject(JSON.parse(err))
+            try {
+              let p = JSON.parse(err)
+              reject(p)
+            } catch (e) {
+              reject(err)
+            }
           } else {
             resolve(JSON.parse(body))
           }

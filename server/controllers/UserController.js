@@ -1,8 +1,9 @@
 const UsersService = require('@services/UsersService')
 const uuidv4 = require('uuid/v4')
+const randomFullName = require('random-fullName')
 
 module.exports.create = (req, res, next) => {
-  return UsersService.create(uuidv4(), req.body.name).then(
+  return UsersService.create(uuidv4(), req.body.name || randomFullName()).then(
     (data) => {
       res.json(data)
     },
