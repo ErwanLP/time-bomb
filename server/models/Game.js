@@ -15,8 +15,10 @@ module.exports = class Game {
     this.maxPlayer = 8
     this.currentPlayerIndex = null
     this.cardPicked = []
-    this.handleNumber = null
-    this.numberOfdefuseFound = null
+    this.handleNumber = 1
+    this.numberOfDefuseFound = 0
+    this.isFinish = false
+    this.bombExploded = false
   }
 
   addUser (user, socket) {
@@ -53,8 +55,6 @@ module.exports = class Game {
   startGame () {
     if (this.isStart === false) {
       this.isStart = true
-      this.handleNumber = 1
-      this.numberOfdefuseFound = 0
       this.setCurrentPlayer(null)
       this.users.forEach((user, index) => {
         user.role = this.createListOfRole(this.users.length)[index].type
@@ -67,13 +67,26 @@ module.exports = class Game {
     }
   }
 
+  endGame () {
+    this.isFinish = true
+    let res
+    if (this.numberOfDefuseFound === this.users) {
+      res = 'Sherlock Win'
+    } else if (this.handleNumber === 5) {
+      res = 'Moriarty win'
+    } else if (this.bombExploded === true) {
+      res = 'Moriarty win'
+    }
+    return res
+  }
+
   startNewHandle () {
     let cards = []
     this.handleNumber++
     this.users.forEach(user => cards = cards.concat(user.cards))
     shuffle(cards)
     this.giveCardToUser(cards)
-
+    return this.handleNumber
   }
 
   giveCardToUser (cards) {
@@ -93,6 +106,8 @@ module.exports = class Game {
           cards: user.cards,
         },
         currentPlayer: this.users[this.currentPlayerIndex].name,
+        numberOfDefuseFound: this.numberOfDefuseFound,
+        handleNumber: this.handleNumber,
       }))
 
       if (user.isCurrentPlayer) {
@@ -117,6 +132,12 @@ module.exports = class Game {
     if (userTo) {
       let card = userTo.cards.splice(index, 1)
       this.cardPicked.push(card)
+      if (card.type === 'Defusing') {
+        this.numberOfDefuseFound++
+      }
+      if (card.type === 'Bomb') {
+        this.bombExploded = true
+      }
       this.setCurrentPlayer(userToId)
       return card
     }
@@ -126,9 +147,15 @@ module.exports = class Game {
     return this.cardPicked.length === this.handleNumber * this.users.length
   }
 
+  isEndOfGame () {
+    return this.handleNumber === 5 || this.numberOfDefuseFound === this.users ||
+      this.bombExploded === true
+  }
+
   createListOfRole (nbOfPlayer) {
     function getNumberOfPlayerInEachTeam () {
       if (nbOfPlayer === 2) return [1, 1]
+      if (nbOfPlayer === 3) return [2, 1]
       if (nbOfPlayer === 4 || nbOfPlayer === 5) return [3, 2]
       if (nbOfPlayer === 6) return [4, 2]
       if (nbOfPlayer === 7 || nbOfPlayer === 8) return [6, 3]

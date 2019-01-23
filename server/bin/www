@@ -22,7 +22,6 @@ app.set('port', port)
 
 let server = http.createServer(app)
 
-
 const io = require('socket.io')(server)
 io.on('connection', function (socket) {
   socket.on('join_game',
@@ -31,6 +30,10 @@ io.on('connection', function (socket) {
     GameController.socketStartGameInstance.bind(null, socket, io))
   socket.on('pick_card',
     GameController.socketPickCard.bind(null, socket, io))
+  socket.on('disconnect', function () {
+    GameController.socketLeaveGameInstance(socket, io, socket.gameId,
+      socket.userId)
+  })
 })
 
 /**

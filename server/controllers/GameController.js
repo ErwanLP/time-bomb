@@ -49,6 +49,10 @@ module.exports.socketJoinGameInstance = (socket, io, gameId, userId) => {
     )
 }
 
+module.exports.socketLeaveGameInstance = (socket, io, gameId, userId) => {
+  console.log(gameId, userId)
+}
+
 module.exports.socketStartGameInstance = (socket, io, gameId) => {
   return GamesService.getById(gameId).
     then(game => game.startGame())
@@ -59,14 +63,20 @@ module.exports.socketPickCard = (
   socket, io, gameId, userFromId, userToId, index) => {
   return GamesService.getById(gameId).
     then(game => {
-        let card = game.pickCard(userToId, index)
+      let card = game.pickCard(userToId, index)
+      io.sockets.in(gameId).
+        emit('game_card_picked', JSON.stringify(card))
+      if (game.isEndOfGame()) {
+        let res = game.endGame()
         io.sockets.in(gameId).
-          emit('game_card_picked', JSON.stringify(card))
-
-      if (game.isEndOfHandle()) {
-        game.startNewHandle()
-      }
+          emit('end_game', res)
+      } else if (game.isEndOfHandle()) {
+        let handleNumber = game.startNewHandle()
+        io.sockets.in(gameId).
+          emit('handle_number', handleNumber)
         game.sendInfoToUser()
-      },
-    )
+      } else {
+        game.sendInfoToUser()
+      }
+    })
 }
