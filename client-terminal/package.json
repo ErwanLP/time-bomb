@@ -1,6 +1,6 @@
 {
   "name": "time-bomb-client-terminal",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "index.js",
   "bin": {
     "time-bomb-client-terminal": "bin/time-bomb-client-terminal"
