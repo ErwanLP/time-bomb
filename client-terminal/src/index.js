@@ -1,10 +1,10 @@
 const minimist = require('minimist')
 const io = require('socket.io-client')
-const input = require('./input')
-const output = require('./output')
+const input = require('./input/index')
+const output = require('./output/index')
 const clear = require('clear')
 const api = 'http://localhost:3002'
-const services = require('./services')(api)
+const services = require('./services/index')(api)
 
 let currentGameId
 let localUserId
@@ -110,6 +110,7 @@ module.exports = function () {
 
     }, () => {
       output.logError('Server Offline')
+      process.exit()
     })
   })
 }
