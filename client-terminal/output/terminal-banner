@@ -1,0 +1,36 @@
+const defaultWidth = 40
+const terminalWidth = () =>
+  (process.stdout.isTTY ? process.stdout.columns : defaultWidth) || defaultWidth
+
+const decideWidth = (minWidth = 0) =>
+  Math.max(minWidth, terminalWidth())
+
+const horizontalLine = (n, symbol, fnLog) => {
+  symbol = symbol || '-'
+  var k
+  var str = ''
+  for (k = 0; k < n; k += 1) {
+    str += symbol
+  }
+  return () => {
+    fnLog(str)
+  }
+}
+
+const centerText = (text) => {
+  const w = terminalWidth()
+  let s = text
+  while (s.length < w - 1) {
+    s = ' ' + s + ' '
+  }
+  return s
+}
+
+module.exports.terminalBannerColor = (text, fnLog) => {
+  const n = decideWidth(text.length)
+  const hr = horizontalLine(n, null, fnLog)
+  hr()
+  fnLog(centerText(text))
+  hr()
+}
+

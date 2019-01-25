@@ -14,7 +14,12 @@ module.exports = {
               reject(err)
             }
           } else {
-            resolve(JSON.parse(body))
+            try {
+              let p = JSON.parse(body)
+              resolve(p)
+            } catch (e) {
+              resolve(body)
+            }
           }
         })
     })
@@ -32,7 +37,12 @@ module.exports = {
               reject(err)
             }
           } else {
-            resolve(JSON.parse(body))
+            try {
+              let p = JSON.parse(body)
+              resolve(p)
+            } catch (e) {
+              resolve(body)
+            }
           }
         })
     })

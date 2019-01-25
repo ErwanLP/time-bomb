@@ -2,10 +2,9 @@ const minimist = require('minimist')
 const io = require('socket.io-client')
 const input = require('./input')
 const output = require('./output')
-const api = 'http://localhost:3003'
+const clear = require('clear')
+const api = 'http://localhost:3002'
 const services = require('./services')(api)
-var clear = require('clear')
-const tb = require('terminal-banner').terminalBanner
 
 let currentGameId
 let localUserId
@@ -61,13 +60,13 @@ module.exports = function () {
         })
       })
 
-      socket.on('game_user_role', role => {
-        output.logPlay('Your role is : ' + role)
+      socket.on('game_user_start', role => {
+        output.tb('Start of the game, your role is ' + role)
       })
 
-      socket.on('game_user_info', data => {
-        tb('Game information')
-        console.log(data)
+      socket.on('game_user_new_handle', data => {
+        clear()
+        output.tb('New Handle')
         let info = JSON.parse(data)
         output.displayVisibleCard(info.me.cards.map(c => c.type))
         output.log('Number of handle ' +
@@ -77,8 +76,16 @@ module.exports = function () {
         output.log('Waiting for ' + info.currentPlayer + ' ....')
       })
 
+      socket.on('game_user_info', data => {
+        output.tb('Game information')
+        let info = JSON.parse(data)
+        output.log('Number of defusing card found ' +
+          info.numberOfDefuseFound)
+        output.log('Waiting for ' + info.currentPlayer + ' ....')
+      })
+
       socket.on('game_user_play', data => {
-        tb('It is your turn')
+        output.tb('It is your turn')
         let info = JSON.parse(data)
         input.pickCardSelectUser(info.users).then(
           user => {
@@ -93,16 +100,8 @@ module.exports = function () {
         )
       })
 
-      socket.on('game_card_picked', data => {
-        output.logPlay(data)
-      })
-
-      socket.on('handle_number', data => {
-        output.logInfo(data)
-      })
-
       socket.on('end_game', data => {
-        output.logSuccess(data)
+        output.logInfo(data)
       })
 
       socket.on('disconnect', function () {

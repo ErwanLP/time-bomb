@@ -2,27 +2,17 @@ const GamesService = require('@services/GamesService')
 const UsersService = require('@services/UsersService')
 const uuidv4 = require('uuid/v4')
 
-module.exports.create = (req, res, next) => {
+module.exports.create = (req, res) => {
   return GamesService.create(uuidv4(), req.body.name, req.body.userId).then(
-    (data) => {
-      res.json(data)
-    },
-    (err) => {
-      console.error(err)
-      res.status(400).send(err)
-    },
+    data => res.json(data),
+    err => res.status(400).send(err),
   )
 }
 
-module.exports.read = (req, res, next) => {
+module.exports.read = (req, res) => {
   return GamesService.read().then(
-    (data) => {
-      res.json(data)
-    },
-    (err) => {
-      console.error(err)
-      res.status(400).send(err)
-    },
+    data => res.json(data),
+    err => res.status(400).send(err),
   )
 }
 
@@ -31,6 +21,8 @@ module.exports.socketJoinGameInstance = (socket, io, gameId, userId) => {
     then(data => {
         [user, game] = data
         if (user && game) {
+          socket.gameId = gameId
+          socket.userId = userId
           game.addUser(user, socket)
           let listUser = 'List of users : ' +
             game.users.reduce(
@@ -50,13 +42,12 @@ module.exports.socketJoinGameInstance = (socket, io, gameId, userId) => {
 }
 
 module.exports.socketLeaveGameInstance = (socket, io, gameId, userId) => {
-  console.log(gameId, userId)
+  console.log('socketLeaveGameInstance', gameId, userId)
 }
 
 module.exports.socketStartGameInstance = (socket, io, gameId) => {
   return GamesService.getById(gameId).
     then(game => game.startGame())
-
 }
 
 module.exports.socketPickCard = (
@@ -64,17 +55,15 @@ module.exports.socketPickCard = (
   return GamesService.getById(gameId).
     then(game => {
       let card = game.pickCard(userToId, index)
-      io.sockets.in(gameId).
-        emit('game_card_picked', JSON.stringify(card))
-      if (game.isEndOfGame()) {
+      if (game.isEndOfHandle()) {
+        let handleNumber = game.startHandle()
+        io.sockets.in(gameId).
+          emit('new_handle', handleNumber)
+        game.sendInfoToUser()
+      } else if (game.isEndOfGame()) {
         let res = game.endGame()
         io.sockets.in(gameId).
           emit('end_game', res)
-      } else if (game.isEndOfHandle()) {
-        let handleNumber = game.startNewHandle()
-        io.sockets.in(gameId).
-          emit('handle_number', handleNumber)
-        game.sendInfoToUser()
       } else {
         game.sendInfoToUser()
       }

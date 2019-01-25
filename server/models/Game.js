@@ -15,7 +15,7 @@ module.exports = class Game {
     this.maxPlayer = 8
     this.currentPlayerIndex = null
     this.cardPicked = []
-    this.handleNumber = 1
+    this.handleNumber = 0
     this.numberOfDefuseFound = 0
     this.isFinish = false
     this.bombExploded = false
@@ -58,35 +58,47 @@ module.exports = class Game {
       this.setCurrentPlayer(null)
       this.users.forEach((user, index) => {
         user.role = this.createListOfRole(this.users.length)[index].type
-        user.socket.emit('game_user_role', user.role)
+        user.socket.emit('game_user_start', user.role)
       })
       let cards = this.createCards(this.users.length)
       shuffle(cards)
       this.giveCardToUser(cards)
-      this.sendInfoToUser()
+      this.startHandle()
     }
   }
 
-  endGame () {
-    this.isFinish = true
-    let res
-    if (this.numberOfDefuseFound === this.users) {
-      res = 'Sherlock Win'
-    } else if (this.handleNumber === 5) {
-      res = 'Moriarty win'
-    } else if (this.bombExploded === true) {
-      res = 'Moriarty win'
+  startHandle () {
+    if (this.handleNumber !== 0) {
+      let cards = []
+      this.users.forEach(user => cards = cards.concat(user.cards))
+      shuffle(cards)
+      this.giveCardToUser(cards)
     }
-    return res
-  }
-
-  startNewHandle () {
-    let cards = []
     this.handleNumber++
-    this.users.forEach(user => cards = cards.concat(user.cards))
-    shuffle(cards)
-    this.giveCardToUser(cards)
-    return this.handleNumber
+    this.users.forEach(user => {
+      user.socket.emit('game_user_new_handle', JSON.stringify({
+        me: {
+          uuid: user.uuid,
+          name: user.name,
+          cards: user.cards,
+        },
+        currentPlayer: this.users[this.currentPlayerIndex].name,
+        numberOfDefuseFound: this.numberOfDefuseFound,
+        handleNumber: this.handleNumber,
+      }))
+      if (user.isCurrentPlayer) {
+        user.socket.emit('game_user_play', JSON.stringify({
+          users: this.users.map(user => {
+            return {
+              uuid: user.uuid,
+              name: user.name,
+              isCurrentPlayer: user.isCurrentPlayer,
+              cardsLength: user.cards.length,
+            }
+          }),
+        }))
+      }
+    })
   }
 
   giveCardToUser (cards) {
@@ -141,6 +153,19 @@ module.exports = class Game {
       this.setCurrentPlayer(userToId)
       return card
     }
+  }
+
+  endGame () {
+    this.isFinish = true
+    let res
+    if (this.numberOfDefuseFound === this.users) {
+      res = 'Sherlock Win'
+    } else if (this.handleNumber === 5) {
+      res = 'Moriarty win'
+    } else if (this.bombExploded === true) {
+      res = 'Moriarty win'
+    }
+    return res
   }
 
   isEndOfHandle () {

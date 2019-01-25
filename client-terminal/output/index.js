@@ -1,6 +1,8 @@
 const chalk = require('chalk')
 const figlet = require('figlet')
 const {table} = require('table')
+const tbColor = require('./terminal-banner').terminalBannerColor
+
 
 const card = '░░░░░░░░░' + '\n' + '░░░░░░░░░' +
   '\n' + '░░░░░░░░░' + '\n' + '░░░░░░░░░' + '\n' + '░░░░░░░░░' + '\n' +
@@ -34,6 +36,10 @@ module.exports.displayVisibleCard = (cards) => {
     this.logPlay('You have no more card')
   }
 
+}
+
+module.exports.tb = (msg) => {
+  return tbColor(msg, (msg) => console.log(chalk.yellow(msg)))
 }
 
 module.exports.displayHiddenCard = (cardsLength) => {
