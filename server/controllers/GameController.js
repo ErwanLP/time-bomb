@@ -55,17 +55,31 @@ module.exports.socketPickCard = (
   return GamesService.getById(gameId).
     then(game => {
       let card = game.pickCard(userToId, index)
-      if (game.isEndOfHandle()) {
-        let handleNumber = game.startHandle()
-        io.sockets.in(gameId).
-          emit('new_handle', handleNumber)
-        game.sendInfoToUser()
-      } else if (game.isEndOfGame()) {
-        let res = game.endGame()
-        io.sockets.in(gameId).
-          emit('end_game', res)
-      } else {
-        game.sendInfoToUser()
-      }
+      Promise.all(
+        [UsersService.getById(userFromId), UsersService.getById(userToId)]).
+        then(data => {
+          io.sockets.in(gameId).
+            emit('game_broadcast_info', JSON.stringify({
+              card: card.type,
+              userFromName: data[0] ? data[0].name : 'one player',
+              userToName: data[1] ? data[1].name : 'other player',
+              currentPlayer: game.users[game.currentPlayerIndex].name,
+              numberOfDefuseFound: game.numberOfDefuseFound,
+            }))
+        }).then(
+        () => {
+          if (game.isEndOfHandle()) {
+            if (game.isEndOfGame()) {
+              let res = game.endGame()
+              io.sockets.in(gameId).
+                emit('game_broadcast_end', res)
+            } else {
+              game.startHandle()
+            }
+          } else {
+            game.startNewPlay()
+          }
+        },
+      )
     })
 }

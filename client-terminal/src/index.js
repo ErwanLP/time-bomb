@@ -2,7 +2,6 @@ const minimist = require('minimist')
 const io = require('socket.io-client')
 const input = require('./input/index')
 const output = require('./output/index')
-const clear = require('clear')
 const api = 'http://localhost:3002'
 const services = require('./services/index')(api)
 
@@ -18,8 +17,8 @@ module.exports = function () {
       services.createUser(name).then(user => {
         localUserId = user.uuid
         output.logInfo('Your name is : ' + user.name)
-        input.host().then((host) => {
-          if (host === 'Host') {
+        input.createOrJoinInstance().then((createOrJoin) => {
+          if (createOrJoin === 'Create new game') {
             //create instance of game
             input.nameInstance().
               then(newGameName => services.createGame(newGameName ||
@@ -61,31 +60,32 @@ module.exports = function () {
       })
 
       socket.on('game_user_start', role => {
-        output.tb('Start of the game, your role is ' + role)
+        output.tbGame('Start of the game, your role is ' + role)
       })
 
       socket.on('game_user_new_handle', data => {
-        clear()
-        output.tb('New Handle')
         let info = JSON.parse(data)
+        output.tbGame('New Handle')
         output.displayVisibleCard(info.me.cards.map(c => c.type))
-        output.log('Number of handle ' +
+        output.log('Number of handle : ' +
           info.handleNumber)
-        output.log('Number of defusing card found ' +
+        output.log('Number of defusing card found : ' +
           info.numberOfDefuseFound)
         output.log('Waiting for ' + info.currentPlayer + ' ....')
       })
 
-      socket.on('game_user_info', data => {
-        output.tb('Game information')
+      socket.on('game_broadcast_info', data => {
+        output.tbInfo('Game information')
         let info = JSON.parse(data)
-        output.log('Number of defusing card found ' +
+        output.log(info.userFromName + ' have taken card ' + info.card +
+          ' from ' + info.userToName)
+        output.log('Number of defusing card found : ' +
           info.numberOfDefuseFound)
         output.log('Waiting for ' + info.currentPlayer + ' ....')
       })
 
       socket.on('game_user_play', data => {
-        output.tb('It is your turn')
+        output.tbPlay('It is your turn')
         let info = JSON.parse(data)
         input.pickCardSelectUser(info.users).then(
           user => {
@@ -100,12 +100,14 @@ module.exports = function () {
         )
       })
 
-      socket.on('end_game', data => {
-        output.logInfo(data)
+      socket.on('game_broadcast_end', data => {
+        output.tbGame(data)
+        process.exit()
       })
 
       socket.on('disconnect', function () {
         output.logError('User disconnect')
+        process.exit()
       })
 
     }, () => {

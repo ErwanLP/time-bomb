@@ -1,14 +1,14 @@
 const inquirer = require('inquirer')
 
-module.exports.host = () => {
+module.exports.createOrJoinInstance = () => {
   return inquirer.prompt([
     {
-      name: 'host',
+      name: 'createOrJoin',
       type: 'list',
-      message: 'Join existing instance game or host your own instance of the game ?',
-      choices: ['Join existing game', 'Host'],
+      message: 'Join existing instance game or create your own instance of the game ?',
+      choices: ['Join existing game', 'Create new game'],
       default: 0,
-    }]).then(data => data.host)
+    }]).then(data => data.createOrJoin)
 }
 
 module.exports.nameInstance = () => {

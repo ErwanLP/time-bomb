@@ -56,8 +56,9 @@ module.exports = class Game {
     if (this.isStart === false) {
       this.isStart = true
       this.setCurrentPlayer(null)
+      let roles = this.createListOfRole(this.users.length)
       this.users.forEach((user, index) => {
-        user.role = this.createListOfRole(this.users.length)[index].type
+        user.role = roles[index].type
         user.socket.emit('game_user_start', user.role)
       })
       let cards = this.createCards(this.users.length)
@@ -86,19 +87,9 @@ module.exports = class Game {
         numberOfDefuseFound: this.numberOfDefuseFound,
         handleNumber: this.handleNumber,
       }))
-      if (user.isCurrentPlayer) {
-        user.socket.emit('game_user_play', JSON.stringify({
-          users: this.users.map(user => {
-            return {
-              uuid: user.uuid,
-              name: user.name,
-              isCurrentPlayer: user.isCurrentPlayer,
-              cardsLength: user.cards.length,
-            }
-          }),
-        }))
-      }
+      shuffle(user.cards)
     })
+    this.startNewPlay()
   }
 
   giveCardToUser (cards) {
@@ -109,19 +100,8 @@ module.exports = class Game {
     })
   }
 
-  sendInfoToUser () {
+  startNewPlay () {
     this.users.forEach(user => {
-      user.socket.emit('game_user_info', JSON.stringify({
-        me: {
-          uuid: user.uuid,
-          name: user.name,
-          cards: user.cards,
-        },
-        currentPlayer: this.users[this.currentPlayerIndex].name,
-        numberOfDefuseFound: this.numberOfDefuseFound,
-        handleNumber: this.handleNumber,
-      }))
-
       if (user.isCurrentPlayer) {
         user.socket.emit('game_user_play', JSON.stringify({
           users: this.users.map(user => {
@@ -134,7 +114,6 @@ module.exports = class Game {
           }),
         }))
       }
-      shuffle(user.cards)
     })
 
   }
@@ -142,7 +121,7 @@ module.exports = class Game {
   pickCard (userToId, index) {
     let userTo = this.users.find(u => u.uuid === userToId)
     if (userTo) {
-      let card = userTo.cards.splice(index, 1)
+      let card = userTo.cards.splice(index, 1)[0]
       this.cardPicked.push(card)
       if (card.type === 'Defusing') {
         this.numberOfDefuseFound++
@@ -173,7 +152,7 @@ module.exports = class Game {
   }
 
   isEndOfGame () {
-    return this.handleNumber === 5 || this.numberOfDefuseFound === this.users ||
+    return this.handleNumber === 4 || this.numberOfDefuseFound === this.users ||
       this.bombExploded === true
   }
 

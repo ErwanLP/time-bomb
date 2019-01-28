@@ -14,6 +14,7 @@ const GameController = require('@controllers/GameController')
  */
 
 let port = normalizePort(process.env.PORT || '3000')
+console.log('port : ' + port)
 app.set('port', port)
 
 /**

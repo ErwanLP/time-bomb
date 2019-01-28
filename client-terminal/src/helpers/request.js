@@ -1,4 +1,4 @@
-const request = require('./../helpers/request')
+const request = require('request')
 
 module.exports = {
   post: (url, params) => {

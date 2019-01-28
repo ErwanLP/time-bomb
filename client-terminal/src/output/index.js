@@ -38,8 +38,16 @@ module.exports.displayVisibleCard = (cards) => {
 
 }
 
-module.exports.tb = (msg) => {
+module.exports.tbGame = (msg) => {
   return tbColor(msg, (msg) => console.log(chalk.yellow(msg)))
+}
+
+module.exports.tbInfo = (msg) => {
+  return tbColor(msg, (msg) => console.log(chalk.blue(msg)))
+}
+
+module.exports.tbPlay = (msg) => {
+  return tbColor(msg, (msg) => console.log(chalk.green(msg)))
 }
 
 module.exports.displayHiddenCard = (cardsLength) => {

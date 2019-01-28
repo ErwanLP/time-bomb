@@ -1,4 +1,4 @@
-const request = require('../helpers/request')
+const request = require('./../helpers/request')
 const GAME_URL = '/games'
 const USER_URL = '/users'
 
