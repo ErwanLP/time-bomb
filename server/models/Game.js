@@ -40,6 +40,13 @@ module.exports = class Game {
     }
   }
 
+  removePlayer (userId) {
+    let index = this.users.findIndex(u => u.uuid === userId)
+    if (index > -1) {
+      this.users.splice(index, 1)
+    }
+  }
+
   setCurrentPlayer (userId) {
     if (userId === null) {
       this.currentPlayerIndex = Math.floor(Math.random() * this.users.length)
@@ -53,7 +60,7 @@ module.exports = class Game {
   }
 
   startGame () {
-    if (this.isStart === false) {
+    if (this.isStart === false && this.users.length >= this.minPlayer) {
       this.isStart = true
       this.setCurrentPlayer(null)
       let roles = this.createListOfRole(this.users.length)

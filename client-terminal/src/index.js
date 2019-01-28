@@ -105,6 +105,11 @@ module.exports = function () {
         process.exit()
       })
 
+      socket.on('game_broadcast_stop_error', data => {
+        output.logError(data)
+        process.exit()
+      })
+
       socket.on('disconnect', function () {
         output.logError('User disconnect')
         process.exit()

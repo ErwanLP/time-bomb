@@ -24,15 +24,7 @@ module.exports.socketJoinGameInstance = (socket, io, gameId, userId) => {
           socket.gameId = gameId
           socket.userId = userId
           game.addUser(user, socket)
-          let listUser = 'List of users : ' +
-            game.users.reduce(
-              (acc, val) => ((val ? acc + val.name : acc) + ' - '),
-              '')
-          io.sockets.in(gameId).
-            emit('broadcast_list_user_in_game', listUser)
-          if (game.hasEnoughPlayer()) {
-            game.creator.socket.emit('ask_start_game', game.users.length)
-          }
+          askStartGame(game, io)
         } else {
           console.error('ERROR : game or user not found')
           console.error(game, user)
@@ -42,7 +34,35 @@ module.exports.socketJoinGameInstance = (socket, io, gameId, userId) => {
 }
 
 module.exports.socketLeaveGameInstance = (socket, io, gameId, userId) => {
-  console.log('socketLeaveGameInstance', gameId, userId)
+  return Promise.all(
+    [GamesService.getById(gameId), UsersService.getById(userId)]).then(
+    data => {
+      let user = data[1]
+      let game = data[0]
+      if (user && game) {
+        if (game.isStart) {
+          io.sockets.in(game.uuid).
+            emit('game_broadcast_stop_error', 'Stop because ' + user.name +
+              ' left the game')
+        } else {
+          game.removePlayer(userId)
+          askStartGame(game, io)
+        }
+      }
+    },
+  )
+}
+
+function askStartGame (game, io) {
+  let listUser = 'List of users : ' +
+    game.users.reduce(
+      (acc, val) => ((val ? acc + val.name : acc) + ' - '),
+      '')
+  io.sockets.in(game.uuid).
+    emit('broadcast_list_user_in_game', listUser)
+  if (game.hasEnoughPlayer()) {
+    game.creator.socket.emit('ask_start_game', game.users.length)
+  }
 }
 
 module.exports.socketStartGameInstance = (socket, io, gameId) => {
