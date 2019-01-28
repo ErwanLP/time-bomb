@@ -6,4 +6,6 @@ router.post('/', GameController.create)
 
 router.get('/', GameController.read)
 
+router.get('/notStarted', GameController.readNotStartedGames)
+
 module.exports = router

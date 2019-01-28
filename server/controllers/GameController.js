@@ -16,6 +16,13 @@ module.exports.read = (req, res) => {
   )
 }
 
+module.exports.readNotStartedGames = (req, res) => {
+  return GamesService.readNotStartedGames().then(
+    data => res.json(data),
+    err => res.status(400).send(err),
+  )
+}
+
 module.exports.socketJoinGameInstance = (socket, io, gameId, userId) => {
   Promise.all([UsersService.getById(userId), GamesService.getById(gameId)]).
     then(data => {

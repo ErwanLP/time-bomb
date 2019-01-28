@@ -10,7 +10,7 @@ module.exports = function (url) {
   }
 
   module.getGame = () => {
-    return request.get(url + GAME_URL)
+    return request.get(url + GAME_URL + '/notStarted')
   }
 
   module.createGame = (name, user) => {

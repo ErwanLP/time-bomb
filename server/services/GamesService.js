@@ -21,6 +21,17 @@ module.exports.read = function () {
   })
 }
 
+module.exports.readNotStartedGames = function () {
+  return new Promise((resolve, reject) => {
+    resolve(gameList.filter(g => g.isStart === false).map(g => {
+      return {
+        name: g.name,
+        uuid: g.uuid,
+      }
+    }))
+  })
+}
+
 module.exports.getById = function (id) {
   return new Promise((resolve, reject) => {
     resolve(gameList.find(u => u.uuid === id))
