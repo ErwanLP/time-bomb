@@ -68,7 +68,10 @@ function askStartGame (game, io) {
   io.sockets.in(game.uuid).
     emit('broadcast_list_user_in_game', listUser)
   if (game.hasEnoughPlayer()) {
-    game.creator.socket.emit('ask_start_game', game.users.length)
+    game.creator.socket.emit('ask_start_game', JSON.stringify({
+      numberOfPlayer: game.users.length,
+      gameId: game.uuid,
+    }))
   }
 }
 

@@ -119,6 +119,8 @@ module.exports = class Game {
               cardsLength: user.cards.length,
             }
           }),
+          myUserId: user.uuid,
+          gameId: this.uuid,
         }))
       }
     })

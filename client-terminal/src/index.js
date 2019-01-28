@@ -2,8 +2,6 @@ const minimist = require('minimist')
 const io = require('socket.io-client')
 const input = require('./input/index')
 const output = require('./output/index')
-let currentGameId
-let localUserId
 
 module.exports = function () {
   let params = minimist(process.argv.slice(2))
@@ -15,7 +13,6 @@ module.exports = function () {
     services.ping().then(() => {
       let socket = io(host)
       services.createUser(name).then(user => {
-        localUserId = user.uuid
         output.logInfo('Your name is : ' + user.name)
         input.createOrJoinInstance().then((createOrJoin) => {
           if (createOrJoin === 'Create new game') {
@@ -24,7 +21,6 @@ module.exports = function () {
               then(newGameName => services.createGame(newGameName ||
                 ('Instance of ' + user.name), user).
                 then(game => {
-                    currentGameId = game.uuid
                     socket.emit('join_game', game.uuid, user.uuid)
                   },
                 ),
@@ -34,7 +30,6 @@ module.exports = function () {
             services.getGame().then(
               games => {
                 input.selectGame(games).then(game => {
-                  currentGameId = game.uuid
                   socket.emit('join_game', game.uuid, user.uuid)
                 })
               },
@@ -51,10 +46,11 @@ module.exports = function () {
         output.logInfo(data)
       })
 
-      socket.on('ask_start_game', (numberOfPlayer) => {
-        input.confirmStartGame(numberOfPlayer).then(bool => {
+      socket.on('ask_start_game', (data) => {
+        let info = JSON.parse(data)
+        input.confirmStartGame(info.numberOfPlayer).then(bool => {
           if (bool === true) {
-            socket.emit('start_game', currentGameId)
+            socket.emit('start_game', info.gameId)
           }
         })
       })
@@ -92,7 +88,7 @@ module.exports = function () {
             let hiddenCards = output.displayHiddenCard(user.cardsLength)
             input.pickCardSelectIndex(hiddenCards.map((val, i) => '' + i)).then(
               index => {
-                socket.emit('pick_card', currentGameId, localUserId, user.uuid,
+                socket.emit('pick_card', info.gameId, info.myUserId, user.uuid,
                   index)
               },
             )
