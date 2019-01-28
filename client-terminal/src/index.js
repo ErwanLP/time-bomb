@@ -2,18 +2,18 @@ const minimist = require('minimist')
 const io = require('socket.io-client')
 const input = require('./input/index')
 const output = require('./output/index')
-const api = 'http://localhost:3002'
-const services = require('./services/index')(api)
-
 let currentGameId
 let localUserId
 
 module.exports = function () {
   let params = minimist(process.argv.slice(2))
-  let name = params.name
+  const name = params.name
+  const host = params.host || 'http://localhost:3002'
+  const services = require('./services/index')(host)
+
   output.figlet('Time Bomb').then(() => {
     services.ping().then(() => {
-      let socket = io(api)
+      let socket = io(host)
       services.createUser(name).then(user => {
         localUserId = user.uuid
         output.logInfo('Your name is : ' + user.name)
