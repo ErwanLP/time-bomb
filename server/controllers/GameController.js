@@ -49,29 +49,9 @@ module.exports.socketJoinGameInstance = (socket, io, gameId) => {
           console.error('ERROR : game or user not found')
           console.error(game, user)
         }
+
       },
     )
-}
-
-module.exports.socketLeaveGameInstance = (socket, io) => {
-  return Promise.all(
-    [GamesService.getById(socket.gameId), UsersService.getById(socket.userId)]).
-    then(
-    data => {
-      let user = data[1]
-      let game = data[0]
-      if (user && game) {
-        if (game.isStart) {
-          io.sockets.in(game.uuid).
-            emit('game_broadcast_stop_error', 'Stop because ' + user.name +
-              ' left the game')
-        } else {
-          game.removePlayer(userId)
-          askStartGame(game, io)
-        }
-      }
-    },
-  )
 }
 
 function askStartGame (game, io) {
@@ -126,4 +106,31 @@ module.exports.socketPickCard = (
         },
       )
     })
+}
+
+module.exports.socketLeaveGameInstance = (socket, io) => {
+  return Promise.all(
+    [GamesService.getById(socket.gameId), UsersService.getById(socket.userId)]).
+    then(
+      data => {
+        let user = data[1]
+        let game = data[0]
+        if (user && game) {
+          game.removePlayer(socket.userId)
+          if (game.isStart) {
+            io.sockets.in(game.uuid).
+              emit('game_broadcast_stop_error', 'Stop because ' + user.name +
+                ' left the game')
+          } else {
+            askStartGame(game, io)
+          }
+        }
+        if (user) {
+          UsersService.deleteById(socket.userId)
+        }
+        if (game && game.users.length === 0) {
+          GamesService.deleteById(socket.gameId)
+        }
+      },
+    )
 }

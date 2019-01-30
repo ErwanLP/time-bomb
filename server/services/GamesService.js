@@ -37,3 +37,15 @@ module.exports.getById = function (id) {
     resolve(gameList.find(u => u.uuid === id))
   })
 }
+
+module.exports.deleteById = function (id) {
+  return new Promise((resolve, reject) => {
+    let index = gameList.findIndex(g => g.uuid === id)
+    if (index > -1) {
+      gameList.splice(index, 1)
+      resolve()
+    } else {
+      reject()
+    }
+  })
+}

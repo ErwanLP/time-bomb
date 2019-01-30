@@ -21,3 +21,15 @@ module.exports.getById = function (id) {
     resolve(userList.find(u => u.uuid === id))
   })
 }
+
+module.exports.deleteById = function (id) {
+  return new Promise((resolve, reject) => {
+    let index = userList.findIndex(u => u.uuid === id)
+    if (index > -1) {
+      userList.splice(index, 1)
+      resolve()
+    } else {
+      reject()
+    }
+  })
+}
