@@ -98,13 +98,13 @@ module.exports.socketPickCard = (
             }))
         }).then(
         () => {
-          if (game.isEndOfHandle()) {
+          if (game.isEndOfRound()) {
             if (game.isEndOfGame()) {
               let res = game.endGame()
               io.sockets.in(gameId).
                 emit('game_broadcast_end', res)
             } else {
-              game.startHandle()
+              game.startRound()
             }
           } else {
             game.startNewPlay()

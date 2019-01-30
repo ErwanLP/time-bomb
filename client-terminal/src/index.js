@@ -59,12 +59,12 @@ module.exports = function () {
         output.tbGame('Start of the game, your role is ' + role)
       })
 
-      socket.on('game_user_new_handle', data => {
+      socket.on('game_user_new_round', data => {
         let info = JSON.parse(data)
-        output.tbGame('New Handle')
+        output.tbGame('New Round')
         output.displayVisibleCard(info.me.cards.map(c => c.type))
-        output.log('Number of handle : ' +
-          info.handleNumber)
+        output.log('Number of round : ' +
+          info.roundNumber)
         output.log('Number of defusing card found : ' +
           info.numberOfDefuseFound)
         output.log('Waiting for ' + info.currentPlayer + ' ....')

@@ -15,7 +15,7 @@ module.exports = class Game {
     this.maxPlayer = 8
     this.currentPlayerIndex = null
     this.cardPicked = []
-    this.handleNumber = 0
+    this.roundNumber = 0
     this.numberOfDefuseFound = 0
     this.isFinish = false
     this.bombExploded = false
@@ -71,20 +71,20 @@ module.exports = class Game {
       let cards = this.createCards(this.users.length)
       shuffle(cards)
       this.giveCardToUser(cards)
-      this.startHandle()
+      this.startRound()
     }
   }
 
-  startHandle () {
-    if (this.handleNumber !== 0) {
+  startRound () {
+    if (this.roundNumber !== 0) {
       let cards = []
       this.users.forEach(user => cards = cards.concat(user.cards))
       shuffle(cards)
       this.giveCardToUser(cards)
     }
-    this.handleNumber++
+    this.roundNumber++
     this.users.forEach(user => {
-      user.socket.emit('game_user_new_handle', JSON.stringify({
+      user.socket.emit('game_user_new_round', JSON.stringify({
         me: {
           uuid: user.uuid,
           name: user.name,
@@ -92,7 +92,7 @@ module.exports = class Game {
         },
         currentPlayer: this.users[this.currentPlayerIndex].name,
         numberOfDefuseFound: this.numberOfDefuseFound,
-        handleNumber: this.handleNumber,
+        roundNumber: this.roundNumber,
       }))
       shuffle(user.cards)
     })
@@ -148,7 +148,7 @@ module.exports = class Game {
     let res
     if (this.numberOfDefuseFound === this.users) {
       res = 'Sherlock Win'
-    } else if (this.handleNumber === 5) {
+    } else if (this.roundNumber === 5) {
       res = 'Moriarty win'
     } else if (this.bombExploded === true) {
       res = 'Moriarty win'
@@ -156,12 +156,12 @@ module.exports = class Game {
     return res
   }
 
-  isEndOfHandle () {
-    return this.cardPicked.length === this.handleNumber * this.users.length
+  isEndOfRound () {
+    return this.cardPicked.length === this.roundNumber * this.users.length
   }
 
   isEndOfGame () {
-    return this.handleNumber === 4 || this.numberOfDefuseFound === this.users ||
+    return this.roundNumber === 4 || this.numberOfDefuseFound === this.users ||
       this.bombExploded === true
   }
 
