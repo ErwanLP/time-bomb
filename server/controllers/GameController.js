@@ -23,13 +23,26 @@ module.exports.readNotStartedGames = (req, res) => {
   )
 }
 
-module.exports.socketJoinGameInstance = (socket, io, gameId, userId) => {
-  Promise.all([UsersService.getById(userId), GamesService.getById(gameId)]).
+module.exports.socketCreateGameInstance = (socket, io, name) => {
+  return GamesService.create(uuidv4(),
+    name ? name : ('Instance of ' + socket.userName), socket.userId).then(
+    (game) => {
+      socket.emit('create_game_success', JSON.stringify({game}))
+    },
+    (err) => {
+      console.error(err)
+      socket.emit('error', JSON.stringify(err))
+    },
+  )
+}
+
+module.exports.socketJoinGameInstance = (socket, io, gameId) => {
+  Promise.all(
+    [UsersService.getById(socket.userId), GamesService.getById(gameId)]).
     then(data => {
         [user, game] = data
         if (user && game) {
           socket.gameId = gameId
-          socket.userId = userId
           game.addUser(user, socket)
           askStartGame(game, io)
         } else {
@@ -40,9 +53,10 @@ module.exports.socketJoinGameInstance = (socket, io, gameId, userId) => {
     )
 }
 
-module.exports.socketLeaveGameInstance = (socket, io, gameId, userId) => {
+module.exports.socketLeaveGameInstance = (socket, io) => {
   return Promise.all(
-    [GamesService.getById(gameId), UsersService.getById(userId)]).then(
+    [GamesService.getById(socket.gameId), UsersService.getById(socket.userId)]).
+    then(
     data => {
       let user = data[1]
       let game = data[0]
@@ -75,20 +89,20 @@ function askStartGame (game, io) {
   }
 }
 
-module.exports.socketStartGameInstance = (socket, io, gameId) => {
-  return GamesService.getById(gameId).
+module.exports.socketStartGameInstance = (socket, io) => {
+  return GamesService.getById(socket.gameId).
     then(game => game.startGame())
 }
 
 module.exports.socketPickCard = (
-  socket, io, gameId, userFromId, userToId, index) => {
-  return GamesService.getById(gameId).
+  socket, io, userToId, index) => {
+  return GamesService.getById(socket.gameId).
     then(game => {
       let card = game.pickCard(userToId, index)
       Promise.all(
-        [UsersService.getById(userFromId), UsersService.getById(userToId)]).
+        [UsersService.getById(socket.userId), UsersService.getById(userToId)]).
         then(data => {
-          io.sockets.in(gameId).
+          io.sockets.in(socket.gameId).
             emit('game_broadcast_info', JSON.stringify({
               card: card.type,
               userFromName: data[0] ? data[0].name : 'one player',
@@ -101,7 +115,7 @@ module.exports.socketPickCard = (
           if (game.isEndOfRound()) {
             if (game.isEndOfGame()) {
               let res = game.endGame()
-              io.sockets.in(gameId).
+              io.sockets.in(socket.gameId).
                 emit('game_broadcast_end', res)
             } else {
               game.startRound()

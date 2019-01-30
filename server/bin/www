@@ -8,6 +8,7 @@ let app = require('../app')
 let debug = require('debug')('server:server')
 let http = require('http')
 const GameController = require('@controllers/GameController')
+const UserController = require('@controllers/UserController')
 
 /**
  * Get port from environment and store in Express.
@@ -25,6 +26,9 @@ let server = http.createServer(app)
 
 const io = require('socket.io')(server)
 io.on('connection', function (socket) {
+  UserController.createBySocket(socket)
+  socket.on('create_game',
+    GameController.socketCreateGameInstance.bind(null, socket, io))
   socket.on('join_game',
     GameController.socketJoinGameInstance.bind(null, socket, io))
   socket.on('start_game',
@@ -32,8 +36,7 @@ io.on('connection', function (socket) {
   socket.on('pick_card',
     GameController.socketPickCard.bind(null, socket, io))
   socket.on('disconnect', function () {
-    GameController.socketLeaveGameInstance(socket, io, socket.gameId,
-      socket.userId)
+    GameController.socketLeaveGameInstance(socket, io)
   })
 })
 
