@@ -141,6 +141,7 @@ module.exports = function () {
       let info = JSON.parse(data)
       output.logError('Please update the version of the package to : ' +
         info.expectedVersion)
+      output.log('npm install -g time-bomb-client-terminal')
       process.exit()
     })
 

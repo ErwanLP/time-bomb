@@ -7,11 +7,6 @@ Install the client
 npm install -g time-bomb-client-terminal
 
 ```
-Update the client 
-```
-npm update -g time-bomb-client-terminal
-
-```
 Play
 ```
 time-bomb-client-terminal --host hostUrl
