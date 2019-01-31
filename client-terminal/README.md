@@ -13,8 +13,8 @@ https://nodejs.org/en/download/
 Install the client
 ```
 npm install -g time-bomb-client-terminal
-
 ```
+
 Play
 ```
 time-bomb-client-terminal --host hostUrl
