@@ -2,6 +2,12 @@
 
 ## How use this client
 
+Node version
+```
+node-v10.15.1
+https://nodejs.org/en/download/
+```
+
 Install the client
 ```
 npm install -g time-bomb-client-terminal
@@ -72,5 +78,4 @@ The game ends immediately if one of the following three conditions is fulfilled:
 
 ```
 http://www.regledujeu.fr/time-bomb/
-
 ```

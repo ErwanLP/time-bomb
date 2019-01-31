@@ -7,8 +7,8 @@ const card = '░░░░░░░░░' + '\n' + '░░░░░░░░░
   '\n' + '░░░░░░░░░' + '\n' + '░░░░░░░░░' + '\n' + '░░░░░░░░░' + '\n' +
   '░░░░░░░░░' + '\n' + '░░░░░░░░░'
 
-let colorLog = (color, msg) => console.log('\n' + chalk[color](msg))
-module.exports.log = msg => console.log(msg)
+module.exports.log = console.log
+let colorLog = (color, msg) => this.log('\n' + chalk[color](msg))
 module.exports.logInfo = colorLog.bind(null, 'blue')
 module.exports.logSuccess = colorLog.bind(null, 'green')
 module.exports.logPlay = colorLog.bind(null, 'yellow')
@@ -38,15 +38,15 @@ module.exports.displayVisibleCard = (cards) => {
 }
 
 module.exports.tbGame = (msg) => {
-  return tbColor(msg, (msg) => console.log(chalk.yellow(msg)))
+  return tbColor(msg, (msg) => this.log(chalk.yellow(msg)))
 }
 
 module.exports.tbInfo = (msg) => {
-  return tbColor(msg, (msg) => console.log(chalk.blue(msg)))
+  return tbColor(msg, (msg) => this.log(chalk.blue(msg)))
 }
 
 module.exports.tbPlay = (msg) => {
-  return tbColor(msg, (msg) => console.log(chalk.green(msg)))
+  return tbColor(msg, (msg) => this.log(chalk.green(msg)))
 }
 
 module.exports.displayHiddenCard = (cardsLength) => {
