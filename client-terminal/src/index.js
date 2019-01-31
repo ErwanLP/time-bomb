@@ -9,7 +9,8 @@ module.exports = function () {
   let params = minimist(process.argv.slice(2))
   const name = params.name
   const bot = !!params.bot
-  const host = params.host || 'http://localhost:' + process.env.CUSTOM_PORT
+  const host = params.host || 'http://localhost:' +
+    (process.env.CUSTOM_PORT || '3000')
 
   output.figlet('Time Bomb', output.logPlay).then(() => {
     output.logInfo('Connecting to ' + host + ' ...')
