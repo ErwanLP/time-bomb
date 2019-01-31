@@ -22,9 +22,14 @@ module.exports = function () {
         } else {
           services.getGame().then(
             games => {
-              input.selectGame(games).then(game => {
-                socket.emit('join_game', game.uuid)
-              })
+              if (games && games.length > 0) {
+                input.selectGame(games).then(game => {
+                  socket.emit('join_game', game.uuid)
+                })
+              } else {
+                output.logInfo('No game instance available')
+                process.exit()
+              }
             },
           )
         }

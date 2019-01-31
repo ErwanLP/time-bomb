@@ -27,10 +27,12 @@ const centerText = (text) => {
 }
 
 module.exports.terminalBannerColor = (text, fnLog) => {
-  const n = decideWidth(text.length)
-  const hr = horizontalLine(n, null, fnLog)
-  hr()
-  fnLog(centerText(text))
-  hr()
+  if (text) {
+    const n = decideWidth(text.length)
+    const hr = horizontalLine(n, null, fnLog)
+    hr()
+    fnLog(centerText(text))
+    hr()
+  }
 }
 

@@ -146,9 +146,9 @@ module.exports = class Game {
   endGame () {
     this.isFinish = true
     let res
-    if (this.numberOfDefuseFound === this.users) {
+    if (this.numberOfDefuseFound === this.users.length) {
       res = 'Sherlock Win'
-    } else if (this.roundNumber === 5) {
+    } else if (this.roundNumber === 4 && this.isEndOfRound()) {
       res = 'Moriarty win'
     } else if (this.bombExploded === true) {
       res = 'Moriarty win'
@@ -161,7 +161,8 @@ module.exports = class Game {
   }
 
   isEndOfGame () {
-    return this.roundNumber === 4 || this.numberOfDefuseFound === this.users ||
+    return (this.roundNumber === 4 && this.isEndOfRound()) ||
+      this.numberOfDefuseFound === this.users.length ||
       this.bombExploded === true
   }
 

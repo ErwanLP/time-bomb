@@ -21,7 +21,7 @@ module.exports.figlet = (msg) => {
       if (err) {
         reject(err)
       } else {
-        //this.logPlay(data)
+        this.logPlay(data)
         resolve()
       }
     })
