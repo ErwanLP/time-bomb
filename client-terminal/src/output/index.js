@@ -3,7 +3,6 @@ const figlet = require('figlet')
 const {table} = require('table')
 const tbColor = require('./terminal-banner').terminalBannerColor
 
-
 const card = '░░░░░░░░░' + '\n' + '░░░░░░░░░' +
   '\n' + '░░░░░░░░░' + '\n' + '░░░░░░░░░' + '\n' + '░░░░░░░░░' + '\n' +
   '░░░░░░░░░' + '\n' + '░░░░░░░░░'
@@ -15,13 +14,13 @@ module.exports.logSuccess = colorLog.bind(null, 'green')
 module.exports.logPlay = colorLog.bind(null, 'yellow')
 module.exports.logError = colorLog.bind(null, 'red')
 
-module.exports.figlet = (msg) => {
+module.exports.figlet = (msg, logFn) => {
   return new Promise((resolve, reject) => {
     figlet(msg, (err, data) => {
       if (err) {
         reject(err)
       } else {
-        this.logPlay(data)
+        logFn ? logFn(data) : this.log(data)
         resolve()
       }
     })

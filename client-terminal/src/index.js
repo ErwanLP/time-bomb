@@ -2,36 +2,26 @@ const minimist = require('minimist')
 const io = require('socket.io-client')
 const input = require('./input/index')
 const output = require('./output/index')
+const version = require('./../package.json').version
 
 module.exports = function () {
   let params = minimist(process.argv.slice(2))
   const name = params.name
+  const bot = !!params.bot
   const host = params.host || 'http://localhost:3002'
-  const services = require('./services/index')(host)
 
-  output.figlet('Time Bomb').then(() => {
-    let socket = io(host, {query: 'name=' + name})
+  output.figlet('Time Bomb', output.logPlay).then(() => {
+    let socket = io(host, {query: 'name=' + name + '&version=' + version})
 
     socket.on('create_user_success', data => {
       let info = JSON.parse(data)
       output.logInfo('Your name is : ' + info.user.name)
       input.createOrJoinInstance().then((createOrJoin) => {
-        if (createOrJoin === 'Create new game') {
+        if (createOrJoin === 'CREATE') {
           input.nameInstance().
             then(newGameName => socket.emit('create_game', newGameName))
         } else {
-          services.getGame().then(
-            games => {
-              if (games && games.length > 0) {
-                input.selectGame(games).then(game => {
-                  socket.emit('join_game', game.uuid)
-                })
-              } else {
-                output.logInfo('No game instance available')
-                process.exit()
-              }
-            },
-          )
+          socket.emit('get_games')
         }
       })
     })
@@ -39,6 +29,22 @@ module.exports = function () {
     socket.on('create_game_success', (data) => {
       let info = JSON.parse(data)
       socket.emit('join_game', info.game.uuid)
+    })
+
+    socket.on('list_games', (data) => {
+      let games = JSON.parse(data)
+      if (games && games.length > 0) {
+        input.selectGame(games).then(game => {
+          socket.emit('join_game', game.uuid)
+        })
+      } else {
+        output.logInfo('No game instance available')
+        input.refreshListOfGame().then(bool => {
+          if (bool === true) {
+            socket.emit('get_games')
+          }
+        })
+      }
     })
 
     socket.on('join_game_success', data => {
@@ -67,44 +73,74 @@ module.exports = function () {
       output.tbGame('New Round')
       output.displayVisibleCard(info.me.cards.map(c => c.type))
       output.log('Number of round : ' +
-        info.roundNumber)
+        info.roundNumber + ' / 4')
       output.log('Number of defusing card found : ' +
-        info.numberOfDefuseFound)
+        info.numberOfDefuseFound + ' / ' + info.numberOfDefuseToFind)
       output.log('Waiting for ' + info.currentPlayer + ' ....')
     })
 
     socket.on('game_broadcast_info', data => {
       output.tbInfo('Game information')
       let info = JSON.parse(data)
-      output.log(info.userFromName + ' have taken card ' + info.card +
-        ' from ' + info.userToName)
+      if (info.card === 'Defusing') {
+        output.logSuccess(info.userFromName + ' has taken card ' + info.card +
+          ' from ' + info.userToName)
+      } else if (info.card === 'Bomb') {
+        output.logError(info.userFromName + ' has taken card ' + info.card +
+          ' from ' + info.userToName)
+      } else {
+        output.log(info.userFromName + ' has taken card ' + info.card +
+          ' from ' + info.userToName)
+      }
       output.log('Number of defusing card found : ' +
-        info.numberOfDefuseFound)
-      output.log('Waiting for ' + info.currentPlayer + ' ....')
+        info.numberOfDefuseFound + ' / ' + info.numberOfDefuseToFind)
+      output.log('Number of card picked this round: ' +
+        info.numberOfCardPickedThisRound + ' / ' +
+        info.numberOfCardsToPickThisRound)
+      output.log('Waiting for ' + info.currentPlayer + ' ...')
     })
 
     socket.on('game_user_play', data => {
-      output.tbPlay('It is your turn')
       let info = JSON.parse(data)
-      input.pickCardSelectUser(info.users).then(
-        user => {
-          let hiddenCards = output.displayHiddenCard(user.cardsLength)
-          input.pickCardSelectIndex(hiddenCards.map((val, i) => '' + i)).then(
-            index => {
-              socket.emit('pick_card', user.uuid, index)
-            },
-          )
-        },
-      )
+      if (!bot) {
+        output.tbPlay('It is your turn')
+        input.pickCardSelectUser(info.users).then(
+          user => {
+            let hiddenCards = output.displayHiddenCard(user.cardsLength)
+            input.pickCardSelectIndex(hiddenCards.map((val, i) => '' + i)).then(
+              index => {
+                socket.emit('pick_card', user.uuid, index)
+              },
+            )
+          },
+        )
+      } else {
+        socket.emit('pick_card', info.users[0].uuid, 0)
+      }
     })
 
     socket.on('game_broadcast_end', data => {
-      output.tbGame(data)
-      process.exit()
+      let info = JSON.parse(data)
+      let str = info.teamWin + ' - ' + info.cause
+      output.tbGame(str)
+      if (info.teamWin === 'Sherlock') {
+        output.figlet('Defused', output.logSuccess).then(() => process.exit())
+      } else if (info.teamWin === 'Moriarty') {
+        output.figlet('Boom', output.logError).then(() => process.exit())
+      } else {
+        process.exit()
+      }
     })
 
     socket.on('game_broadcast_stop_error', data => {
       output.logError(data)
+      process.exit()
+    })
+
+    socket.on('wrong_version', data => {
+      let info = JSON.parse(data)
+      output.logError('Please update the version of the package to : ' +
+        info.expectedVersion)
       process.exit()
     })
 

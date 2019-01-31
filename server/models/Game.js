@@ -92,6 +92,7 @@ module.exports = class Game {
         },
         currentPlayer: this.users[this.currentPlayerIndex].name,
         numberOfDefuseFound: this.numberOfDefuseFound,
+        numberOfDefuseToFind: this.users.length,
         roundNumber: this.roundNumber,
       }))
       shuffle(user.cards)
@@ -145,13 +146,16 @@ module.exports = class Game {
 
   endGame () {
     this.isFinish = true
-    let res
+    let res = {}
     if (this.numberOfDefuseFound === this.users.length) {
-      res = 'Sherlock Win'
+      res.teamWin = 'Sherlock'
+      res.cause = 'The bomb has been defused'
     } else if (this.roundNumber === 4 && this.isEndOfRound()) {
-      res = 'Moriarty win'
+      res.teamWin = 'Moriarty'
+      res.cause = 'The bomb has been not defused'
     } else if (this.bombExploded === true) {
-      res = 'Moriarty win'
+      res.teamWin = 'Moriarty'
+      res.cause = 'The bomb exploded'
     }
     return res
   }

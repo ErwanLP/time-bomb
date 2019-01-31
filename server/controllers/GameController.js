@@ -23,6 +23,18 @@ module.exports.readNotStartedGames = (req, res) => {
   )
 }
 
+module.exports.socketGetGames = (socket) => {
+  return GamesService.readNotStartedGames().then(
+    (games) => {
+      socket.emit('list_games', JSON.stringify(games))
+    },
+    (err) => {
+      console.error(err)
+      socket.emit('error', JSON.stringify(err))
+    },
+  )
+}
+
 module.exports.socketCreateGameInstance = (socket, io, name) => {
   return GamesService.create(uuidv4(),
     name ? name : ('Instance of ' + socket.userName), socket.userId).then(
@@ -89,13 +101,17 @@ module.exports.socketPickCard = (
               userToName: data[1] ? data[1].name : 'other player',
               currentPlayer: game.users[game.currentPlayerIndex].name,
               numberOfDefuseFound: game.numberOfDefuseFound,
+              numberOfDefuseToFind: game.users.length,
+              numberOfCardsToPickThisRound: game.users.length,
+              numberOfCardPickedThisRound: game.cardPicked.length -
+              ((game.roundNumber - 1) * game.users.length),
             }))
         }).then(
         () => {
           if (game.isEndOfGame()) {
             let res = game.endGame()
             io.sockets.in(socket.gameId).
-              emit('game_broadcast_end', res)
+              emit('game_broadcast_end', JSON.stringify(res))
           } else if (game.isEndOfRound()) {
             game.startRound()
           } else {

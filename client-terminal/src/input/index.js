@@ -8,7 +8,8 @@ module.exports.createOrJoinInstance = () => {
       message: 'Join existing instance game or create your own instance of the game ?',
       choices: ['Join existing game', 'Create new game'],
       default: 0,
-    }]).then(data => data.createOrJoin)
+    }]).
+    then(data => data.createOrJoin === 'Create new game' ? 'CREATE' : 'JOIN')
 }
 
 module.exports.nameInstance = () => {
@@ -41,6 +42,15 @@ module.exports.confirmStartGame = (numberOfPlayer) => {
       message: 'Start game with ' + numberOfPlayer +
       ' player(s) (or waiting for more player) ?',
     }]).then(data => data.confirmStartGame)
+}
+
+module.exports.refreshListOfGame = () => {
+  return inquirer.prompt([
+    {
+      name: 'refreshListOfGame',
+      type: 'confirm',
+      message: 'Refresh list of instance ?',
+    }]).then(data => data.refreshListOfGame)
 }
 
 module.exports.pickCardSelectUser = (users) => {
