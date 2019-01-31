@@ -39,7 +39,7 @@ module.exports.socketCreateGameInstance = (socket, io, name) => {
   return GamesService.create(uuidv4(),
     name ? name : ('Instance of ' + socket.userName), socket.userId).then(
     (game) => {
-      socket.emit('create_game_success', JSON.stringify({game}))
+      socket.emit('create_game_success', JSON.stringify(game))
     },
     (err) => {
       console.error(err)
@@ -54,9 +54,15 @@ module.exports.socketJoinGameInstance = (socket, io, gameId) => {
     then(data => {
         [user, game] = data
         if (user && game) {
-          socket.gameId = gameId
-          game.addUser(user, socket)
-          askStartGame(game, io)
+          let userWithSameName = game.users.find(u => u.name === user.name)
+          if (userWithSameName) {
+            socket.emit('join_game_error', 'Can not connect to instance ' +
+              game.name + ' because an other player have the same name')
+          } else {
+            socket.gameId = gameId
+            game.addUser(user, socket)
+            askStartGame(game, io)
+          }
         } else {
           console.error('ERROR : game or user not found')
           console.error(game, user)

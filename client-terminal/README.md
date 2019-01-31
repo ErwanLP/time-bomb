@@ -22,7 +22,7 @@ time-bomb-client-terminal --host hostUrl
 
 Name  
 ```
-time-bomb-client-terminal --name yourName
+time-bomb-client-terminal --name YOUR_NAME
 ```
 
 ## TIME BOMB

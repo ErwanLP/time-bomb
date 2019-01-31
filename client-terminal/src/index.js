@@ -13,6 +13,11 @@ module.exports = function () {
     (process.env.CUSTOM_PORT || '3000')
 
   output.figlet('Time Bomb', output.logPlay).then(() => {
+    if (name === 'YOUR_NAME') {
+      output.logError('Your name can not be  : YOUR_NAME')
+      process.exit()
+    }
+
     output.logInfo('Connecting to ' + host + ' ...')
     let socket = io(host, {query: 'name=' + name + '&version=' + version})
 
@@ -31,7 +36,7 @@ module.exports = function () {
 
     socket.on('create_game_success', (data) => {
       let info = JSON.parse(data)
-      socket.emit('join_game', info.game.uuid)
+      socket.emit('join_game', info.uuid)
     })
 
     socket.on('list_games', (data) => {
@@ -52,6 +57,11 @@ module.exports = function () {
 
     socket.on('join_game_success', data => {
       output.logSuccess(data)
+    })
+
+    socket.on('join_game_error', data => {
+      output.logError(data)
+      process.exit()
     })
 
     socket.on('broadcast_list_user_in_game', data => {
@@ -142,9 +152,10 @@ module.exports = function () {
 
     socket.on('wrong_version', data => {
       let info = JSON.parse(data)
-      output.logError('Please update the version of the package to : ' +
+      output.logError('Please change the version of the package to : ' +
         info.expectedVersion)
-      output.log('npm install -g time-bomb-client-terminal')
+      output.log('npm install -g time-bomb-client-terminal@' +
+        info.expectedVersion)
       process.exit()
     })
 
