@@ -1,5 +1,7 @@
 # time-bomb-client-terminal
 
+Terminal client for Time Bomb
+
 ## How use this client
 
 Node version
