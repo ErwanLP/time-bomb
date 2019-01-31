@@ -2,15 +2,21 @@ const minimist = require('minimist')
 const io = require('socket.io-client')
 const input = require('./input/index')
 const output = require('./output/index')
-const version = require('./../package.json').version
+const versionNumber = require('./../package.json').version
 require('dotenv').config({path: __dirname + '/./../../.env'})
 
 module.exports = function () {
   let params = minimist(process.argv.slice(2))
   const name = params.name
   const bot = !!params.bot
+  const version = !!params.v || !!params.version
   const host = params.host || 'http://localhost:' +
     (process.env.CUSTOM_PORT || '3000')
+
+  if (version) {
+    output.log(versionNumber)
+    process.exit()
+  }
 
   output.figlet('Time Bomb', output.logPlay).then(() => {
     if (name === 'YOUR_NAME') {
@@ -19,7 +25,7 @@ module.exports = function () {
     }
 
     output.logInfo('Connecting to ' + host + ' ...')
-    let socket = io(host, {query: 'name=' + name + '&version=' + version})
+    let socket = io(host, {query: 'name=' + name + '&version=' + versionNumber})
 
     socket.on('create_user_success', data => {
       let info = JSON.parse(data)
