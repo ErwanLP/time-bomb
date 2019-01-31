@@ -140,7 +140,7 @@ module.exports = function () {
 
     socket.on('game_broadcast_end', data => {
       let info = JSON.parse(data)
-      let str = info.teamWin + ' - ' + info.cause
+      let str = info.teamWin + ' Win - ' + info.cause
       output.tbGame(str)
       if (info.teamWin === 'Sherlock') {
         output.figlet('Defused', output.logSuccess).then(() => process.exit())
