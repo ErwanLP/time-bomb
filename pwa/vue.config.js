@@ -1,3 +1,5 @@
 module.exports = {
-  pwa: {},
+  pwa: {
+    name: 'Time Bomb',
+  },
 }
