@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "chalk": "^2.4.2",
+    "configstore": "^4.0.0",
     "dotenv": "^6.2.0",
     "figlet": "^1.2.1",
     "inquirer": "^6.2.1",

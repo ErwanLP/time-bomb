@@ -26,6 +26,10 @@ Name
 ```
 time-bomb-client-terminal --name YOUR_NAME
 ```
+Save : you can save your configuration ( host and name ) in local config files  
+```
+time-bomb-client-terminal --host hostUrl --name YOUR_NAME --save
+```
 
 ## TIME BOMB
 

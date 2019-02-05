@@ -2,19 +2,26 @@ const minimist = require('minimist')
 const io = require('socket.io-client')
 const input = require('./input/index')
 const output = require('./output/index')
-const versionNumber = require('./../package.json').version
+const Configstore = require('configstore')
+const pkg = require('./../package.json')
 require('dotenv').config({path: __dirname + '/./../../.env'})
+const conf = new Configstore(pkg.name, {})
 
 module.exports = function () {
   let params = minimist(process.argv.slice(2))
-  const name = params.name
   const bot = !!params.bot
+  const save = !!params.save
   const version = !!params.v || !!params.version
-  const host = params.host || 'http://localhost:' +
+  if (save) {
+    conf.set('host', params.host)
+    conf.set('name', params.name)
+  }
+  const host = params.host || conf.get('host') || 'http://localhost:' +
     (process.env.CUSTOM_PORT || '3000')
+  const name = params.name || conf.get('name')
 
   if (version) {
-    output.log(versionNumber)
+    output.log(pkg.version)
     process.exit()
   }
 
@@ -25,7 +32,7 @@ module.exports = function () {
     }
 
     output.logInfo('Connecting to ' + host + ' ...')
-    let socket = io(host, {query: 'name=' + name + '&version=' + versionNumber})
+    let socket = io(host, {query: 'name=' + name + '&version=' + pkg.version})
 
     socket.on('create_user_success', data => {
       let info = JSON.parse(data)
