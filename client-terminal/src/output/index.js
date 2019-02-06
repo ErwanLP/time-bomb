@@ -20,7 +20,7 @@ module.exports.figlet = (msg, logFn) => {
       if (err) {
         reject(err)
       } else {
-        logFn ? logFn(data) : this.log(data)
+        //logFn ? logFn(data) : this.log(data)
         resolve()
       }
     })

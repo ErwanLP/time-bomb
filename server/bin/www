@@ -30,15 +30,15 @@ io.on('connection', function (socket) {
 
   if (checkVersion(socket.handshake.query.version)) {
     UserController.createBySocket(socket)
-    socket.on('create_game',
+    socket.on('game_create',
       GameController.socketCreateGameInstance.bind(null, socket, io))
-    socket.on('get_games',
+    socket.on('game_list',
       GameController.socketGetGames.bind(null, socket))
-    socket.on('join_game',
+    socket.on('game_join',
       GameController.socketJoinGameInstance.bind(null, socket, io))
-    socket.on('start_game',
+    socket.on('game_start',
       GameController.socketStartGameInstance.bind(null, socket, io))
-    socket.on('pick_card',
+    socket.on('game_pick_card',
       GameController.socketPickCard.bind(null, socket, io))
     socket.on('disconnect', function () {
       GameController.socketLeaveGameInstance(socket, io)

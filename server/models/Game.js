@@ -35,7 +35,7 @@ module.exports = class Game {
       if (this.creator.uuid === user.uuid) {
         this.creator.socket = socket
       }
-      socket.emit('join_game_success', 'Success to connect to lobby as ' +
+      socket.emit('user_join_game_success', 'Success to connect to lobby as ' +
         (this.creator.uuid === user.uuid ? 'creator' : 'player'))
     }
   }

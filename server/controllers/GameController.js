@@ -26,7 +26,7 @@ module.exports.readNotStartedGames = (req, res) => {
 module.exports.socketGetGames = (socket) => {
   return GamesService.readNotStartedGames().then(
     (games) => {
-      socket.emit('list_games', JSON.stringify(games))
+      socket.emit('game_list_success', JSON.stringify(games))
     },
     (err) => {
       console.error(err)
@@ -39,7 +39,7 @@ module.exports.socketCreateGameInstance = (socket, io, name) => {
   return GamesService.create(uuidv4(),
     name ? name : ('Instance of ' + socket.userName), socket.userId).then(
     (game) => {
-      socket.emit('create_game_success', JSON.stringify(game))
+      socket.emit('game_create_success', JSON.stringify(game))
     },
     (err) => {
       console.error(err)
@@ -56,7 +56,7 @@ module.exports.socketJoinGameInstance = (socket, io, gameId) => {
         if (user && game) {
           let userWithSameName = game.users.find(u => u.name === user.name)
           if (userWithSameName) {
-            socket.emit('join_game_error', 'Can not connect to instance ' +
+            socket.emit('user_join_game_error', 'Can not connect to instance ' +
               game.name + ' because an other player have the same name')
           } else {
             socket.gameId = gameId
@@ -78,9 +78,9 @@ function askStartGame (game, io) {
       (acc, val) => ((val ? acc + val.name : acc) + ' - '),
       '')
   io.sockets.in(game.uuid).
-    emit('broadcast_list_user_in_game', listUser)
+    emit('game_broadcast_list_user', listUser)
   if (game.hasEnoughPlayer()) {
-    game.creator.socket.emit('ask_start_game', JSON.stringify({
+    game.creator.socket.emit('game_ask_start', JSON.stringify({
       numberOfPlayer: game.users.length,
       gameId: game.uuid,
     }))

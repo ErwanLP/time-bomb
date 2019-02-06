@@ -10,7 +10,7 @@ module.exports.createBySocket = (socket) => {
     (user) => {
       socket.userId = user.uuid
       socket.userName = user.name
-      socket.emit('create_user_success', JSON.stringify({user}))
+      socket.emit('user_create_success', JSON.stringify({user}))
     },
     (err) => {
       console.error(err)
