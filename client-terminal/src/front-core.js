@@ -88,16 +88,6 @@ module.exports = function (config, io, implementation) {
    */
   socket.on('game_user_new_round', implementation.gameNewRound)
 
-  /**
-   * Socket broadcast info
-   */
-  socket.on('game_broadcast_info',
-    implementation.gameNewRound.bind(
-      {
-        gameStart: () => socket.emit('game_start'),
-      },
-    ),
-  )
 
   /**
    * Socket game broadcast info
@@ -115,7 +105,7 @@ module.exports = function (config, io, implementation) {
   /**
    * Socket game broadcast end
    */
-  socket.on('game_broadcast_info', implementation.gameEnd)
+  socket.on('game_broadcast_end', implementation.gameEnd)
 
   /**
    * Socket game broadcast stop error
