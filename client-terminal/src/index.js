@@ -2,7 +2,7 @@ const minimist = require('minimist')
 const io = require('socket.io-client')
 const output = require('./output/index')
 const Configstore = require('configstore')
-const FrontCore = require('front-core')
+const FrontCore = require('./front-core')
 const pkg = require('./../package.json')
 const implementation = require('./terminalImplementation')
 require('dotenv').config({path: __dirname + '/./../../.env'})
@@ -34,14 +34,12 @@ module.exports = function () {
     process.exit()
   }
 
-  output.figlet('Time Bomb', output.logPlay).then(() => {
-    if (name === 'YOUR_NAME') {
-      output.logError('Your name can not be  : YOUR_NAME')
-      process.exit()
-    }
+  if (name === 'YOUR_NAME') {
+    output.logError('Your name can not be YOUR_NAME, please be more creative')
+    process.exit()
+  }
 
-    output.logInfo('Connecting to ' + host + ' ...')
-
+  implementation.init(host).then(() => {
     FrontCore({
       host: host,
       name: name,

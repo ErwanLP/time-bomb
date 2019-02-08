@@ -1,6 +1,12 @@
 const output = require('./output/index')
 const input = require('./input/index')
 
+module.exports.init = function (host) {
+  return output.figlet('Time Bomb', output.logPlay).then(() => {
+    output.logInfo('Connecting to ' + host + ' ...')
+  })
+}
+
 module.exports.displayUser = function (data) {
   let info = JSON.parse(data)
   output.logInfo('Your name is : ' + info.user.name)
