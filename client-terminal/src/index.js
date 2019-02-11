@@ -5,7 +5,6 @@ const Configstore = require('configstore')
 const FrontCore = require('./front-core')
 const pkg = require('./../package.json')
 const implementation = require('./terminalImplementation')
-require('dotenv').config({path: __dirname + '/./../../.env'})
 const conf = new Configstore(pkg.name, {})
 
 module.exports = function () {
@@ -20,12 +19,10 @@ module.exports = function () {
   }
   let host, name
   if (dev) {
-    host = params.host || 'http://localhost:' +
-      (process.env.CUSTOM_PORT || '3000')
+    host = params.host || 'http://localhost:3002'
     name = params.name
   } else {
-    host = params.host || conf.get('host') || 'http://localhost:' +
-      (process.env.CUSTOM_PORT || '3000')
+    host = params.host || conf.get('host') || 'http://localhost:3002'
     name = params.name || conf.get('name')
   }
 

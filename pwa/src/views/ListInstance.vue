@@ -6,7 +6,7 @@
                     <template>
                         <v-list-tile
                                 avatar
-                                @click=""
+                                @click="createInstance"
                         >
                             <v-list-tile-avatar>
                                 <v-icon>add</v-icon>
@@ -36,7 +36,7 @@
                                 v-else
                                 :key="item.title"
                                 avatar
-                                @click=""
+                                @click="joinInstance"
                         >
                             <v-list-tile-avatar>
                                 <v-icon>{{item.avatar}}</v-icon>
@@ -63,23 +63,31 @@
           {header: 'List Instance'},
           {
             avatar: 'games',
-            title: 'Brunch this weekend?',
-            subtitle: '<span class=\'text--primary\'>Ali Connors</span> &mdash; I\'ll be in your neighborhood doing errands this weekend. Do you want to hang out?',
+            title: 'Instance',
+            subtitle: 'Alex, Scott, Jennifer',
           },
           {divider: true, inset: true},
           {
             avatar: 'games',
-            title: 'Summer BBQ <span class="grey--text text--lighten-1">4</span>',
-            subtitle: '<span class=\'text--primary\'>to Alex, Scott, Jennifer</span> &mdash; Wish I could come, but I\'m out of town this weekend.',
+            title: 'Instance',
+            subtitle: 'Alex, Scott, Jennifer',
           },
           {divider: true, inset: true},
           {
             avatar: 'games',
-            title: 'Oui oui',
-            subtitle: '<span class=\'text--primary\'>Sandra Adams</span> &mdash; Do you have Paris recommendations? Have you ever been?',
+            title: 'Instance',
+            subtitle: 'Alex, Scott, Jennifer',
           },
         ],
       }
+    },
+    methods: {
+      createInstance: function () {
+        this.$router.push('/create-instance')
+      },
+      joinInstance: function () {
+        this.$router.push('/instance/1/lobby')
+      },
     },
   }
 </script>

@@ -16,7 +16,7 @@ checkVersion = (clientVersion) => clientVersion === clientTerminalVersion
  * Get port from environment and store in Express.
  */
 require('dotenv').config({path: __dirname + '/./../../.env'})
-let port = normalizePort(process.env.PORT || process.env.CUSTOM_PORT || '3000')
+let port = normalizePort(process.env.PORT || '3002')
 app.set('port', port)
 
 /**
