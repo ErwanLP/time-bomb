@@ -1,5 +1,7 @@
-# time-bomb
+# Time Bomb
 
-## TODO
-- be tolerant about hot fix (0.0.X) in check version (https://www.npmjs.com/package/semver)
-- propose the perfect version of install : npm install time-bomb-client-terminal@1.2.6
+[Client terminal for Time Bomb](./client-terminal/README.md)
+
+[PWA for Time Bomb](./pwa/README.md)
+
+[Server for Time Bomb](./server/README.md)
