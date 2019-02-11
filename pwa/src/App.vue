@@ -22,7 +22,7 @@
                     </v-list-tile-action>
                     <v-list-tile-content>
                         <v-list-tile-title>
-                            <router-link to="/about">About</router-link>
+                            <router-link to="/list-instance">List instance</router-link>
                         </v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
@@ -33,20 +33,12 @@
             <v-toolbar-title>Time Bomb</v-toolbar-title>
         </v-toolbar>
         <v-content>
-            <v-container fluid fill-height>
-                <v-layout
-                        justify-center
-                        align-center
-                >
-                    <v-flex text-xs-center>
-                        <router-view></router-view>
-                    </v-flex>
-                </v-layout>
-            </v-container>
+            <router-view></router-view>
         </v-content>
         <v-footer
                 height="auto"
                 color="indigo"
+                absolute="true"
         >
             <v-layout
                     justify-center
@@ -56,10 +48,13 @@
                         v-for="linkObject in links"
                         :key="linkObject.key"
                         color="white"
+                        v-on:click="linkObject.fn"
                         flat
                         round
                 >
-                    {{linkObject.name}}
+                    <v-icon v-if="linkObject.icon">{{linkObject.icon}}</v-icon>
+                    <span v-if="linkObject.name">{{linkObject.name}}</span>
+
                 </v-btn>
             </v-layout>
         </v-footer>
@@ -73,9 +68,9 @@
       return {
         drawer: null,
         links: [
-          {name: 'Title 1', key: '/home'},
-          {name: 'Title 2', key: '/home2'},
-          {name: 'Title 3', key: '/home3'},
+          {icon: 'view_list', key: 'list-instance', fn: () => this.$router.push('/list-instance')},
+          {icon: 'home', key: 'home1', fn: () => this.$router.push('/')},
+          {icon: 'settings_applications', key: 'home3'},
         ],
       }
     },
