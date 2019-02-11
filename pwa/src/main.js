@@ -8,17 +8,13 @@ import VueSocketIO from 'vue-socket.io'
 
 Vue.config.productionTip = false
 
-const base_url = window.location.origin
-let socket_url
-if (base_url === 'http://localhost:8080') {
-  socket_url = 'http://localhost:3002'
-} else {
-  socket_url = base_url
-}
+store.commit('editHost', window.location.origin === 'http://localhost:8080'
+  ? 'http://localhost:3002'
+  : window.location.origin)
 
 Vue.use(new VueSocketIO({
   debug: true,
-  connection: socket_url,
+  connection: store.state.host,
   vuex: {
     store,
     actionPrefix: '',
@@ -30,7 +26,8 @@ new Vue({
   sockets: {
     connect: function () {},
     wrong_version: function () {},
-    user_create_success: function () {
+    user_create_success: function (data) {
+      store.commit('editUser', JSON.parse(data))
     },
   },
   router,

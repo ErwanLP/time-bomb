@@ -63,19 +63,19 @@
           {header: 'List Instance'},
           {
             avatar: 'games',
-            title: 'Instance',
+            title: 'Instance 1',
             subtitle: 'Alex, Scott, Jennifer',
           },
           {divider: true, inset: true},
           {
             avatar: 'games',
-            title: 'Instance',
+            title: 'Instance 2',
             subtitle: 'Alex, Scott, Jennifer',
           },
           {divider: true, inset: true},
           {
             avatar: 'games',
-            title: 'Instance',
+            title: 'Instance 3',
             subtitle: 'Alex, Scott, Jennifer',
           },
         ],

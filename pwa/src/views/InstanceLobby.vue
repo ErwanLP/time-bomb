@@ -13,7 +13,7 @@
                 :items="desserts"
                 class="elevation-1"
                 align="center"
-                :pagination.sync="pagination"
+                :hide-actions="true"
         >
             <template slot="items" slot-scope="props">
                 <td>{{ props.item.name }}</td>
@@ -28,10 +28,6 @@
     components: {},
     data () {
       return {
-        pagination: {
-          rowsPerPage: -1,
-          sortBy: name,
-        },
         headers: [
           {
             text: 'Players',

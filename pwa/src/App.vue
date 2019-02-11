@@ -8,11 +8,31 @@
             <v-list dense>
                 <v-list-tile>
                     <v-list-tile-action>
-                        <v-icon>home</v-icon>
+                        <v-icon>people</v-icon>
                     </v-list-tile-action>
                     <v-list-tile-content>
                         <v-list-tile-title>
-                            <router-link to="/">Home</router-link>
+                            {{userName}}
+                        </v-list-tile-title>
+                    </v-list-tile-content>
+                </v-list-tile>
+                <v-list-tile>
+                    <v-list-tile-action>
+                        <v-icon>cloud</v-icon>
+                    </v-list-tile-action>
+                    <v-list-tile-content>
+                        <v-list-tile-title>
+                            {{host}}
+                        </v-list-tile-title>
+                    </v-list-tile-content>
+                </v-list-tile>
+                <v-list-tile>
+                    <v-list-tile-action>
+                        <v-icon>settings</v-icon>
+                    </v-list-tile-action>
+                    <v-list-tile-content>
+                        <v-list-tile-title>
+                            Params
                         </v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
@@ -21,6 +41,10 @@
         <v-toolbar color="indigo" dark fixed app>
             <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
             <v-toolbar-title>Time Bomb</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-btn icon>
+                <v-icon>refresh</v-icon>
+            </v-btn>
         </v-toolbar>
         <v-content>
             <router-view></router-view>
@@ -51,6 +75,7 @@
     </v-app>
 </template>
 <script>
+  import { store } from "./store";
   export default {
     name: 'App',
     components: {},
@@ -59,10 +84,19 @@
         drawer: null,
         links: [
           {icon: 'view_list', key: 'list-instance', fn: () => this.$router.push('/list-instance')},
-          {icon: 'home', key: 'home1', fn: () => this.$router.push('/')},
-          {icon: 'settings_applications', key: 'home3'},
+          {icon: 'home', key: 'home', fn: () => this.$router.push('/')},
+          {icon: 'book', key: 'rules', fn: () => this.$router.push('/')},
         ],
       }
     },
+    computed: {
+      userName () {
+        return this.$store.state.user.name
+      },
+      host () {
+        return this.$store.state.host
+      },
+    },
+
   }
 </script>

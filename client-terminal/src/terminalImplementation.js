@@ -9,7 +9,7 @@ module.exports.init = function (host) {
 
 module.exports.displayUser = function (data) {
   let info = JSON.parse(data)
-  output.logInfo('Your name is : ' + info.user.name)
+  output.logInfo('Your name is : ' + info.name)
   this.createOrListInstance()
 }
 

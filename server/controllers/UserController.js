@@ -4,13 +4,14 @@ const randomFullName = require('random-fullName')
 
 module.exports.createBySocket = (socket) => {
   return UsersService.create(uuidv4(),
-    socket.handshake.query.name !== 'undefined'
-      ? socket.handshake.query.name
-      : randomFullName()).then(
+    (socket.handshake.query.name === 'undefined' ||
+      socket.handshake.query.name === undefined)
+      ? randomFullName()
+      : socket.handshake.query.name).then(
     (user) => {
       socket.userId = user.uuid
       socket.userName = user.name
-      socket.emit('user_create_success', JSON.stringify({user}))
+      socket.emit('user_create_success', JSON.stringify(user))
     },
     (err) => {
       console.error(err)
