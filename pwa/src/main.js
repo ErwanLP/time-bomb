@@ -29,6 +29,24 @@ new Vue({
     user_create_success: function (data) {
       store.commit('editUser', JSON.parse(data))
     },
+    game_create_success: function (data) {
+      let info = JSON.parse(data)
+      this.$socket.emit('game_join', info.uuid)
+    },
+    user_join_game_success: function (data) {
+      console.log('user_join_game_success')
+      console.log(data.uuid)
+      this.$router.push('/instance/1/lobby')
+    },
+    user_join_game_error: function (err) {
+      console.error(err)
+    },
+    game_broadcast_list_user: function (data) {
+
+    },
+    error: function (err) {
+      console.error(err)
+    },
   },
   router,
   store,

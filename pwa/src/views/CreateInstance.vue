@@ -37,7 +37,7 @@
         this.$router.push('/list-instance')
       },
       create: function () {
-        console.log(this.newInstance)
+        this.$socket.emit('game_create', this.newInstance.name)
       },
     },
   }

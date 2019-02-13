@@ -10,7 +10,8 @@ let http = require('http')
 const GameController = require('@controllers/GameController')
 const UserController = require('@controllers/UserController')
 const clientTerminalVersion = require('./../../client-terminal/package').version
-checkVersion = (clientVersion) => clientVersion === clientTerminalVersion
+checkVersion = (clientVersion) => clientVersion ? clientVersion ===
+  clientTerminalVersion : true
 
 /**
  * Get port from environment and store in Express.

@@ -48,13 +48,7 @@ module.exports = function (config, io, implementation) {
    * Socket user join game success
    */
   socket.on('user_join_game_success',
-    implementation.userJoinGameSuccess.bind(
-      {
-        gameJoin: (gameId) => socket.emit('game_join', gameId),
-        gameList: () => socket.emit('game_list'),
-        createOrListInstance: createOrListInstance,
-      },
-    ),
+    implementation.userJoinGameSuccess,
   )
 
   /**
