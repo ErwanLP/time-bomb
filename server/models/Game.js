@@ -70,7 +70,10 @@ module.exports = class Game {
       let roles = this.createListOfRole(this.users.length)
       this.users.forEach((user, index) => {
         user.role = roles[index].type
-        user.socket.emit('game_user_start', user.role)
+        user.socket.emit('game_user_start', JSON.stringify({
+          role: user.role,
+          gameId: this.uuid,
+        }))
       })
       let cards = this.createCards(this.users.length)
       shuffle(cards)

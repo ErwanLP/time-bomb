@@ -42,7 +42,7 @@
     },
     methods: {
       startInstance: function () {
-        console.log('start')
+        this.$socket.emit('game_start')
       },
     },
     computed: mapState({

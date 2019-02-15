@@ -75,7 +75,8 @@ module.exports.gameAskStart = function (data) {
 }
 
 module.exports.gameStart = function (data) {
-  output.tbGame('Start of the game, your role is ' + data)
+  let info = JSON.parse(data)
+  output.tbGame('Start of the game, your role is ' + info.role)
 }
 
 module.exports.gameNewRound = function (data) {

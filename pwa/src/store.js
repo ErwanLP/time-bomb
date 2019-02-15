@@ -6,6 +6,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     user: {},
+    role: null,
     host: null,
     instanceList: [],
     playerList: [],
@@ -21,7 +22,10 @@ export default new Vuex.Store({
       state.instanceList = payload
     },
     editListUser (state, payload) {
-      state.playerList = payload.userList
+      state.playerList = payload
+    },
+    editRole (state, payload) {
+      state.role = payload
     },
 
   },

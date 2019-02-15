@@ -25,7 +25,6 @@ Vue.use(new VueSocketIO({
 new Vue({
   sockets: {
     connect: function () {},
-    wrong_version: function () {},
     user_create_success: function (data) {
       store.commit('editUser', JSON.parse(data))
     },
@@ -46,9 +45,41 @@ new Vue({
     },
     game_broadcast_list_user: function (data) {
       let info = JSON.parse(data)
-      store.commit('editListUser', info)
+      store.commit('editListUser', info.userList)
+    },
+    game_user_start: function (data) {
+      let info = JSON.parse(data)
+      store.commit('editRole', info.role)
+      this.$router.push('/instance/' + info.gameId + '/play')
+    },
+    game_user_new_round: function (data) {
+      let info = JSON.parse(data)
+      console.log(info)
+    },
+    game_broadcast_info: function (data) {
+      let info = JSON.parse(data)
+      console.log(info)
+    },
+    game_user_play: function (data) {
+      let info = JSON.parse(data)
+      console.log(info)
+    },
+    game_broadcast_end: function (data) {
+      let info = JSON.parse(data)
+      console.log(info)
+    },
+    game_broadcast_stop_error: function (data) {
+      let info = JSON.parse(data)
+      console.log(info)
+    },
+    wrong_version: function (data) {
+      let info = JSON.parse(data)
+      console.log(info)
     },
     error: function (err) {
+      console.error(err)
+    },
+    disconnect: function (err) {
       console.error(err)
     },
   },
