@@ -10,7 +10,7 @@
         </v-btn>
         <v-data-table
                 :headers="headers"
-                :items="desserts"
+                :items="players"
                 class="elevation-1"
                 align="center"
                 :hide-actions="true"
@@ -23,8 +23,10 @@
 
 </template>
 <script>
+  import { mapState } from 'vuex'
+
   export default {
-    name: 'ListInstance',
+    name: 'InstanceLobby',
     components: {},
     data () {
       return {
@@ -36,37 +38,15 @@
             align: 'center',
           },
         ],
-        desserts: [
-          {
-            name: 'Frozen Yogurt',
-
-          },
-          {
-            name: 'Ice cream sandwich',
-          },
-          {
-            name: 'Eclair',
-          },
-          {
-            name: 'Cupcake',
-          },
-          {
-            name: 'Gingerbread',
-          },
-          {
-            name: 'Jelly bean',
-          },
-        ],
       }
     },
     methods: {
-      createInstance: function () {
-        this.$router.push('/create-instance')
-      },
       startInstance: function () {
-        this.$router.push('/create-instance')
+        console.log('start', this.$store.getters.playerListName)
       },
-
     },
+    computed: mapState({
+      players: state => state.playerList ? state.playerList.map(u => ({name: u})) : [],
+    }),
   }
 </script>

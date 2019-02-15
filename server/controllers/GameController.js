@@ -73,12 +73,17 @@ module.exports.socketJoinGameInstance = (socket, io, gameId) => {
 }
 
 function askStartGame (game, io) {
-  let listUser = 'List of users : ' +
-    game.users.reduce(
-      (acc, val) => ((val ? acc + val.name : acc) + ' - '),
-      '')
+  /*  let listUser = 'List of users : ' +
+      game.users.reduce(
+        (acc, val) => ((val ? acc + val.name : acc) + ' - '),
+        '')*/
+  /*  io.sockets.in(game.uuid).
+      emit('game_broadcast_list_user', listUser)*/
   io.sockets.in(game.uuid).
-    emit('game_broadcast_list_user', listUser)
+    emit('game_broadcast_list_user', JSON.stringify({
+      userList: game.users.map(user => user.name),
+      gameId: game.uuid,
+    }))
   if (game.hasEnoughPlayer()) {
     game.creator.socket.emit('game_ask_start', JSON.stringify({
       numberOfPlayer: game.users.length,

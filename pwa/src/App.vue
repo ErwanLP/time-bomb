@@ -43,7 +43,7 @@
             <v-toolbar-title>Time Bomb</v-toolbar-title>
             <v-spacer></v-spacer>
             <v-btn icon>
-                <v-icon>refresh</v-icon>
+                <v-icon v-on:click="refresh">refresh</v-icon>
             </v-btn>
         </v-toolbar>
         <v-content>
@@ -75,7 +75,8 @@
     </v-app>
 </template>
 <script>
-  import { store } from "./store";
+  import { store } from './store'
+
   export default {
     name: 'App',
     components: {},
@@ -85,9 +86,15 @@
         links: [
           {icon: 'view_list', key: 'list-instance', fn: () => this.$router.push('/list-instance')},
           {icon: 'home', key: 'home', fn: () => this.$router.push('/')},
-          {icon: 'book', key: 'rules', fn: () => this.$router.push('/')},
+          {icon: 'book', key: 'rules', fn: () => this.$router.push('/rules')},
         ],
       }
+    },
+    methods: {
+      refresh: function () {
+
+      },
+
     },
     computed: {
       userName () {

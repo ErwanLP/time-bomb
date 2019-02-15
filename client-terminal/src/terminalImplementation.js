@@ -47,7 +47,8 @@ module.exports.joinGameFromList = function (data) {
 }
 
 module.exports.userJoinGameSuccess = function (data) {
-  output.logSuccess(data)
+  let info = JSON.parse(data)
+  output.logSuccess('Success to connect to lobby as ' + info.as)
 }
 
 module.exports.userJoinGameError = function (data) {
@@ -56,7 +57,12 @@ module.exports.userJoinGameError = function (data) {
 }
 
 module.exports.gameListUser = function (data) {
-  output.logInfo(data)
+  let info = JSON.parse(data)
+  let listUser = 'List of users : ' +
+    info.userList.reduce(
+      (acc, userName) => ((userName ? acc + userName : acc) + ' - '),
+      '')
+  output.logInfo(listUser)
 }
 
 module.exports.gameAskStart = function (data) {

@@ -34,15 +34,15 @@ new Vue({
       this.$socket.emit('game_join', info.uuid)
     },
     user_join_game_success: function (data) {
-      console.log('user_join_game_success')
-      console.log(data.uuid)
-      this.$router.push('/instance/1/lobby')
+      let info = JSON.parse(data)
+      this.$router.push('/instance/' + info.gameId + '/lobby')
     },
     user_join_game_error: function (err) {
       console.error(err)
     },
     game_broadcast_list_user: function (data) {
-
+      let info = JSON.parse(data)
+      store.commit('editListUser', info)
     },
     error: function (err) {
       console.error(err)

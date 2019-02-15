@@ -19,17 +19,17 @@
             </v-card>
             <v-card>
                 <v-card-actions>
-                    <v-btn flat color="orange">Create my own instance</v-btn>
+                    <v-btn :to="{name: 'createInstance'}" flat color="orange">Create my own instance</v-btn>
                 </v-card-actions>
             </v-card>
             <v-card>
                 <v-card-actions>
-                    <v-btn flat color="orange">See Liste of instance</v-btn>
+                    <v-btn :to="{name: 'listInstance'}" flat color="orange">See Liste of instance</v-btn>
                 </v-card-actions>
             </v-card>
             <v-card>
                 <v-card-actions>
-                    <v-btn flat color="orange">Rules</v-btn>
+                    <v-btn :to="{name: 'rules'}" flat color="orange">Rules</v-btn>
                 </v-card-actions>
             </v-card>
         </v-flex>

@@ -20,8 +20,16 @@ export default new Router({
       component: () => import(/* webpackChunkName: "about" */ './views/ListInstance.vue'),
     },
     {
+      path: '/rules',
+      name: 'rules',
+      // route level code-splitting
+      // this generates a separate chunk (about.[hash].js) for this route
+      // which is lazy-loaded when the route is visited.
+      component: () => import(/* webpackChunkName: "about" */ './views/Rules.vue'),
+    },
+    {
       path: '/create-instance',
-      name: 'CreateInstance',
+      name: 'createInstance',
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
@@ -29,7 +37,7 @@ export default new Router({
     },
     {
       path: '/instance/:id/lobby',
-      name: 'InstanceLobby',
+      name: 'instanceLobby',
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
