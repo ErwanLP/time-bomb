@@ -20,6 +20,11 @@
                             La partie se déroule en 4 manches maximum
                         </div>
                     </div>
+                </v-card-title>
+            </v-card>
+            <v-card>
+                <v-card-title primary-title>
+
                     <div>
                         <h3 class="headline mb-0">Déroulement d’une manche</h3>
                         <div>
@@ -44,6 +49,10 @@
                             Coupante) et procède de la même manière.
                         </div>
                     </div>
+                </v-card-title>
+            </v-card>
+            <v-card>
+                <v-card-title primary-title>
                     <div>
                         <h3 class="headline mb-0">Fin de la Manche</h3>
                         <div>
@@ -61,6 +70,10 @@
                             durant la manche précédente devient le premier joueur.
                         </div>
                     </div>
+                </v-card-title>
+            </v-card>
+            <v-card>
+                <v-card-title primary-title>
                     <div>
                         <h3 class="headline mb-0">Fin de la partie</h3>
                         <div>
