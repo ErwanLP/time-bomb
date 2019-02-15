@@ -7,6 +7,7 @@ export default new Vuex.Store({
   state: {
     user: {},
     host: null,
+    instanceList: [],
     playerList: [],
   },
   mutations: {
@@ -15,6 +16,9 @@ export default new Vuex.Store({
     },
     editHost (state, payload) {
       state.host = payload
+    },
+    editListInstance (state, payload) {
+      state.instanceList = payload
     },
     editListUser (state, payload) {
       state.playerList = payload.userList

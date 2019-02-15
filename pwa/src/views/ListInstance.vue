@@ -18,7 +18,7 @@
                         </v-list-tile>
                     </template>
                     <v-divider></v-divider>
-                    <template v-for="(item, index) in items">
+                    <template v-for="(item, index) in instances">
                         <v-subheader
                                 v-if="item.header"
                                 :key="item.header"
@@ -36,7 +36,7 @@
                                 v-else
                                 :key="item.title"
                                 avatar
-                                @click="joinInstance"
+                                @click="joinInstance(item.id)"
                         >
                             <v-list-tile-avatar>
                                 <v-icon>{{item.avatar}}</v-icon>
@@ -54,40 +54,44 @@
     </v-layout>
 </template>
 <script>
+  import { mapState } from 'vuex'
+
   export default {
     name: 'ListInstance',
     components: {},
     data () {
-      return {
-        items: [
-          {header: 'List Instance'},
-          {
-            avatar: 'games',
-            title: 'Instance 1',
-            subtitle: 'Alex, Scott, Jennifer',
-          },
-          {divider: true, inset: true},
-          {
-            avatar: 'games',
-            title: 'Instance 2',
-            subtitle: 'Alex, Scott, Jennifer',
-          },
-          {divider: true, inset: true},
-          {
-            avatar: 'games',
-            title: 'Instance 3',
-            subtitle: 'Alex, Scott, Jennifer',
-          },
-        ],
-      }
+      return {}
+    },
+    beforeMount: function () {
+      console.log('beforeMount')
+      this.$socket.emit('game_list')
     },
     methods: {
       createInstance: function () {
         this.$router.push('/create-instance')
       },
-      joinInstance: function () {
-        this.$router.push('/instance/1/lobby')
+      joinInstance: function (id) {
+        this.$router.push('/instance/' + id + '/lobby')
       },
     },
+    computed: mapState({
+      instances: state => {
+        let items = [
+          {header: 'List Instance'},
+        ]
+        state.instanceList.forEach((i, idx, array) => {
+          items.push({
+            avatar: 'games',
+            id: i.uuid,
+            title: i.name,
+            subtitle: 'Alex, Scott, Jennifer',
+          })
+          if (idx !== array.length - 1) {
+            items.push({divider: true, inset: true})
+          }
+        })
+        return items
+      },
+    }),
   }
 </script>

@@ -42,7 +42,7 @@
     },
     methods: {
       startInstance: function () {
-        console.log('start', this.$store.getters.playerListName)
+        console.log('start')
       },
     },
     computed: mapState({

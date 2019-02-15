@@ -29,6 +29,10 @@ new Vue({
     user_create_success: function (data) {
       store.commit('editUser', JSON.parse(data))
     },
+    game_list_success: function (data) {
+      let info = JSON.parse(data)
+      store.commit('editListInstance', info)
+    },
     game_create_success: function (data) {
       let info = JSON.parse(data)
       this.$socket.emit('game_join', info.uuid)
