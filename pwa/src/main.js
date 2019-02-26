@@ -1,16 +1,16 @@
-import Vue from 'vue'
-import './plugins/vuetify'
-import App from './App.vue'
-import './registerServiceWorker'
-import router from './router'
-import store from './store'
-import VueSocketIO from 'vue-socket.io'
+import Vue from 'vue';
+import './plugins/vuetify';
+import App from './App.vue';
+import './registerServiceWorker';
+import router from './router';
+import store from './store';
+import VueSocketIO from 'vue-socket.io';
 
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
 
 store.commit('editHost', window.location.origin === 'http://localhost:8080'
-  ? 'http://localhost:3002'
-  : window.location.origin)
+    ? 'http://localhost:3002'
+    : window.location.origin);
 
 Vue.use(new VueSocketIO({
   debug: true,
@@ -20,70 +20,79 @@ Vue.use(new VueSocketIO({
     actionPrefix: '',
     mutationPrefix: '',
   },
-}))
+}));
 
 new Vue({
   sockets: {
-    connect: function () {},
-    user_create_success: function (data) {
-      store.commit('editUser', JSON.parse(data))
+    connect: function() {},
+    user_create_success: function(data) {
+      store.commit('editUser', JSON.parse(data));
     },
-    game_list_success: function (data) {
-      let info = JSON.parse(data)
-      store.commit('editListInstance', info)
+    game_list_success: function(data) {
+      let info = JSON.parse(data);
+      store.commit('editListInstance', info);
     },
-    game_create_success: function (data) {
-      let info = JSON.parse(data)
-      this.$socket.emit('game_join', info.uuid)
+    game_create_success: function(data) {
+      let info = JSON.parse(data);
+      this.$socket.emit('game_join', info.uuid);
     },
-    user_join_game_success: function (data) {
-      let info = JSON.parse(data)
-      this.$router.push('/instance/' + info.gameId + '/lobby')
+    user_join_game_success: function(data) {
+      let info = JSON.parse(data);
+      this.$router.push('/instance/' + info.gameId + '/lobby');
     },
-    user_join_game_error: function (err) {
-      console.error(err)
+    user_join_game_error: function(err) {
+      throw err;
     },
-    game_broadcast_list_user: function (data) {
-      let info = JSON.parse(data)
-      store.commit('editListUser', info.userList)
+    game_broadcast_list_user: function(data) {
+      let info = JSON.parse(data);
+      store.commit('editListUser', info.userList);
     },
-    game_user_start: function (data) {
-      let info = JSON.parse(data)
-      store.commit('editRole', info.role)
-      this.$router.push('/instance/' + info.gameId + '/play')
+    game_ask_start: function(data) {
+      store.commit('canStartGame');
     },
-    game_user_new_round: function (data) {
-      let info = JSON.parse(data)
-      console.log(info)
+    game_user_start: function(data) {
+      let info = JSON.parse(data);
+      store.commit('startGame');
+      store.commit('editRole', info.role);
+      this.$router.push('/instance/' + info.gameId + '/play');
     },
-    game_broadcast_info: function (data) {
-      let info = JSON.parse(data)
-      console.log(info)
+    game_user_new_round: function(data) {
+      let info = JSON.parse(data);
+      store.commit('editCards', info.me.cards);
+      store.commit('editNumberOfDefuseFound', info.numberOfDefuseFound);
+      store.commit('editCurrentPlayer', info.currentPlayer);
+      store.commit('editNumberOfDefuseToFind', info.numberOfDefuseToFind);
+      store.commit('editRoundNumber', info.roundNumber);
+      console.log(info);
     },
-    game_user_play: function (data) {
-      let info = JSON.parse(data)
-      console.log(info)
+    game_broadcast_info: function(data) {
+      let info = JSON.parse(data);
+      console.log(info);
     },
-    game_broadcast_end: function (data) {
-      let info = JSON.parse(data)
-      console.log(info)
+    game_user_play: function(data) {
+      let info = JSON.parse(data);
+      console.log(info);
     },
-    game_broadcast_stop_error: function (data) {
-      let info = JSON.parse(data)
-      console.log(info)
+    game_broadcast_end: function(data) {
+      let info = JSON.parse(data);
+      console.log(info);
     },
-    wrong_version: function (data) {
-      let info = JSON.parse(data)
-      console.log(info)
+    game_broadcast_stop_error: function(data) {
+      let info = JSON.parse(data);
+      console.log(info);
     },
-    error: function (err) {
-      console.error(err)
+    wrong_version: function(data) {
+      let info = JSON.parse(data);
+      console.log(info);
     },
-    disconnect: function (err) {
-      console.error(err)
+    error: function(err) {
+      throw err;
+    },
+    disconnect: function(err) {
+      throw err;
     },
   },
   router,
   store,
   render: h => h(App),
-}).$mount('#app')
+}).$mount('#app');

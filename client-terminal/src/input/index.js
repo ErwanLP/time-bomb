@@ -1,4 +1,4 @@
-const inquirer = require('inquirer')
+const inquirer = require('inquirer');
 
 module.exports.createOrListInstance = () => {
   return inquirer.prompt([
@@ -10,7 +10,7 @@ module.exports.createOrListInstance = () => {
       default: 0,
     }]).
     then(data => data.createOrList === 'Create new game' ? 'CREATE' : 'LIST')
-}
+};
 
 module.exports.nameInstance = () => {
   return inquirer.prompt([
@@ -19,7 +19,7 @@ module.exports.nameInstance = () => {
       type: 'input',
       message: 'what is the name your new instance ?',
     }]).then(data => data.newGameName)
-}
+};
 
 module.exports.selectGame = (games) => {
   return inquirer.prompt([
@@ -32,7 +32,7 @@ module.exports.selectGame = (games) => {
     }]).
     then(data => data.selectedGame).
     then(selectedGame => games.find((g) => g.name === selectedGame))
-}
+};
 
 module.exports.confirmStartGame = (numberOfPlayer) => {
   return inquirer.prompt([
@@ -42,7 +42,7 @@ module.exports.confirmStartGame = (numberOfPlayer) => {
       message: 'Start game with ' + numberOfPlayer +
       ' player(s) (or waiting for more player) ?',
     }]).then(data => data.confirmStartGame)
-}
+};
 
 module.exports.refreshListOfGame = () => {
   return inquirer.prompt([
@@ -51,23 +51,26 @@ module.exports.refreshListOfGame = () => {
       type: 'confirm',
       message: 'Refresh list of instance ?',
     }]).then(data => data.refreshListOfGame)
-}
+};
 
 module.exports.pickCardSelectUser = (users) => {
+  users.push({name: 'BACK', cardsLength: null});
   return inquirer.prompt([
     {
       name: 'pickCardSelectUser',
       type: 'list',
       message: 'Which player would you like to take a card ?',
       choices: users ? users.filter(user => !user.isCurrentPlayer).
-        map(user => user.name + ' (' + user.cardsLength + ' cards)') : [''],
+          map(user => user.name + (user.cardsLength !== null
+              ? (' (' + user.cardsLength + ' cards)')
+              : '')) : [''],
       default: 0,
     }]).
     then(data => data.pickCardSelectUser).
     then(pickCardSelectUser => pickCardSelectUser.split(
       new RegExp(' \\(\\d cards\\)'))[0]).
     then(userName => users.find((u) => u.name === userName))
-}
+};
 
 module.exports.pickCardSelectIndex = (arr) => {
   return inquirer.prompt([
@@ -79,6 +82,6 @@ module.exports.pickCardSelectIndex = (arr) => {
       default: 0,
     }]).
     then(data => data.pickCardSelectIndex)
-}
+};
 
 

@@ -5,6 +5,7 @@
                 color="success"
                 @click="startInstance"
                 :block="true"
+                :disabled="canStartGame"
         >
             Start Instance
         </v-btn>
@@ -23,12 +24,12 @@
 
 </template>
 <script>
-  import { mapState } from 'vuex'
+  import {mapState} from 'vuex';
 
   export default {
     name: 'InstanceLobby',
     components: {},
-    data () {
+    data() {
       return {
         headers: [
           {
@@ -38,15 +39,17 @@
             align: 'center',
           },
         ],
-      }
+      };
     },
     methods: {
-      startInstance: function () {
-        this.$socket.emit('game_start')
+      startInstance: function() {
+        this.$socket.emit('game_start');
       },
     },
     computed: mapState({
       players: state => state.playerList ? state.playerList.map(u => ({name: u})) : [],
+      canStartGame: state => !state.canStartGame,
+
     }),
-  }
+  };
 </script>

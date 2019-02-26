@@ -29,13 +29,24 @@
                                             justify-center
                                             ma-0
                                     >
-                                        <v-progress-circular indeterminate color="grey lighten-5"></v-progress-circular>
                                     </v-layout>
                                 </v-img>
                             </v-card>
                         </v-flex>
                     </v-layout>
                 </v-container>
+                <div class="text-xs-center">
+                    <v-rating
+                            v-model="numberOfDefuseFound"
+                            :length="numberOfDefuseToFind"
+                            empty-icon="alarm_on"
+                            full-icon="alarm"
+                            :hover="hover"
+                            :readonly="readonly"
+                            color="green lighten-3"
+                            background-color="grey lighten-1"
+                    ></v-rating>
+                </div>
             </v-card>
         </v-flex>
 
@@ -43,25 +54,32 @@
 
 </template>
 <script>
-  import { mapState } from 'vuex'
+  import {mapState} from 'vuex';
 
   export default {
     name: 'InstanceLobby',
     components: {},
-    data () {
+    data() {
       return {
         displayRole: false,
         displayCards: false,
-      }
+        hover: true,
+        readonly: false,
+      };
     },
     methods: {
-      toggleDisplay: function () {
-        this.displayRole = !this.displayRole
-        this.displayCards = !this.displayCards
+      toggleDisplay: function() {
+        this.displayRole = !this.displayRole;
+        this.displayCards = !this.displayCards;
       },
     },
     computed: mapState({
       role: state => state.role || 'ROLE',
+      cards: state => state.cards,
+      numberOfDefuseFound: state => state.numberOfDefuseFound,
+      currentPlayer: state => state.currentPlayer,
+      numberOfDefuseToFind: state => state.numberOfDefuseToFind,
+      roundNumber: state => state.roundNumber,
     }),
-  }
+  };
 </script>

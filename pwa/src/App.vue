@@ -26,25 +26,11 @@
                         </v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
-                <v-list-tile>
-                    <v-list-tile-action>
-                        <v-icon>settings</v-icon>
-                    </v-list-tile-action>
-                    <v-list-tile-content>
-                        <v-list-tile-title>
-                            Params
-                        </v-list-tile-title>
-                    </v-list-tile-content>
-                </v-list-tile>
             </v-list>
         </v-navigation-drawer>
         <v-toolbar color="indigo" dark fixed app>
             <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
             <v-toolbar-title>Time Bomb</v-toolbar-title>
-            <v-spacer></v-spacer>
-            <v-btn icon>
-                <v-icon v-on:click="refresh">refresh</v-icon>
-            </v-btn>
         </v-toolbar>
         <v-content>
             <router-view></router-view>
@@ -53,6 +39,7 @@
                 height="auto"
                 color="indigo"
                 fixed
+                v-if="displayFooter"
         >
             <v-layout
                     justify-center
@@ -75,12 +62,12 @@
     </v-app>
 </template>
 <script>
-  import { store } from './store'
+  import {store} from './store';
 
   export default {
     name: 'App',
     components: {},
-    data () {
+    data() {
       return {
         drawer: null,
         links: [
@@ -88,22 +75,25 @@
           {icon: 'home', key: 'home', fn: () => this.$router.push('/')},
           {icon: 'book', key: 'rules', fn: () => this.$router.push('/rules')},
         ],
-      }
+      };
     },
     methods: {
-      refresh: function () {
+      refresh: function() {
 
       },
 
     },
     computed: {
-      userName () {
-        return this.$store.state.user.name
+      userName() {
+        return this.$store.state.user.name;
       },
-      host () {
-        return this.$store.state.host
+      host() {
+        return this.$store.state.host;
+      },
+      displayFooter() {
+        return !this.$store.state.gameIsStart;
       },
     },
 
-  }
+  };
 </script>

@@ -1,7 +1,7 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
+import Vue from 'vue';
+import Vuex from 'vuex';
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
@@ -10,24 +10,52 @@ export default new Vuex.Store({
     host: null,
     instanceList: [],
     playerList: [],
+    canStartGame: false,
+    gameIsStart: false,
+    cards: [],
+    numberOfDefuseFound: 0,
+    currentPlayer: '',
+    numberOfDefuseToFind: 0,
+    roundNumber: 0,
   },
   mutations: {
-    editUser (state, payload) {
-      state.user = payload
+    editUser(state, payload) {
+      state.user = payload;
     },
-    editHost (state, payload) {
-      state.host = payload
+    editHost(state, payload) {
+      state.host = payload;
     },
-    editListInstance (state, payload) {
-      state.instanceList = payload
+    editListInstance(state, payload) {
+      state.instanceList = payload;
     },
-    editListUser (state, payload) {
-      state.playerList = payload
+    editListUser(state, payload) {
+      state.playerList = payload;
     },
-    editRole (state, payload) {
-      state.role = payload
+    editRole(state, payload) {
+      state.role = payload;
+    },
+    canStartGame(state) {
+      state.canStartGame = true;
+    },
+    startGame(state) {
+      state.gameIsStart = true;
+    },
+    editCards(state, payload) {
+      state.cards = payload;
+    },
+    editNumberOfDefuseFound(state, payload) {
+      state.numberOfDefuseFound = payload;
+    },
+    editCurrentPlayer(state, payload) {
+      state.currentPlayer = payload;
+    },
+    editNumberOfDefuseToFind(state, payload) {
+      state.numberOfDefuseToFind = payload;
+    },
+    editRoundNumber(state, payload) {
+      state.roundNumber = payload;
     },
 
   },
   actions: {},
-})
+});
