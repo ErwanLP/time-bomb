@@ -67,7 +67,19 @@ new Vue({
     },
     game_broadcast_info: function(data) {
       let info = JSON.parse(data);
-      console.log(info);
+      store.commit('editCurrentPlayer', info.currentPlayer);
+      store.commit('editNumberOfDefuseFound', info.numberOfDefuseFound);
+      store.commit('editNumberOfDefuseToFind', info.numberOfDefuseToFind);
+      store.commit('editNumberOfCardsToPickThisRound',
+          info.numberOfCardsToPickThisRound);
+      store.commit('editNumberOfCardPickedThisRound',
+          info.numberOfCardPickedThisRound);
+      store.commit('pushPlayLog', {
+        card: info.card,
+        userFromName: info.userFromName,
+        userToName: info.userToName,
+      });
+
     },
     game_user_play: function(data) {
       let info = JSON.parse(data);

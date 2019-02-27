@@ -37,6 +37,7 @@
                 </v-container>
 
                 <div class="text-xs-center">
+                    Defusing Found :
                     <v-rating
                             v-model="numberOfDefuseFound"
                             :length="numberOfDefuseToFind"
@@ -48,9 +49,22 @@
                     ></v-rating>
                 </div>
                 <div class="text-xs-center">
+                    Round :
                     <v-rating
                             v-model="roundNumber"
                             length="4"
+                            empty-icon="label_important"
+                            full-icon="label_important"
+                            :readonly="readonly"
+                            color="green lighten-3"
+                            background-color="grey lighten-1"
+                    ></v-rating>
+                </div>
+                <div class="text-xs-center" v-if="numberOfCardsToPickThisRound">
+                    Card picked :
+                    <v-rating
+                            v-model="numberOfCardPickedThisRound"
+                            :length="numberOfCardsToPickThisRound"
                             empty-icon="label_important"
                             full-icon="label_important"
                             :readonly="readonly"
@@ -62,6 +76,27 @@
                     <v-icon>timer</v-icon>
                     {{currentPlayer}}
                 </div>
+
+            </v-card>
+            <v-card>
+                <v-timeline
+                        align-top
+                        dense
+                >
+
+                    <v-timeline-item v-for="i in playLog.length"
+                                     color="black lighten-3"
+                                     small
+                    >
+                        <v-layout wrap pt-3>
+                            <v-flex>
+                                {{playLog[i-1].userFromName}} has taken card {{playLog[i-1].card}} from
+                                {{playLog[i-1].userToName}}
+                            </v-flex>
+                        </v-layout>
+                    </v-timeline-item>
+
+                </v-timeline>
             </v-card>
         </v-flex>
 
@@ -106,10 +141,13 @@
     computed: mapState({
       role: state => state.role || 'ROLE',
       cards: state => state.cards,
+      playLog: state => state.playLog,
       numberOfDefuseFound: state => state.numberOfDefuseFound,
       currentPlayer: state => state.currentPlayer,
       numberOfDefuseToFind: state => state.numberOfDefuseToFind,
       roundNumber: state => state.roundNumber,
+      numberOfCardsToPickThisRound: state => state.numberOfCardsToPickThisRound,
+      numberOfCardPickedThisRound: state => state.numberOfCardPickedThisRound,
     }),
   };
 </script>

@@ -17,6 +17,9 @@ export default new Vuex.Store({
     currentPlayer: '',
     numberOfDefuseToFind: 0,
     roundNumber: 0,
+    numberOfCardsToPickThisRound: 0,
+    numberOfCardPickedThisRound: 0,
+    playLog: [],
   },
   mutations: {
     editUser(state, payload) {
@@ -54,6 +57,15 @@ export default new Vuex.Store({
     },
     editRoundNumber(state, payload) {
       state.roundNumber = payload;
+    },
+    editNumberOfCardsToPickThisRound(state, payload) {
+      state.numberOfCardsToPickThisRound = payload;
+    },
+    editNumberOfCardPickedThisRound(state, payload) {
+      state.numberOfCardPickedThisRound = payload;
+    },
+    pushPlayLog(state, payload) {
+      state.playLog.unshift(payload);
     },
 
   },
