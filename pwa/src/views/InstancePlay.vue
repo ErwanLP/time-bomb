@@ -37,7 +37,7 @@
                 </v-container>
 
                 <div class="text-xs-center">
-                    Defusing Found :
+                    <strong>Defusing Found :</strong>
                     <v-rating
                             v-model="numberOfDefuseFound"
                             :length="numberOfDefuseToFind"
@@ -49,7 +49,7 @@
                     ></v-rating>
                 </div>
                 <div class="text-xs-center">
-                    Round :
+                    <strong>Round :</strong>
                     <v-rating
                             v-model="roundNumber"
                             length="4"
@@ -61,7 +61,7 @@
                     ></v-rating>
                 </div>
                 <div class="text-xs-center" v-if="numberOfCardsToPickThisRound">
-                    Card picked :
+                    <strong>Card picked :</strong>
                     <v-rating
                             v-model="numberOfCardPickedThisRound"
                             :length="numberOfCardsToPickThisRound"
@@ -73,12 +73,52 @@
                     ></v-rating>
                 </div>
                 <div class="text-xs-center">
-                    <v-icon>timer</v-icon>
-                    {{currentPlayer}}
+                    <strong>Wainting for {{currentPlayer}} ...</strong>
                 </div>
 
             </v-card>
             <v-card>
+                <v-subheader>Your turn ! please select players</v-subheader>
+
+                <v-expansion-panel popout>
+                    <v-expansion-panel-content
+                            v-for="(message, i) in messages"
+                            :key="i"
+                            hide-actions
+                    >
+                        <v-layout
+                                slot="header"
+                                align-center
+                                row
+                                spacer
+                        >
+                            <v-flex xs3>
+                                <v-avatar
+                                        slot="activator"
+                                        size="36px"
+                                >
+                                    <v-icon
+                                    >people
+                                    </v-icon>
+                                </v-avatar>
+                            </v-flex>
+
+                            <v-flex xs9>
+                                <strong v-html="message.name"></strong>
+                                <span
+                                        v-if="message.total"
+                                        class="grey--text"
+                                >
+                &nbsp;({{ message.total }})
+              </span>
+                            </v-flex>
+                        </v-layout>
+                        <v-divider></v-divider>
+                        <v-card-text v-text="lorem"></v-card-text>
+                    </v-expansion-panel-content>
+                </v-expansion-panel>
+            </v-card>
+            <v-card v-if="playLog.length !== 0">
                 <v-timeline
                         align-top
                         dense
@@ -114,6 +154,20 @@
         displayRole: false,
         displayCards: false,
         readonly: true,
+        messages: [
+          {
+            name: 'John Leider',
+          },
+          {
+            name: 'Social',
+            total: 3,
+          },
+          {
+            name: 'Promos',
+            total: 4,
+          },
+        ],
+        lorem: 'Lorem ipsum dolor sit amet, at aliquam vivendum vel, everti delicatissimi cu eos. Dico iuvaret debitis mel an, et cum zril menandri. Eum in consul legimus accusam. Ea dico abhorreant duo, quo illum minimum incorrupte no, nostro voluptaria sea eu. Suas eligendi ius at, at nemore equidem est. Sed in error hendrerit, in consul constituam cum.',
       };
     },
     methods: {
