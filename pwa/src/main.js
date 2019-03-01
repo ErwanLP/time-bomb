@@ -47,7 +47,7 @@ new Vue({
       let info = JSON.parse(data);
       store.commit('editListUser', info.userList);
     },
-    game_ask_start: function(data) {
+    game_ask_start: function() {
       store.commit('canStartGame');
     },
     game_user_start: function(data) {
@@ -63,7 +63,6 @@ new Vue({
       store.commit('editCurrentPlayer', info.currentPlayer);
       store.commit('editNumberOfDefuseToFind', info.numberOfDefuseToFind);
       store.commit('editRoundNumber', info.roundNumber);
-      console.log(info);
     },
     game_broadcast_info: function(data) {
       let info = JSON.parse(data);
@@ -83,19 +82,21 @@ new Vue({
     },
     game_user_play: function(data) {
       let info = JSON.parse(data);
-      console.log(info);
+      store.commit('editPlayers', info.users);
+      store.commit('editMyTurn', true);
     },
     game_broadcast_end: function(data) {
       let info = JSON.parse(data);
-      console.log(info);
+      let str = info.teamWin + ' Win - ' + info.cause;
+      store.commit('editEndGameMsg', str);
     },
     game_broadcast_stop_error: function(data) {
       let info = JSON.parse(data);
-      console.log(info);
+      throw info;
     },
     wrong_version: function(data) {
       let info = JSON.parse(data);
-      console.log(info);
+      throw info;
     },
     error: function(err) {
       throw err;

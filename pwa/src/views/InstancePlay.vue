@@ -1,6 +1,14 @@
 <template>
     <v-form>
+        <v-alert
+                :value="endGameMsg !== null"
+                type="info"
+        >
+            {{endGameMsg}}
+            <br/>
+            <strong v-on:click="backHome">Click here to return home</strong>
 
+        </v-alert>
         <v-btn
                 color="info"
                 @click="toggleDisplay"
@@ -77,12 +85,12 @@
                 </div>
 
             </v-card>
-            <v-card>
+            <v-card v-show="myTurn">
                 <v-subheader>Your turn ! please select players</v-subheader>
 
                 <v-expansion-panel popout>
                     <v-expansion-panel-content
-                            v-for="(message, i) in messages"
+                            v-for="(player, i) in players"
                             :key="i"
                             hide-actions
                     >
@@ -98,23 +106,49 @@
                                         size="36px"
                                 >
                                     <v-icon
-                                    >people
+                                    >person
                                     </v-icon>
                                 </v-avatar>
                             </v-flex>
 
-                            <v-flex xs9>
-                                <strong v-html="message.name"></strong>
+                            <v-flex xs9 v-on:click="selectPlayer(player)">
+                                <strong v-html="player.name"></strong>
                                 <span
-                                        v-if="message.total"
                                         class="grey--text"
                                 >
-                &nbsp;({{ message.total }})
+                &nbsp;({{ player.cardsLength }})
               </span>
                             </v-flex>
                         </v-layout>
                         <v-divider></v-divider>
-                        <v-card-text v-text="lorem"></v-card-text>
+                        <v-card-text>
+                            <v-container grid-list-sm fluid>
+                                <v-layout row wrap>
+                                    <v-flex v-for="i in selectedPlayer.cardsLength" :key="i" d-flex
+                                    >
+                                        <v-card flat tile class="d-flex">
+                                            <v-img
+                                                    :lazy-src="require('../assets/img/back.png')"
+                                                    :src="require('../assets/img/back.png')"
+                                                    v-on:click="selectCard(i-1)"
+                                                    aspect-ratio="0.55"
+                                                    class="grey lighten-2"
+
+                                            >
+                                                <v-layout
+                                                        slot="placeholder"
+                                                        fill-height
+                                                        align-center
+                                                        justify-center
+                                                        ma-0
+                                                >
+                                                </v-layout>
+                                            </v-img>
+                                        </v-card>
+                                    </v-flex>
+                                </v-layout>
+                            </v-container>
+                        </v-card-text>
                     </v-expansion-panel-content>
                 </v-expansion-panel>
             </v-card>
@@ -125,8 +159,8 @@
                 >
 
                     <v-timeline-item v-for="i in playLog.length"
-                                     color="black lighten-3"
-                                     small
+                                     :color="getColor(playLog[i-1].card)"
+                                     small :key="i"
                     >
                         <v-layout wrap pt-3>
                             <v-flex>
@@ -154,26 +188,16 @@
         displayRole: false,
         displayCards: false,
         readonly: true,
-        messages: [
-          {
-            name: 'John Leider',
-          },
-          {
-            name: 'Social',
-            total: 3,
-          },
-          {
-            name: 'Promos',
-            total: 4,
-          },
-        ],
-        lorem: 'Lorem ipsum dolor sit amet, at aliquam vivendum vel, everti delicatissimi cu eos. Dico iuvaret debitis mel an, et cum zril menandri. Eum in consul legimus accusam. Ea dico abhorreant duo, quo illum minimum incorrupte no, nostro voluptaria sea eu. Suas eligendi ius at, at nemore equidem est. Sed in error hendrerit, in consul constituam cum.',
+        selectedPlayer: {cardsLength: 0},
       };
     },
     methods: {
       toggleDisplay: function() {
         this.displayRole = !this.displayRole;
         this.displayCards = !this.displayCards;
+      },
+      backHome: function() {
+        this.$router.push('/');
       },
       getImage: function(card) {
         if (card) {
@@ -187,9 +211,32 @@
             return 'back.png';
           }
         } else {
-          console.log(card);
           return 'back.png';
         }
+      },
+      getColor: function(card) {
+        if (card) {
+          if (card === 'Securised') {
+            return 'grey';
+          } else if (card === 'Defusing') {
+            return 'green';
+          } else if (card === 'Bomb') {
+            return 'red';
+          } else {
+            return 'grey';
+          }
+        } else {
+          return 'back.png';
+        }
+      },
+      selectPlayer: function(player) {
+        this.selectedPlayer = player;
+      },
+      selectCard: function(index) {
+        this.$socket.emit('game_pick_card', this.selectedPlayer.uuid,
+            index);
+        this.$store.commit('editMyTurn', false);
+        this.selectedPlayer = {cardsLength: 0};
       },
     },
     computed: mapState({
@@ -202,6 +249,9 @@
       roundNumber: state => state.roundNumber,
       numberOfCardsToPickThisRound: state => state.numberOfCardsToPickThisRound,
       numberOfCardPickedThisRound: state => state.numberOfCardPickedThisRound,
+      players: state => state.players.filter(u => !u.isCurrentPlayer),
+      myTurn: state => state.myTurn,
+      endGameMsg: state => state.endGameMsg,
     }),
   };
 </script>

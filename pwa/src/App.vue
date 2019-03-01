@@ -33,6 +33,12 @@
             <v-toolbar-title>Time Bomb</v-toolbar-title>
         </v-toolbar>
         <v-content>
+            <v-alert
+                    :value="error !== null"
+                    type="error"
+            >
+                {{error}}
+            </v-alert>
             <router-view></router-view>
         </v-content>
         <v-footer
@@ -62,8 +68,6 @@
     </v-app>
 </template>
 <script>
-  import {store} from './store';
-
   export default {
     name: 'App',
     components: {},
@@ -92,6 +96,9 @@
       },
       displayFooter() {
         return !this.$store.state.gameIsStart;
+      },
+      error() {
+        return this.$store.state.error;
       },
     },
 

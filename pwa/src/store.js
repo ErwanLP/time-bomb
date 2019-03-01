@@ -20,6 +20,10 @@ export default new Vuex.Store({
     numberOfCardsToPickThisRound: 0,
     numberOfCardPickedThisRound: 0,
     playLog: [],
+    players: [],
+    myTurn: false,
+    endGameMsg: null,
+    error: null,
   },
   mutations: {
     editUser(state, payload) {
@@ -66,6 +70,15 @@ export default new Vuex.Store({
     },
     pushPlayLog(state, payload) {
       state.playLog.unshift(payload);
+    },
+    editPlayers(state, payload) {
+      state.players = payload;
+    },
+    editMyTurn(state, payload) {
+      state.myTurn = payload;
+    },
+    editEndGameMsg(state, payload) {
+      state.endGameMsg = payload;
     },
 
   },
