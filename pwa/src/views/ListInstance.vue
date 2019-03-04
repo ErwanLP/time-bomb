@@ -54,7 +54,7 @@
     </v-layout>
 </template>
 <script>
-  import { mapState } from 'vuex'
+  import {mapState} from 'vuex';
 
   export default {
     name: 'ListInstance',
@@ -63,7 +63,7 @@
       return {}
     },
     beforeMount: function () {
-      console.log('beforeMount')
+      console.log('beforeMount');
       this.$socket.emit('game_list')
     },
     methods: {
@@ -71,25 +71,25 @@
         this.$router.push('/create-instance')
       },
       joinInstance: function (id) {
-        this.$router.push('/instance/' + id + '/lobby')
+        this.$socket.emit('game_join', id);
       },
     },
     computed: mapState({
       instances: state => {
         let items = [
           {header: 'List Instance'},
-        ]
+        ];
         state.instanceList.forEach((i, idx, array) => {
           items.push({
             avatar: 'games',
             id: i.uuid,
             title: i.name,
             subtitle: 'Alex, Scott, Jennifer',
-          })
+          });
           if (idx !== array.length - 1) {
             items.push({divider: true, inset: true})
           }
-        })
+        });
         return items
       },
     }),

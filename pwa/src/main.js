@@ -91,8 +91,7 @@ new Vue({
       store.commit('editEndGameMsg', str);
     },
     game_broadcast_stop_error: function(data) {
-      let info = JSON.parse(data);
-      throw info;
+      store.commit('editEndGameMsg', data);
     },
     wrong_version: function(data) {
       let info = JSON.parse(data);
