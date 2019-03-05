@@ -9,7 +9,7 @@ module.exports.createOrListInstance = () => {
       choices: ['Join existing game', 'Create new game'],
       default: 0,
     }]).
-    then(data => data.createOrList === 'Create new game' ? 'CREATE' : 'LIST')
+      then(data => data.createOrList === 'Create new game' ? 'CREATE' : 'LIST');
 };
 
 module.exports.nameInstance = () => {
@@ -18,7 +18,7 @@ module.exports.nameInstance = () => {
       name: 'newGameName',
       type: 'input',
       message: 'what is the name your new instance ?',
-    }]).then(data => data.newGameName)
+    }]).then(data => data.newGameName);
 };
 
 module.exports.selectGame = (games) => {
@@ -30,8 +30,8 @@ module.exports.selectGame = (games) => {
       choices: games ? games.map(game => game.name) : [''],
       default: 0,
     }]).
-    then(data => data.selectedGame).
-    then(selectedGame => games.find((g) => g.name === selectedGame))
+      then(data => data.selectedGame).
+      then(selectedGame => games.find((g) => g.name === selectedGame));
 };
 
 module.exports.confirmStartGame = (numberOfPlayer) => {
@@ -41,7 +41,7 @@ module.exports.confirmStartGame = (numberOfPlayer) => {
       type: 'confirm',
       message: 'Start game with ' + numberOfPlayer +
       ' player(s) (or waiting for more player) ?',
-    }]).then(data => data.confirmStartGame)
+    }]).then(data => data.confirmStartGame);
 };
 
 module.exports.refreshListOfGame = () => {
@@ -50,11 +50,10 @@ module.exports.refreshListOfGame = () => {
       name: 'refreshListOfGame',
       type: 'confirm',
       message: 'Refresh list of instance ?',
-    }]).then(data => data.refreshListOfGame)
+    }]).then(data => data.refreshListOfGame);
 };
 
 module.exports.pickCardSelectUser = (users) => {
-  users.push({name: 'BACK', cardsLength: null});
   return inquirer.prompt([
     {
       name: 'pickCardSelectUser',
@@ -66,10 +65,20 @@ module.exports.pickCardSelectUser = (users) => {
               : '')) : [''],
       default: 0,
     }]).
-    then(data => data.pickCardSelectUser).
-    then(pickCardSelectUser => pickCardSelectUser.split(
-      new RegExp(' \\(\\d cards\\)'))[0]).
-    then(userName => users.find((u) => u.name === userName))
+      then(data => data.pickCardSelectUser).
+      then(pickCardSelectUser => pickCardSelectUser.split(
+          new RegExp(' \\(\\d cards\\)'))[0]).
+      then(userName => users.find((u) => u.name === userName));
+};
+
+module.exports.confirmPickCard = (userName, index) => {
+  return inquirer.prompt([
+    {
+      name: 'confirmPickCard',
+      type: 'confirm',
+      message: 'Confirm you want to pick card number ' + index +
+      ' to the player ' + userName,
+    }]).then(data => data.confirmPickCard);
 };
 
 module.exports.pickCardSelectIndex = (arr) => {
@@ -81,7 +90,7 @@ module.exports.pickCardSelectIndex = (arr) => {
       choices: arr,
       default: 0,
     }]).
-    then(data => data.pickCardSelectIndex)
+      then(data => data.pickCardSelectIndex);
 };
 
 
