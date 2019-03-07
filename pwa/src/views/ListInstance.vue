@@ -63,7 +63,6 @@
       return {}
     },
     beforeMount: function () {
-      console.log('beforeMount');
       this.$socket.emit('game_list')
     },
     methods: {
