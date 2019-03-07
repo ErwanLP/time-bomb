@@ -5,6 +5,7 @@ import './registerServiceWorker';
 import router from './router';
 import store from './store';
 import VueSocketIO from 'vue-socket.io';
+import localforage from 'localforage';
 
 Vue.config.productionTip = false;
 
@@ -25,6 +26,15 @@ Vue.use(new VueSocketIO({
 new Vue({
   sockets: {
     connect: function() {},
+    connection_success: function() {
+      localforage.getItem('PLAYER_NAME', (err, value) => {
+        if (err || !value) {
+          this.$socket.emit('user_create');
+        } else {
+          this.$socket.emit('user_create', value);
+        }
+      });
+    },
     user_create_success: function(data) {
       store.commit('editUser', JSON.parse(data));
     },

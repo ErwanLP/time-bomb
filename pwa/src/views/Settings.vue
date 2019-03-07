@@ -48,6 +48,7 @@
           if (err) {
             throw err;
           }
+          this.$router.push('/');
         });
       },
     },
