@@ -7,6 +7,10 @@ module.exports.init = function(host) {
   });
 };
 
+module.exports.connectionSuccess = function() {
+  this.userCreate();
+};
+
 module.exports.displayUser = function(data) {
   let info = JSON.parse(data);
   output.logInfo('Your name is : ' + info.name);
