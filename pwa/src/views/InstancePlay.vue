@@ -99,12 +99,11 @@
                     <v-divider></v-divider>
 
 
-                    <template v-for="(player, index) in playersMessages">
+                    <template v-for="(player) in playersMessages">
 
                         <v-list-tile
                                 :key="player.userId"
                                 avatar
-                                @click=""
                         >
                             <v-list-tile-avatar>
                                 <p style="font-size:30px" v-if="!player.messages.find(m => m.type === 'mood')">
