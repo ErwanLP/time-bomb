@@ -1,241 +1,342 @@
-var shuffle = require('shuffle-array')
+const shuffle = require('shuffle-array');
+
+const LOBBY = 'LOBBY';
+const IN_GAME = 'IN_GAME';
+const FINISHED = 'FINISHED';
+const PAUSE = 'PAUSE';
+const SECURE_CABLE = 'SECURE_CABLE';
+const DEFUSING_CABLE = 'DEFUSING_CABLE';
+const BOMB = 'BOMB';
+const SHERLOCK = 'SHERLOCK';
+const MORIARTY = 'MORIARTY';
 
 module.exports = class Game {
 
-  constructor (uuid, name, userId) {
-    this.name = name
-    this.uuid = uuid
-    this.creationDate = new Date()
+  constructor(uuid, name, userId) {
+    this.name = name;
+    this.uuid = uuid;
+    this.createdDate = new Date();
     this.creator = {
-      uuid: userId,
-    }
-    this.users = []
-    this.isStart = false
-    this.minPlayer = 2
-    this.maxPlayer = 8
-    this.currentPlayerIndex = null
-    this.cardPicked = []
-    this.roundNumber = 0
-    this.numberOfDefuseFound = 0
-    this.isFinish = false
-    this.bombExploded = false
+      uuid: userId
+    };
+    this.players = [];
+    this.playerMessages = [];
+    this.MIN_PLAYER_NUMBER = 2;
+    this.MAX_PLAYER_NUMBER = 8;
+    this.MAX_ROUND_NUMBER = 4;
+    this.CARD_PLAYER_NUMBER = 5;
+    this.currentPlayerIndex = null;
+    this.cardPicked = [];
+    this.roundNumber = 0;
+    this.numberOfDefuseFound = 0;
+    this.bombExploded = false;
+    this.state = LOBBY;
   }
 
-  addUser (user, socket) {
-    // TODO check unic name in users
-    if (this.isStart === false && this.users.length < this.maxPlayer) {
-      socket.join(this.uuid)
-      this.users.push({
-        uuid: user.uuid,
-        name: user.name,
+  addPlayer(user) {
+
+    let playerCanAccess = () => {
+      return this.players.length <= this.MAX_PLAYER_NUMBER;
+    };
+
+    if (playerCanAccess()) {
+      this.players.push({
+        user: user,
         role: null,
-        socket: socket,
         isCreator: this.creator.uuid === user.uuid,
-      })
+        cards: []
+      });
       if (this.creator.uuid === user.uuid) {
-        this.creator.socket = socket
+        this.creator = user;
       }
-      /*      socket.emit('user_join_game_success', 'Success to connect to lobby as ' +
-              (this.creator.uuid === user.uuid ? 'creator' : 'player'))*/
-      socket.emit('user_join_game_success', JSON.stringify({
+
+      user.socket.emit('user_join_game_success', JSON.stringify({
         as: this.creator.uuid === user.uuid ? 'creator' : 'player',
         gameId: this.uuid,
-      }))
-    }
-  }
-
-  removePlayer (userId) {
-    let index = this.users.findIndex(u => u.uuid === userId)
-    if (index > -1) {
-      this.users.splice(index, 1)
-    }
-  }
-
-  setCurrentPlayer (userId) {
-    if (userId === null) {
-      this.currentPlayerIndex = Math.floor(Math.random() * this.users.length)
-      // returns a random integer from 0 to 99
+        state: this.state
+      }));
+      return true;
     } else {
-      this.currentPlayerIndex = this.users.findIndex(u => u.uuid === userId)
-    }
-    this.users.forEach((user, index) => {
-      user.isCurrentPlayer = index === this.currentPlayerIndex
-    })
-  }
-
-  startGame () {
-    if (this.isStart === false && this.users.length >= this.minPlayer) {
-      this.isStart = true
-      this.setCurrentPlayer(null)
-      let roles = this.createListOfRole(this.users.length)
-      this.users.forEach((user, index) => {
-        user.role = roles[index].type
-        user.socket.emit('game_user_start', JSON.stringify({
-          role: user.role,
-          gameId: this.uuid,
-        }))
-      })
-      let cards = this.createCards(this.users.length)
-      shuffle(cards)
-      this.giveCardToUser(cards)
-      this.startRound()
+      return false;
     }
   }
 
-  startRound () {
+  removePlayer(userId) {
+    let index = this.players.findIndex(p => p.user.uuid === userId);
+    if (index > -1) {
+      this.players.splice(index, 1);
+    }
+  }
+
+  hasUser(user) {
+    return this.players.findIndex(p => p.user.uuid === user.uuid) > -1;
+  }
+
+  setPause() {
+    this.state = PAUSE;
+  }
+
+  unsetPause() {
+    this.state = IN_GAME;
+  }
+
+  setCurrentPlayer(userId) {
+    if (userId === null) {
+      this.currentPlayerIndex = Math.floor(Math.random() * this.players.length);
+    } else {
+      this.currentPlayerIndex = this.players.findIndex(
+          p => p.user.uuid === userId);
+    }
+    this.players.forEach((player, index) => {
+      player.isCurrentPlayer = index === this.currentPlayerIndex;
+    });
+  }
+
+  isCurrentPlayer(userId) {
+    let player = this.players.find(p => p.user.uuid === userId);
+    return player ? player.isCurrentPlayer : false;
+
+  }
+
+  startGame() {
+    let canStartGame = () => {
+      return LOBBY === this.state && this.players.length >=
+          this.MIN_PLAYER_NUMBER;
+    };
+
+    if (canStartGame()) {
+      this.state = IN_GAME;
+      this.setCurrentPlayer(null);
+      let roles = this.createListOfRole(this.players.length);
+      this.players.forEach((player, index) => {
+        player.role = roles[index];
+        player.user.socket.emit('game_user_start', JSON.stringify({
+          role: player.role,
+          gameId: this.uuid
+        }));
+      });
+      let cards = this.createCards(this.players.length);
+      shuffle(cards);
+      this.giveCardToUser(cards);
+      this.startRound();
+    }
+  }
+
+  startRound() {
     if (this.roundNumber !== 0) {
-      let cards = []
-      this.users.forEach(user => cards = cards.concat(user.cards))
-      shuffle(cards)
-      this.giveCardToUser(cards)
+      let cards = [];
+      this.players.forEach(player => cards = cards.concat(player.cards));
+      shuffle(cards);
+      this.giveCardToUser(cards);
+      this.playerMessages = [];
     }
-    this.roundNumber++
-    this.users.forEach(user => {
-      user.socket.emit('game_user_new_round', JSON.stringify({
+    this.roundNumber++;
+    this.players.forEach(player => {
+      player.user.socket.emit('game_user_new_round', JSON.stringify({
         me: {
-          uuid: user.uuid,
-          name: user.name,
-          cards: user.cards,
+          uuid: player.user.uuid,
+          name: player.user.name,
+          cards: player.cards
         },
-        currentPlayer: this.users[this.currentPlayerIndex].name,
+        currentPlayer: this.players[this.currentPlayerIndex].user.name,
         numberOfDefuseFound: this.numberOfDefuseFound,
-        numberOfDefuseToFind: this.users.length,
+        numberOfDefuseToFind: this.players.length,
+        numberOfCardsToPickThisRound: this.players.length,
+        numberOfCardPickedThisRound: 0,
         roundNumber: this.roundNumber,
-      }))
-      shuffle(user.cards)
-    })
-    this.startNewPlay()
+        gameId: this.uuid
+      }));
+      shuffle(player.cards);
+    });
+    this.startNewPlay();
   }
 
-  giveCardToUser (cards) {
-    this.users.forEach(user => user.cards = [])
+  giveCardToUser(cards) {
+    this.players.forEach(user => user.cards = []);
     cards.forEach((card, index) => {
-      let userIndex = index % this.users.length
-      this.users[userIndex].cards.push(card)
-    })
+      let userIndex = index % this.players.length;
+      this.players[userIndex].cards.push(card);
+    });
   }
 
-  startNewPlay () {
-    this.users.forEach(user => {
-      if (user.isCurrentPlayer) {
-        user.socket.emit('game_user_play', JSON.stringify({
-          users: this.users.map(user => {
+  startNewPlay() {
+    this.players.forEach(player => {
+      if (player.isCurrentPlayer) {
+        player.user.socket.emit('game_user_play', JSON.stringify({
+          players: this.players.map(player => {
             return {
-              uuid: user.uuid,
-              name: user.name,
-              isCurrentPlayer: user.isCurrentPlayer,
-              cardsLength: user.cards.length,
-            }
+              user: {
+                uuid: player.user.uuid,
+                name: player.user.name
+              },
+              isCurrentPlayer: player.isCurrentPlayer,
+              cardsLength: player.cards.length
+            };
           }),
-          myUserId: user.uuid,
-          gameId: this.uuid,
-        }))
+          myUserId: player.user.uuid,
+          gameId: this.uuid
+        }));
       }
-    })
-
+    });
   }
 
-  pickCard (userToId, index) {
-    let userTo = this.users.find(u => u.uuid === userToId)
-    if (userTo) {
-      let card = userTo.cards.splice(index, 1)[0]
-      this.cardPicked.push(card)
-      if (card.type === 'Defusing') {
-        this.numberOfDefuseFound++
+  historyOf(userId) {
+    let player = this.players.find(p => p.user.uuid === userId);
+    return {
+      me: {
+        uuid: player.user.uuid,
+        name: player.user.name,
+        cards: player.cards
+      },
+      role: player.role,
+      currentPlayer: this.players[this.currentPlayerIndex].user.name,
+      numberOfDefuseFound: this.numberOfDefuseFound,
+      numberOfDefuseToFind: this.players.length,
+      numberOfCardsToPickThisRound: this.players.length,
+      numberOfCardPickedThisRound: this.cardPicked.length -
+      ((this.roundNumber - 1) * this.players.length),
+      roundNumber: this.roundNumber,
+      gameId: this.uuid,
+      playerMessages: this.playerMessages
+    };
+  }
+
+  pickCard(userFromId, userToId, index) {
+    let playerTo = this.players.find(p => p.user.uuid === userToId);
+    let playerFrom = this.players.find(p => p.user.uuid === userFromId);
+    if (playerFrom.isCurrentPlayer && playerTo) {
+      let card = playerTo.cards.splice(index, 1)[0];
+      this.cardPicked.push(card);
+      if (card.type === DEFUSING_CABLE) {
+        this.numberOfDefuseFound++;
       }
-      if (card.type === 'Bomb') {
-        this.bombExploded = true
+      if (card.type === BOMB) {
+        this.bombExploded = true;
       }
-      this.setCurrentPlayer(userToId)
-      return card
+      this.setCurrentPlayer(userToId);
+      return card;
     }
   }
 
-  endGame () {
-    this.isFinish = true
-    let res = {}
-    if (this.numberOfDefuseFound === this.users.length) {
-      res.teamWin = 'Sherlock'
-      res.cause = 'The bomb has been defused'
+  setMessage(userId, message) {
+    let player = this.players.find(p => p.user.uuid === userId);
+    let playerMessage = this.playerMessages.find(
+        m => m.userId === userId && m.type === message.type);
+    if (!playerMessage) {
+      this.playerMessages.push({
+        userId: userId,
+        userName: player.user.name,
+        type: message.type,
+        value: message.value
+      });
+    } else {
+      playerMessage.value = message.value;
+    }
+  }
+
+  getMessages() {
+    return this.playerMessages;
+  }
+
+  endGame() {
+    this.state = FINISHED;
+    let res = {
+      gameId: this.uuid,
+      sherlock: this.players.filter(p => p.role.type === SHERLOCK).
+          map(p => p.user.name),
+      moriarty: this.players.filter(p => p.role.type === MORIARTY).
+          map(p => p.user.name)
+    };
+    if (this.numberOfDefuseFound === this.players.length) {
+      res.teamWin = 'Sherlock';
+      res.cause = 'The bomb has been defused';
     } else if (this.roundNumber === 4 && this.isEndOfRound()) {
-      res.teamWin = 'Moriarty'
-      res.cause = 'The bomb has been not defused'
+      res.teamWin = 'Moriarty';
+      res.cause = 'The bomb has been not defused';
     } else if (this.bombExploded === true) {
-      res.teamWin = 'Moriarty'
-      res.cause = 'The bomb exploded'
+      res.teamWin = 'Moriarty';
+      res.cause = 'The bomb exploded';
     }
-    return res
+    return res;
   }
 
-  isEndOfRound () {
-    return this.cardPicked.length === this.roundNumber * this.users.length
+  isEndOfRound() {
+    return this.cardPicked.length === this.roundNumber * this.players.length;
   }
 
-  isEndOfGame () {
-    return (this.roundNumber === 4 && this.isEndOfRound()) ||
-      this.numberOfDefuseFound === this.users.length ||
-      this.bombExploded === true
+  isEndOfGame() {
+    return (this.roundNumber === this.MAX_ROUND_NUMBER &&
+        this.isEndOfRound()) ||
+        this.numberOfDefuseFound === this.players.length ||
+        this.bombExploded === true;
   }
 
-  createListOfRole (nbOfPlayer) {
-    function getNumberOfPlayerInEachTeam () {
-      if (nbOfPlayer === 2) return [1, 1]
-      if (nbOfPlayer === 3) return [2, 1]
-      if (nbOfPlayer === 4 || nbOfPlayer === 5) return [3, 2]
-      if (nbOfPlayer === 6) return [4, 2]
-      if (nbOfPlayer === 7 || nbOfPlayer === 8) return [6, 3]
-      throw 'number of player incorrect'
+  createListOfRole(nbOfPlayer) {
+    function getNumberOfPlayerInEachTeam() {
+      return [Math.round(nbOfPlayer * 2 / 3), Math.ceil(nbOfPlayer / 3)];
     }
 
     let res = [], nbOfSherlock, nbOfMoriarty;
-    [nbOfSherlock, nbOfMoriarty] = getNumberOfPlayerInEachTeam()
+    [nbOfSherlock, nbOfMoriarty] = getNumberOfPlayerInEachTeam();
     for (let i = 0; i < nbOfSherlock; i++) {
       res.push({
-        type: 'Sherlock',
-      })
+        type: SHERLOCK,
+        image: 'sherlock_' + i + '.png',
+        label: 'Sherlock'
+      });
     }
     for (let i = 0; i < nbOfMoriarty; i++) {
       res.push({
-        type: 'Moriarty',
-      })
+        type: MORIARTY,
+        image: 'moriarty_' + i + '.png',
+        label: 'Moriarty'
+      });
     }
-    shuffle(res)
-    return res.slice(0, nbOfPlayer)
+    shuffle(res);
+    return res.slice(0, nbOfPlayer);
   }
 
-  createCards (nbOfPlayer) {
-    function getNumberOfCableOfEachType () {
-      if (nbOfPlayer === 2) return [7, 2, 1]
-      if (nbOfPlayer === 3) return [11, 3, 1]
-      if (nbOfPlayer === 4) return [15, 4, 1]
-      if (nbOfPlayer === 5) return [19, 5, 1]
-      if (nbOfPlayer === 6) return [23, 6, 1]
-      if (nbOfPlayer === 7) return [27, 7, 1]
-      if (nbOfPlayer === 8) return [31, 8, 1]
-      throw 'number of player incorrect'
-    }
+  createCards(nbOfPlayer) {
+    let getNumberOfCableOfEachType = () => {
+      const NUMBER_OF_BOMB = 1;
+      return [
+        (this.CARD_PLAYER_NUMBER * nbOfPlayer) - (nbOfPlayer + NUMBER_OF_BOMB),
+        nbOfPlayer,
+        NUMBER_OF_BOMB];
+    };
 
-    let res = [], nbOfSecured, nbOfDefusing, nbOfBomb;
-    [nbOfSecured, nbOfDefusing, nbOfBomb] = getNumberOfCableOfEachType()
+    let res = [];
+    let [nbOfSecured, nbOfDefusing, nbOfBomb] = getNumberOfCableOfEachType();
     for (let i = 0; i < nbOfSecured; i++) {
       res.push({
-        type: 'Securised',
-      })
+        type: SECURE_CABLE,
+        label: 'Secure'
+      });
     }
     for (let i = 0; i < nbOfDefusing; i++) {
       res.push({
-        type: 'Defusing',
-      })
+        type: DEFUSING_CABLE,
+        label: 'Defusing'
+      });
     }
     for (let i = 0; i < nbOfBomb; i++) {
       res.push({
-        type: 'Bomb',
-      })
+        type: BOMB,
+        label: 'Bomb'
+      });
     }
-    return res
+    return res;
   }
 
-  hasEnoughPlayer () {
-    return this.users.length >= this.minPlayer
+  hasEnoughPlayer() {
+    return this.players.length >= this.MIN_PLAYER_NUMBER;
   }
-}
+
+  iEmpty() {
+    return this.players.every(player => !player.user.isActive());
+  }
+
+  allPlayersAreActives() {
+    return this.players.every(player => player.user.isActive());
+  }
+};

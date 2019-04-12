@@ -19,13 +19,21 @@ Vue.use(new VueSocketIO({
   vuex: {
     store,
     actionPrefix: '',
-    mutationPrefix: '',
-  },
+    mutationPrefix: ''
+  }
 }));
 
 new Vue({
   sockets: {
-    connect: function() {},
+    connect: function() {
+      this.$router.push('/');
+    },
+    reconnecting: function() {
+      this.$router.push('/');
+    },
+    disconnect: function() {
+      this.$router.push('/');
+    },
     connection_success: function() {
       localforage.getItem('PLAYER_NAME', (err, value) => {
         if (err || !value) {
@@ -39,8 +47,7 @@ new Vue({
       store.commit('editUser', JSON.parse(data));
     },
     game_list_success: function(data) {
-      let info = JSON.parse(data);
-      store.commit('editListInstance', info);
+      store.commit('editListInstance', JSON.parse(data));
     },
     game_create_success: function(data) {
       let info = JSON.parse(data);
@@ -48,73 +55,62 @@ new Vue({
     },
     user_join_game_success: function(data) {
       let info = JSON.parse(data);
-      this.$router.push('/instance/' + info.gameId + '/lobby');
+      store.commit('createJoinedInstance', info.gameId);
+      if (info.state === 'LOBBY') {
+        this.$router.push('/instance/' + info.gameId + '/lobby');
+      }
     },
-    user_join_game_error: function(err) {
-      throw err;
+    game_broadcast_pause: function(data) {
+      store.commit('setPause', JSON.parse(data));
     },
-    game_broadcast_list_user: function(data) {
+    game_user_resume: function(data) {
+      store.commit('userResume', JSON.parse(data));
+    },
+    game_broadcast_resume: function(data) {
       let info = JSON.parse(data);
-      store.commit('editListUser', info.userList);
+      store.commit('unSetPause', info);
+      this.$router.push('/instance/' + info.gameId + '/play');
     },
-    game_ask_start: function() {
-      store.commit('canStartGame');
+    game_broadcast_list_player: function(data) {
+      store.commit('editListPlayer', JSON.parse(data));
+    },
+    game_ask_start: function(data) {
+      store.commit('canStartGame', JSON.parse(data));
     },
     game_user_start: function(data) {
       let info = JSON.parse(data);
-      store.commit('startGame');
-      store.commit('editRole', info.role);
+      store.commit('startGame', info);
+      store.commit('editRole', info);
       this.$router.push('/instance/' + info.gameId + '/play');
     },
     game_user_new_round: function(data) {
-      let info = JSON.parse(data);
-      store.commit('editCards', info.me.cards);
-      store.commit('editNumberOfDefuseFound', info.numberOfDefuseFound);
-      store.commit('editCurrentPlayer', info.currentPlayer);
-      store.commit('editNumberOfDefuseToFind', info.numberOfDefuseToFind);
-      store.commit('editRoundNumber', info.roundNumber);
+      store.commit('newRound', JSON.parse(data));
     },
     game_broadcast_info: function(data) {
-      let info = JSON.parse(data);
-      store.commit('editCurrentPlayer', info.currentPlayer);
-      store.commit('editNumberOfDefuseFound', info.numberOfDefuseFound);
-      store.commit('editNumberOfDefuseToFind', info.numberOfDefuseToFind);
-      store.commit('editNumberOfCardsToPickThisRound',
-          info.numberOfCardsToPickThisRound);
-      store.commit('editNumberOfCardPickedThisRound',
-          info.numberOfCardPickedThisRound);
-      store.commit('pushPlayLog', {
-        card: info.card,
-        userFromName: info.userFromName,
-        userToName: info.userToName,
-      });
-
+      store.commit('newPick', JSON.parse(data));
     },
     game_user_play: function(data) {
       let info = JSON.parse(data);
-      store.commit('editPlayers', info.users);
-      store.commit('editMyTurn', true);
+      store.commit('myTurn', {
+        gameId: info.gameId,
+        b: true,
+        players: info.players
+      });
+    },
+    game_broadcast_message: function(data) {
+      store.commit('setMessages', JSON.parse(data));
     },
     game_broadcast_end: function(data) {
-      let info = JSON.parse(data);
-      let str = info.teamWin + ' Win - ' + info.cause;
-      store.commit('editEndGameMsg', str);
+      store.commit('endGame', JSON.parse(data));
     },
-    game_broadcast_stop_error: function(data) {
-      store.commit('editEndGameMsg', data);
-    },
-    wrong_version: function(data) {
-      let info = JSON.parse(data);
-      throw info;
+    wrong_version: function(err) {
+      throw err;
     },
     error: function(err) {
       throw err;
-    },
-    disconnect: function(err) {
-      throw err;
-    },
+    }
   },
   router,
   store,
-  render: h => h(App),
+  render: h => h(App)
 }).$mount('#app');

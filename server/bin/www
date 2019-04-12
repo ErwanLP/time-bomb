@@ -28,9 +28,9 @@ app.set('port', port);
 let server = http.createServer(app);
 
 const io = require('socket.io')(server);
-io.on('connection', function (socket) {
-  if (!socket.handshake.query.version || checkVersion(socket.handshake.query.version)) {
-    //UserController.createBySocket(socket)
+io.on('connection', function(socket) {
+  if (!socket.handshake.query.version ||
+      checkVersion(socket.handshake.query.version)) {
     socket.emit('connection_success');
     socket.on('user_create',
         UserController.createBySocket.bind(null, socket));
@@ -40,21 +40,28 @@ io.on('connection', function (socket) {
         GameController.socketGetGames.bind(null, socket));
     socket.on('game_join',
         GameController.socketJoinGameInstance.bind(null, socket, io));
+    socket.on('game_leave',
+        GameController.socketLeaveGameInstance.bind(null, socket, io));
     socket.on('game_start',
         GameController.socketStartGameInstance.bind(null, socket, io));
     socket.on('game_pick_card',
         GameController.socketPickCard.bind(null, socket, io));
-    socket.on('disconnect', function () {
-      GameController.socketLeaveGameInstance(socket, io)
-    })
+    socket.on('game_user_message',
+        GameController.socketMessage.bind(null, socket, io));
+    socket.on('disconnect', function() {
+      GameController.socketLeaveGameInstance(socket, io).then(
+          () => {
+            UserController.socketLeave(socket, io);
+          }
+      );
+    });
   } else {
     socket.emit('wrong_version', JSON.stringify({
       clientVersion: socket.handshake.query.version,
-      expectedVersion: clientTerminalVersion,
-    }))
+      expectedVersion: clientTerminalVersion
+    }));
   }
 });
-
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -68,33 +75,33 @@ server.on('listening', onListening);
  * Normalize a port into a number, string, or false.
  */
 
-function normalizePort (val) {
+function normalizePort(val) {
   let port = parseInt(val, 10);
 
   if (isNaN(port)) {
     // named pipe
-    return val
+    return val;
   }
 
   if (port >= 0) {
     // port number
-    return port
+    return port;
   }
 
-  return false
+  return false;
 }
 
 /**
  * Event listener for HTTP server "error" event.
  */
 
-function onError (error) {
+function onError(error) {
   if (error.syscall !== 'listen') {
-    throw error
+    throw error;
   }
 
   let bind = typeof port === 'string'
-    ? 'Pipe ' + port
+      ? 'Pipe ' + port
       : 'Port ' + port;
 
   // handle specific listen errors with friendly messages
@@ -108,7 +115,7 @@ function onError (error) {
       process.exit(1);
       break;
     default:
-      throw error
+      throw error;
   }
 }
 
@@ -116,10 +123,10 @@ function onError (error) {
  * Event listener for HTTP server "listening" event.
  */
 
-function onListening () {
+function onListening() {
   let addr = server.address();
   let bind = typeof addr === 'string'
-    ? 'pipe ' + addr
+      ? 'pipe ' + addr
       : 'port ' + addr.port;
-  debug('Listening on ' + bind)
+  debug('Listening on ' + bind);
 }

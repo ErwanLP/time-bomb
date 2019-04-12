@@ -14,7 +14,7 @@
     "http-errors": "~1.6.2",
     "module-alias": "^2.1.0",
     "morgan": "~1.9.0",
-    "random-fullName": "^1.0.0",
+    "pokemon": "^1.2.3",
     "shuffle-array": "^1.0.1",
     "socket.io": "^2.2.0",
     "uuid": "^3.3.2"

@@ -1,10 +1,16 @@
 const output = require('./output/index');
 const input = require('./input/index');
 
-module.exports.init = function(host) {
-  return output.figlet('Time Bomb', output.logPlay).then(() => {
-    output.logInfo('Connecting to ' + host + ' ...');
-  });
+module.exports.init = function(host, dev) {
+  if (dev) {
+    return Promise.resolve(() => {
+      output.logInfo('Connecting to ' + host + ' ...');
+    });
+  } else {
+    return output.figlet('Time Bomb', output.logPlay).then(() => {
+      output.logInfo('Connecting to ' + host + ' ...');
+    });
+  }
 };
 
 module.exports.connectionSuccess = function() {
@@ -60,10 +66,10 @@ module.exports.userJoinGameError = function(data) {
   process.exit();
 };
 
-module.exports.gameListUser = function(data) {
+module.exports.gameListPlayer = function(data) {
   let info = JSON.parse(data);
   let listUser = 'List of users : ' +
-      info.userList.reduce(
+      info.playerList.reduce(
           (acc, userName) => ((userName ? acc + userName : acc) + ' - '),
           '');
   output.logInfo(listUser);
@@ -80,62 +86,62 @@ module.exports.gameAskStart = function(data) {
 
 module.exports.gameStart = function(data) {
   let info = JSON.parse(data);
-  output.tbGame('Start of the game, your role is ' + info.role);
+  output.tbGame('Start of the game, your role is ' + info.role.label);
 };
 
 module.exports.gameNewRound = function(data) {
   let info = JSON.parse(data);
-  output.tbGame('New Round');
-  output.displayVisibleCard(info.me.cards.map(c => c.type));
-  output.log('Number of round : ' +
-      info.roundNumber + ' / 4');
-  output.log('Number of defusing card found : ' +
-      info.numberOfDefuseFound + ' / ' + info.numberOfDefuseToFind);
-  output.log('Waiting for ' + info.currentPlayer + ' ....');
+  output.tbGame('New Round - [' + info.roundNumber + '/4]');
+  output.displayVisibleCard(info.me.cards.map(c => c.label));
+  output.log('There are ' +
+      (info.numberOfDefuseToFind - info.numberOfDefuseFound) +
+      ' defusing card(s) left to find, waiting for ' + info.currentPlayer);
+
 };
 
-module.exports.gameInfo = function(data) {
-  output.tbInfo('Game information');
+module.exports.pickInfo = function(data) {
   let info = JSON.parse(data);
-  if (info.card === 'Defusing') {
-    output.logSuccess(info.userFromName + ' has taken card ' + info.card +
+  output.tbInfo('Pick Information - [' + info.numberOfCardPickedThisRound +
+      '/' + info.numberOfCardsToPickThisRound + ']');
+  if (info.card.type === 'DEFUSING_CABLE') {
+    output.logSuccess(info.userFromName + ' has taken card ' + info.card.label +
         ' from ' + info.userToName);
-  } else if (info.card === 'Bomb') {
-    output.logError(info.userFromName + ' has taken card ' + info.card +
+    if (info.numberOfDefuseToFind - info.numberOfDefuseFound > 0) {
+      output.log('There are ' +
+          (info.numberOfDefuseToFind - info.numberOfDefuseFound) +
+          ' defusing card(s) left to find, waiting for ' + info.currentPlayer);
+    }
+  } else if (info.card.type === 'BOMB') {
+    output.logError(info.userFromName + ' has taken card ' + info.card.label +
         ' from ' + info.userToName);
   } else {
-    output.log(info.userFromName + ' has taken card ' + info.card +
+    output.log(info.userFromName + ' has taken card ' + info.card.label +
         ' from ' + info.userToName);
+    output.log('Waiting for ' + info.currentPlayer);
   }
-  output.log('Number of defusing card found : ' +
-      info.numberOfDefuseFound + ' / ' + info.numberOfDefuseToFind);
-  output.log('Number of card picked this round: ' +
-      info.numberOfCardPickedThisRound + ' / ' +
-      info.numberOfCardsToPickThisRound);
-  output.log('Waiting for ' + info.currentPlayer + ' ...');
 };
 
 module.exports.gameUserPlay = function(bot, data) {
 
   let selectPlayerAndCard = (info, loopFn) => {
-    return input.pickCardSelectUser(info.users).then(
-        user => {
-          let hiddenCards = output.displayHiddenCard(user.cardsLength);
+    return input.pickCardSelectPlayer(info.players).then(
+        player => {
+          let hiddenCards = output.displayHiddenCard(player.cardsLength);
           input.pickCardSelectIndex(hiddenCards.map((val, i) => '' + i)).then(
               index => {
-                input.confirmPickCard(user.name, index).then(
+                input.confirmPickCard(player.user.name, index).then(
                     want => {
                       if (want) {
-                        return this.gamePickCard(user.uuid, index);
+                        return this.gamePickCard(player.user.uuid, index);
                       } else {
                         loopFn(info, loopFn);
                       }
-                    },
+                    }
                 );
 
-              },
+              }
           );
-        },
+        }
     );
   };
 
@@ -161,9 +167,14 @@ module.exports.gameEnd = function(data) {
   }
 };
 
-module.exports.gameStopError = function(data) {
-  output.logError(data);
-  process.exit();
+module.exports.gamePause = function(data) {
+  let info = JSON.parse(data);
+  output.logError(info.label);
+};
+
+module.exports.gameResume = function(data) {
+  let info = JSON.parse(data);
+  output.logSuccess(info.label);
 };
 
 module.exports.wrongVersion = function(data) {
@@ -175,7 +186,7 @@ module.exports.wrongVersion = function(data) {
   process.exit();
 };
 
-module.exports.error = function(data) {
+module.exports.CustomError = function(data) {
   output.logError(data);
   process.exit();
 };

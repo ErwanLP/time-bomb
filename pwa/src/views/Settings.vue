@@ -1,25 +1,22 @@
 <template>
-    <v-form>
-        <v-container>
-            <v-layout>
-                <v-flex
-                >
-                    <v-text-field
-                            v-model="name"
-                            label="Your name"
-                            required
-                    ></v-text-field>
-                </v-flex>
-            </v-layout>
-            <v-btn
-                    color="success"
-                    @click="saveSettings"
+    <v-container>
+        <v-layout>
+            <v-flex
             >
-                Validate
-            </v-btn>
-        </v-container>
-    </v-form>
-
+                <v-text-field
+                        v-model="name"
+                        label="Your name"
+                        required
+                ></v-text-field>
+            </v-flex>
+        </v-layout>
+        <v-btn
+                color="success"
+                @click="saveSettings"
+        >
+            Validate
+        </v-btn>
+    </v-container>
 </template>
 <script>
 
@@ -30,7 +27,7 @@
     components: {},
     data() {
       return {
-        name: '',
+        name: ''
       };
     },
     beforeMount: function() {
@@ -47,10 +44,12 @@
         localforage.setItem('PLAYER_NAME', this.name, (err) => {
           if (err) {
             throw err;
+          } else {
+            this.$socket.emit('user_create', this.name);
           }
           this.$router.push('/');
         });
-      },
-    },
+      }
+    }
   };
 </script>
