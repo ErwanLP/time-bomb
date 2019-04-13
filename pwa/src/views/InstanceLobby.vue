@@ -5,7 +5,7 @@
                 color="success"
                 @click="startInstance"
                 :block="true"
-                :disabled="canStartGame"
+                :disabled="lockStartGame"
         >
             Start Instance
         </v-btn>
@@ -24,32 +24,46 @@
 
 </template>
 <script>
-  import {mapState} from 'vuex';
 
   export default {
     name: 'InstanceLobby',
     components: {},
     data() {
       return {
+        startedInstance: false,
         headers: [
           {
             text: 'Players',
             sortable: false,
             value: 'name',
-            align: 'center',
-          },
-        ],
+            align: 'center'
+          }
+        ]
       };
+    },
+    beforeMount: function() {
+    },
+    beforeDestroy: function() {
+      if (!this.startedInstance) {
+        this.$socket.emit('game_leave');
+      }
     },
     methods: {
       startInstance: function() {
+        this.startedInstance = true;
         this.$socket.emit('game_start');
-      },
+      }
     },
-    computed: mapState({
-      players: state => state.playerList ? state.playerList.map(u => ({name: u})) : [],
-      canStartGame: state => !state.canStartGame,
 
-    }),
+    computed: {
+      players() {
+        return this.$store.state.instanceJoined[this.$route.params.id].playerNameList
+            ? this.$store.state.instanceJoined[this.$route.params.id].playerNameList.map(u => ({name: u}))
+            : [];
+      },
+      lockStartGame() {
+        return !this.$store.state.instanceJoined[this.$route.params.id].canStartGame;
+      }
+    }
   };
 </script>

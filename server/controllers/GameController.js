@@ -1,161 +1,194 @@
-const GamesService = require('@services/GamesService')
-const UsersService = require('@services/UsersService')
-const uuidv4 = require('uuid/v4')
-
-module.exports.create = (req, res) => {
-  return GamesService.create(uuidv4(), req.body.name, req.body.userId).then(
-    data => res.json(data),
-    err => res.status(400).send(err),
-  )
-}
-
-module.exports.read = (req, res) => {
-  return GamesService.read().then(
-    data => res.json(data),
-    err => res.status(400).send(err),
-  )
-}
-
-module.exports.readNotStartedGames = (req, res) => {
-  return GamesService.readNotStartedGames().then(
-    data => res.json(data),
-    err => res.status(400).send(err),
-  )
-}
+const GamesService = require('@services/GamesService');
+const UsersService = require('@services/UsersService');
+const uuidv4 = require('uuid/v4');
 
 module.exports.socketGetGames = (socket) => {
-  return GamesService.readNotStartedGames().then(
-    (games) => {
-      socket.emit('game_list_success', JSON.stringify(games))
-    },
-    (err) => {
-      console.error(err)
-      socket.emit('error', JSON.stringify(err))
-    },
-  )
-}
+  return GamesService.readLobbyGames().then(
+      (games) => {
+        socket.emit('game_list_success', JSON.stringify(games));
+      },
+      (err) => {
+        console.error(err);
+        socket.emit('error', JSON.stringify(err));
+      }
+  );
+};
 
 module.exports.socketCreateGameInstance = (socket, io, name) => {
+
+  function getHours() {
+    function addZero(i) {
+      if (i < 10) {
+        i = '0' + i;
+      }
+      return i;
+    }
+
+    let d = new Date();
+    let h = addZero(d.getHours());
+    let m = addZero(d.getMinutes());
+    return h + ':' + m;
+  }
+
   return GamesService.create(uuidv4(),
-    name ? name : ('Instance of ' + socket.userName), socket.userId).then(
-    (game) => {
-      socket.emit('game_create_success', JSON.stringify(game))
-    },
-    (err) => {
-      console.error(err)
-      socket.emit('error', JSON.stringify(err))
-    },
-  )
-}
+      name ? name : ('Instance of ' + socket.userName + ' - ' + getHours()),
+      socket.userId).then(
+      (game) => {
+        socket.emit('game_create_success', JSON.stringify(game));
+      },
+      (err) => {
+        console.error(err);
+        socket.emit('error', JSON.stringify(err));
+      }
+  );
+};
 
 module.exports.socketJoinGameInstance = (socket, io, gameId) => {
   Promise.all(
-    [UsersService.getById(socket.userId), GamesService.getById(gameId)]).
-    then(data => {
-        [user, game] = data
-        if (user && game) {
-          let userWithSameName = game.users.find(u => u.name === user.name)
-          if (userWithSameName) {
-            socket.emit('user_join_game_error', 'Can not connect to instance ' +
-              game.name + ' because an other player have the same name')
-          } else {
-            socket.gameId = gameId
-            game.addUser(user, socket)
-            askStartGame(game, io)
+      [UsersService.getById(socket.userId), GamesService.getById(gameId)]).
+      then(data => {
+            [user, game] = data;
+            if (user && game) {
+              if (game.state === 'LOBBY') {
+                if (game.addPlayer(user)) {
+                  socket.gameId = gameId;
+                  user.socket.join(game.uuid);
+                  askStartGame(game, io);
+                }
+              } else if (game.state === 'PAUSE') {
+                if (game.hasUser(user)) {
+                  socket.gameId = gameId;
+                  user.socket.join(game.uuid);
+                  user.socket.emit('game_user_resume',
+                      JSON.stringify(game.historyOf(user.uuid)));
+                  if (game.isCurrentPlayer(user.uuid)) {
+                    game.startNewPlay();
+                  }
+                  if (game.allPlayersAreActives()) {
+                    game.unsetPause();
+                    io.sockets.in(game.uuid).
+                        emit('game_broadcast_resume', JSON.stringify({
+                          gameId: game.uuid,
+                          label: 'The instance is now resuming'
+                        }));
+                  }
+                }
+              }
+            } else {
+              console.error('ERROR : game or user not found');
+              console.error(game, user);
+            }
+
           }
-        } else {
-          console.error('ERROR : game or user not found')
-          console.error(game, user)
-        }
+      );
+};
 
-      },
-    )
-}
+module.exports.socketLeaveGameInstance = (socket, io) => {
+  return Promise.all(
+      [
+        GamesService.getById(socket.gameId),
+        UsersService.getById(socket.userId)]).
+      then(
+          data => {
+            let user = data[1];
+            let game = data[0];
+            if (user && game) {
+              if (game.state === 'IN_GAME') {
+                game.setPause();
+                io.sockets.in(game.uuid).
+                    emit('game_broadcast_pause', JSON.stringify({
+                      gameId: game.uuid,
+                      label: 'Pause because ' + user.name +
+                      ' left the instance'
+                    }));
+              } else if (game.state === 'LOBBY') {
+                game.removePlayer(socket.userId);
+                socket.gameId = game.uuid;
+                askStartGame(game, io);
+              }
+              if (game && game.iEmpty()) {
+                GamesService.deleteById(socket.gameId).catch(
+                    console.error
+                );
+              }
+            }
+          }
+      ).catch(console.error);
+};
 
-function askStartGame (game, io) {
-  /*  let listUser = 'List of users : ' +
-      game.users.reduce(
-        (acc, val) => ((val ? acc + val.name : acc) + ' - '),
-        '')*/
-  /*  io.sockets.in(game.uuid).
-      emit('game_broadcast_list_user', listUser)*/
+function askStartGame(game, io) {
   io.sockets.in(game.uuid).
-    emit('game_broadcast_list_user', JSON.stringify({
-      userList: game.users.map(user => user.name),
-      gameId: game.uuid,
-    }))
+      emit('game_broadcast_list_player', JSON.stringify({
+        playerList: game.players.map(player => player.user.name),
+        gameId: game.uuid
+      }));
   if (game.hasEnoughPlayer()) {
     game.creator.socket.emit('game_ask_start', JSON.stringify({
-      numberOfPlayer: game.users.length,
-      gameId: game.uuid,
-    }))
+      numberOfPlayer: game.players.length,
+      gameId: game.uuid
+    }));
   }
 }
 
 module.exports.socketStartGameInstance = (socket, io) => {
   return GamesService.getById(socket.gameId).
-    then(game => game.startGame())
-}
+      then(game => game.startGame());
+};
 
 module.exports.socketPickCard = (
-  socket, io, userToId, index) => {
+    socket, io, userToId, index) => {
   return GamesService.getById(socket.gameId).
-    then(game => {
-      let card = game.pickCard(userToId, index)
-      Promise.all(
-        [UsersService.getById(socket.userId), UsersService.getById(userToId)]).
-        then(data => {
-          io.sockets.in(socket.gameId).
-            emit('game_broadcast_info', JSON.stringify({
-              card: card.type,
-              userFromName: data[0] ? data[0].name : 'one player',
-              userToName: data[1] ? data[1].name : 'other player',
-              currentPlayer: game.users[game.currentPlayerIndex].name,
-              numberOfDefuseFound: game.numberOfDefuseFound,
-              numberOfDefuseToFind: game.users.length,
-              numberOfCardsToPickThisRound: game.users.length,
-              numberOfCardPickedThisRound: game.cardPicked.length -
-              ((game.roundNumber - 1) * game.users.length),
-            }))
-        }).then(
-        () => {
-          if (game.isEndOfGame()) {
-            let res = game.endGame()
-            io.sockets.in(socket.gameId).
-              emit('game_broadcast_end', JSON.stringify(res))
-          } else if (game.isEndOfRound()) {
-            game.startRound()
-          } else {
-            game.startNewPlay()
-          }
-        },
-      )
-    })
-}
+      then(game => {
+        if (game) {
+          let card = game.pickCard(socket.userId, userToId, index);
+          Promise.all(
+              [
+                UsersService.getById(socket.userId),
+                UsersService.getById(userToId)]).
+              then(data => {
+                io.sockets.in(socket.gameId).
+                    emit('game_broadcast_info', JSON.stringify({
+                      gameId: game.uuid,
+                      card: card,
+                      userFromName: data[0] ? data[0].name : 'one player',
+                      userToName: data[1] ? data[1].name : 'other player',
+                      currentPlayer: game.players[game.currentPlayerIndex].user.name,
+                      numberOfDefuseFound: game.numberOfDefuseFound,
+                      numberOfDefuseToFind: game.players.length,
+                      numberOfCardsToPickThisRound: game.players.length,
+                      numberOfCardPickedThisRound: game.cardPicked.length -
+                      ((game.roundNumber - 1) * game.players.length)
+                    }));
+              }).then(
+              () => {
+                if (game.isEndOfGame()) {
+                  let res = game.endGame();
+                  io.sockets.in(socket.gameId).
+                      emit('game_broadcast_end', JSON.stringify(res));
+                } else if (game.isEndOfRound()) {
+                  game.startRound();
+                } else {
+                  game.startNewPlay();
+                }
+              }
+          );
+        }
 
-module.exports.socketLeaveGameInstance = (socket, io) => {
-  return Promise.all(
-    [GamesService.getById(socket.gameId), UsersService.getById(socket.userId)]).
-    then(
-      data => {
-        let user = data[1]
-        let game = data[0]
-        if (user && game) {
-          game.removePlayer(socket.userId)
-          if (game.isStart) {
-            io.sockets.in(game.uuid).
-              emit('game_broadcast_stop_error', 'Stop because ' + user.name +
-                ' left the game')
-          } else {
-            askStartGame(game, io)
-          }
+      });
+};
+
+module.exports.socketMessage = (
+    socket, io, message) => {
+  return GamesService.getById(socket.gameId).
+      then(game => {
+        if (game) {
+          game.setMessage(socket.userId, JSON.parse(message));
+          io.sockets.in(socket.gameId).
+              emit('game_broadcast_message', JSON.stringify({
+                gameId: socket.gameId,
+                playerMessages: game.getMessages()
+              }));
         }
-        if (user) {
-          UsersService.deleteById(socket.userId)
-        }
-        if (game && game.users.length === 0) {
-          GamesService.deleteById(socket.gameId)
-        }
-      },
-    )
-}
+
+      });
+};

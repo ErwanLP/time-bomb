@@ -1,44 +1,48 @@
 const UsersService = require('@services/UsersService');
 const uuidv4 = require('uuid/v4');
-const randomFullName = require('random-fullName');
+const pokemon = require('pokemon');
 
-module.exports.createBySocket = (socket, userName) => {
-  return UsersService.create(uuidv4(),
-      (userName === 'undefined' || userName === undefined || userName === null)
-          ? randomFullName()
-          : userName).then(
-      (user) => {
+module.exports.createBySocket = (socket, name) => {
+
+  let isNameValid = (name) => !(name === 'undefined' || name === undefined ||
+      name === null);
+
+  let generatedName = isNameValid(name) ? name : pokemon.random('fr');
+
+  return UsersService.getByName(generatedName).then(
+      user => {
+        if (user) {
+          if (user.isActive()) {
+            return UsersService.create(uuidv4(), generatedName);
+          } else {
+            return user;
+          }
+        } else {
+          return UsersService.create(uuidv4(), generatedName);
+        }
+      }
+  ).then(
+      user => {
         socket.userId = user.uuid;
         socket.userName = user.name;
-        socket.emit('user_create_success', JSON.stringify(user));
-      },
-      (err) => {
-        console.error(err);
-        socket.emit('error', JSON.stringify(err));
-      },
-  );
+        user.setSocket(socket);
+        user.setActive();
+        socket.emit('user_create_success', user.stringify());
+        return user;
+      }
+  ).catch((err) => {
+    console.error(err);
+    socket.emit('custom_error', JSON.stringify(err));
+  });
 };
 
-module.exports.create = (req, res, next) => {
-  return UsersService.create(uuidv4(), req.body.name || randomFullName()).then(
-      (data) => {
-        res.json(data);
-      },
-      (err) => {
-        console.error(err);
-        res.status(400).send(err);
-      },
-  );
-};
-
-module.exports.read = (req, res, next) => {
-  return UsersService.read().then(
-      (data) => {
-        res.json(data);
-      },
-      (err) => {
-        console.error(err);
-        res.status(400).send(err);
-      },
-  );
+module.exports.socketLeave = (socket, io) => {
+  return UsersService.getById(socket.userId).
+      then(
+          user => {
+            if (user) {
+              user.setInactive();
+            }
+          }
+      ).catch(console.error);
 };
