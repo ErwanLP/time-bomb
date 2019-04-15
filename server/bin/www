@@ -31,7 +31,8 @@ const io = require('socket.io')(server);
 io.on('connection', function(socket) {
   if (!socket.handshake.query.version ||
       checkVersion(socket.handshake.query.version)) {
-    socket.emit('connection_success');
+    socket.emit('connection_success',
+        JSON.stringify({version: clientTerminalVersion}));
     socket.on('user_create',
         UserController.createBySocket.bind(null, socket));
     socket.on('game_create',

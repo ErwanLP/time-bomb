@@ -34,7 +34,9 @@ new Vue({
     disconnect: function() {
       this.$router.push('/');
     },
-    connection_success: function() {
+    connection_success: function(data) {
+      let info = JSON.parse(data);
+      store.commit('setVersion', info.version);
       localforage.getItem('PLAYER_NAME', (err, value) => {
         if (err || !value) {
           this.$socket.emit('user_create');

@@ -7,6 +7,7 @@ export default new Vuex.Store({
   state: {
     user: {},
     host: null,
+    version: null,
     instanceList: [],
     error: null,
     instanceJoined: {
@@ -129,6 +130,9 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    setVersion(state, payload) {
+      state.version = payload;
+    },
     editUser(state, payload) {
       state.user = payload;
     },
