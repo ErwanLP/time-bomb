@@ -16,154 +16,195 @@
 
             <v-tab-item
             >
-                <v-list two-line>
-                    <template>
-                        <v-list-tile
-                                avatar
-                        >
-                            <v-list-tile-content>
-                                <v-list-tile-title>Have the bomb ?</v-list-tile-title>
-                            </v-list-tile-content>
-                            <v-list-tile-avatar @click="sendMessage({type : 'bomb', value : false})">
-                                <v-btn flat small color="error">No</v-btn>
-                            </v-list-tile-avatar>
-                            <v-list-tile-avatar @click="sendMessage({type : 'bomb', value : true})">
-                                <v-btn flat small color="primary">Yes</v-btn>
-                            </v-list-tile-avatar>
-                        </v-list-tile>
-                    </template>
-                    <v-divider></v-divider>
-                    <template>
-                        <v-list-tile
-                                avatar
-                        >
-
-                            <v-list-tile-content>
-                                <v-list-tile-title>Have some defusing cards ?</v-list-tile-title>
-                            </v-list-tile-content>
-                        </v-list-tile>
-                    </template>
-                    <template>
-                        <v-list-tile
-                                avatar
-                        >
-                            <v-list-tile-avatar @click="sendMessage({type : 'defusing', value : 0})">
-                                <v-btn flat small color="error">0</v-btn>
-                            </v-list-tile-avatar>
-                            <v-list-tile-avatar @click="sendMessage({type : 'defusing', value : 1})">
-                                <v-btn flat small>1</v-btn>
-                            </v-list-tile-avatar>
-                            <v-list-tile-avatar @click="sendMessage({type : 'defusing', value : 2})">
-                                <v-btn flat small>2</v-btn>
-                            </v-list-tile-avatar>
-                            <v-list-tile-avatar @click="sendMessage({type : 'defusing', value : 3})">
-                                <v-btn flat small>3</v-btn>
-                            </v-list-tile-avatar>
-                            <v-list-tile-avatar @click="sendMessage({type : 'defusing', value : 4})">
-                                <v-btn flat small>4</v-btn>
-                            </v-list-tile-avatar>
-                            <v-list-tile-avatar @click="sendMessage({type : 'defusing', value : 5})">
-                                <v-btn flat small>5</v-btn>
-                            </v-list-tile-avatar>
-                        </v-list-tile>
-                    </template>
-
-                    <v-divider></v-divider>
-                    <v-layout justify-center row wrap>
-                        <v-flex xs2 style="text-align: center; color:rgb(30, 16, 53)"
-                                @click="sendMessage({type : 'mood', value : 128519 })">
-                            <span style="font-size:50px">&#128519;</span>
-                        </v-flex>
-                        <v-flex xs2 style="text-align: center; color:rgb(30, 16, 53)"
-                                @click="sendMessage({type : 'mood', value : 129320 })">
-                            <span style="font-size:50px">&#129320;</span>
-                        </v-flex>
-                        <v-flex xs2 style="text-align: center; color:rgb(30, 16, 53)"
-                                @click="sendMessage({type : 'mood', value : 128515 })">
-                            <span style="font-size:50px">&#128515;</span>
-                        </v-flex>
-                        <v-flex xs2 style="text-align: center; color:rgb(30, 16, 53)"
-                                @click="sendMessage({type : 'mood', value : 128564 })">
-                            <span style="font-size:50px">&#128564;</span>
-                        </v-flex>
-                        <v-flex xs2 style="text-align: center; color:rgb(30, 16, 53)"
-                                @click="sendMessage({type : 'mood', value : 129488 })">
-                            <span style="font-size:50px">&#129488;</span>
-                        </v-flex>
-                        <v-flex xs2 style="text-align: center; color:rgb(30, 16, 53)"
-                                @click="sendMessage({type : 'mood', value : 128520 })">
-                            <span style="font-size:50px">&#128520;</span>
+                <v-container
+                        fluid
+                        grid-list-lg
+                >
+                    <v-layout row wrap>
+                        <v-flex xs12>
+                            <v-card>
+                                <v-layout row>
+                                    <v-flex xs12>
+                                        <v-card-title primary-title>
+                                            <div>
+                                                <div class="headline"></div>
+                                                <div>You can tell the other players your cards</div>
+                                                <div>Of course you can lie...</div>
+                                            </div>
+                                        </v-card-title>
+                                    </v-flex>
+                                    <!--                                        <v-flex xs5>
+                                                                                <v-img
+                                                                                        src="https://cdn.vuetifyjs.com/images/cards/halcyon.png"
+                                                                                        height="125px"
+                                                                                        contain
+                                                                                ></v-img>
+                                                                            </v-flex>-->
+                                </v-layout>
+                                <v-divider light></v-divider>
+                                <v-card-actions class="pa-3">
+                                    Have the bomb ?
+                                    <v-spacer></v-spacer>
+                                    <v-list-tile-avatar @click="sendMessage({type : 'bomb', value : false})">
+                                        <v-btn flat small color="error">No</v-btn>
+                                    </v-list-tile-avatar>
+                                    <v-list-tile-avatar @click="sendMessage({type : 'bomb', value : true})">
+                                        <v-btn flat small color="primary">Yes</v-btn>
+                                    </v-list-tile-avatar>
+                                </v-card-actions>
+                                <v-divider light></v-divider>
+                                <v-card-actions class="pa-3">
+                                    Have some defusing cards ?
+                                </v-card-actions>
+                                <v-card-actions class="pa-3">
+                                    <v-list-tile
+                                            avatar
+                                    >
+                                        <v-list-tile-avatar @click="sendMessage({type : 'defusing', value : 0})">
+                                            <v-btn flat small color="error">0</v-btn>
+                                        </v-list-tile-avatar>
+                                        <v-list-tile-avatar @click="sendMessage({type : 'defusing', value : 1})">
+                                            <v-btn flat small>1</v-btn>
+                                        </v-list-tile-avatar>
+                                        <v-list-tile-avatar @click="sendMessage({type : 'defusing', value : 2})">
+                                            <v-btn flat small>2</v-btn>
+                                        </v-list-tile-avatar>
+                                        <v-list-tile-avatar @click="sendMessage({type : 'defusing', value : 3})">
+                                            <v-btn flat small>3</v-btn>
+                                        </v-list-tile-avatar>
+                                        <v-list-tile-avatar @click="sendMessage({type : 'defusing', value : 4})">
+                                            <v-btn flat small>4</v-btn>
+                                        </v-list-tile-avatar>
+                                        <v-list-tile-avatar @click="sendMessage({type : 'defusing', value : 5})">
+                                            <v-btn flat small>5</v-btn>
+                                        </v-list-tile-avatar>
+                                    </v-list-tile>
+                                </v-card-actions>
+                                <v-divider light></v-divider>
+                                <v-card-actions class="pa-3">
+                                    Your mood, your feeling?
+                                </v-card-actions>
+                                <v-card-actions class="pa-3">
+                                    <v-layout justify-center row wrap>
+                                        <v-flex xs2 style="text-align: center; color:rgb(30, 16, 53)"
+                                                @click="sendMessage({type : 'mood', value : 128519 })">
+                                            <span style="font-size:50px">&#128519;</span>
+                                        </v-flex>
+                                        <v-flex xs2 style="text-align: center; color:rgb(30, 16, 53)"
+                                                @click="sendMessage({type : 'mood', value : 129320 })">
+                                            <span style="font-size:50px">&#129320;</span>
+                                        </v-flex>
+                                        <v-flex xs2 style="text-align: center; color:rgb(30, 16, 53)"
+                                                @click="sendMessage({type : 'mood', value : 128515 })">
+                                            <span style="font-size:50px">&#128515;</span>
+                                        </v-flex>
+                                        <v-flex xs2 style="text-align: center; color:rgb(30, 16, 53)"
+                                                @click="sendMessage({type : 'mood', value : 128564 })">
+                                            <span style="font-size:50px">&#128564;</span>
+                                        </v-flex>
+                                        <v-flex xs2 style="text-align: center; color:rgb(30, 16, 53)"
+                                                @click="sendMessage({type : 'mood', value : 129488 })">
+                                            <span style="font-size:50px">&#129488;</span>
+                                        </v-flex>
+                                        <v-flex xs2 style="text-align: center; color:rgb(30, 16, 53)"
+                                                @click="sendMessage({type : 'mood', value : 128520 })">
+                                            <span style="font-size:50px">&#128520;</span>
+                                        </v-flex>
+                                    </v-layout>
+                                </v-card-actions>
+                            </v-card>
                         </v-flex>
                     </v-layout>
+                </v-container>
 
-                    <v-divider></v-divider>
+                <v-container
+                        fluid
+                        grid-list-lg
+                >
+                    <v-layout row wrap>
+                        <v-flex xs12>
+                            <v-card>
+                                <v-layout row>
+                                    <v-flex xs12>
+                                        <v-card-title primary-title>
+                                            <div>
+                                                <div class="headline">Players information</div>
+                                            </div>
+                                        </v-card-title>
+                                    </v-flex>
+                                </v-layout>
+                                <v-divider light></v-divider>
+                                <v-card-actions>
+                                    <v-list>
+                                        <v-list-tile v-for="(player) in playersMessages"
+                                                     :key="player.userId"
+                                                     avatar
+                                        >
+                                            <v-list-tile-avatar>
+                                                <p style="font-size:30px"
+                                                   v-if="!player.messages.find(m => m.type === 'mood')">
+                                                    &#128578;</p>
+                                                <p style="font-size:30px"
+                                                   v-else-if="player.messages.find(m => m.type === 'mood').value === 128519 ">
+                                                    &#128519;</p>
+                                                <p style="font-size:30px"
+                                                   v-else-if="player.messages.find(m => m.type === 'mood').value === 129320 ">
+                                                    &#129320;</p>
+                                                <p style="font-size:30px"
+                                                   v-else-if="player.messages.find(m => m.type === 'mood').value === 128515 ">
+                                                    &#128515;</p>
+                                                <p style="font-size:30px"
+                                                   v-else-if="player.messages.find(m => m.type === 'mood').value === 128564 ">
+                                                    &#128564;</p>
+                                                <p style="font-size:30px"
+                                                   v-else-if="player.messages.find(m => m.type === 'mood').value === 129488 ">
+                                                    &#129488;</p>
+                                                <p style="font-size:30px"
+                                                   v-else-if="player.messages.find(m => m.type === 'mood').value === 128520 ">
+                                                    &#128520;</p>
+                                                <p v-else>{{player.messages.find(m => m.type === 'mood').value}}</p>
+                                            </v-list-tile-avatar>
 
+                                            <v-list-tile-content>
+                                                <v-list-tile-title v-html="player.userName"></v-list-tile-title>
+                                            </v-list-tile-content>
 
-                    <template v-for="(player) in playersMessages">
+                                            <v-list-tile-action>
+                                                <v-chip small>
+                                                    <v-avatar
+                                                            v-bind:class="[player.messages.find(m => m.type === 'defusing') && player.messages.find(m => m.type === 'defusing').value > 0 ? 'teal' : 'primary']"
+                                                    >
+                                                        {{player.messages.find(m => m.type === 'defusing') ?
+                                                        player.messages.find(m => m.type === 'defusing').value : ''}}
+                                                    </v-avatar>
+                                                    <v-icon
+                                                    >
+                                                        alarm
+                                                    </v-icon>
+                                                </v-chip>
 
-                        <v-list-tile
-                                :key="player.userId"
-                                avatar
-                        >
-                            <v-list-tile-avatar>
-                                <p style="font-size:30px" v-if="!player.messages.find(m => m.type === 'mood')">
-                                    &#128578;</p>
-                                <p style="font-size:30px"
-                                   v-else-if="player.messages.find(m => m.type === 'mood').value === 128519 ">
-                                    &#128519;</p>
-                                <p style="font-size:30px"
-                                   v-else-if="player.messages.find(m => m.type === 'mood').value === 129320 ">
-                                    &#129320;</p>
-                                <p style="font-size:30px"
-                                   v-else-if="player.messages.find(m => m.type === 'mood').value === 128515 ">
-                                    &#128515;</p>
-                                <p style="font-size:30px"
-                                   v-else-if="player.messages.find(m => m.type === 'mood').value === 128564 ">
-                                    &#128564;</p>
-                                <p style="font-size:30px"
-                                   v-else-if="player.messages.find(m => m.type === 'mood').value === 129488 ">
-                                    &#129488;</p>
-                                <p style="font-size:30px"
-                                   v-else-if="player.messages.find(m => m.type === 'mood').value === 128520 ">
-                                    &#128520;</p>
-                                <p v-else>{{player.messages.find(m => m.type === 'mood').value}}</p>
-                            </v-list-tile-avatar>
-
-                            <v-list-tile-content>
-                                <v-list-tile-title v-html="player.userName"></v-list-tile-title>
-                            </v-list-tile-content>
-                            <v-list-tile-action>
-                                <v-badge
-                                        :color="player.messages.find(m => m.type === 'defusing') && player.messages.find(m => m.type === 'defusing').value > 0 ? 'green' : 'grey'"
-                                        left>
-                                    <template v-slot:badge>
-                                        <span>{{player.messages.find(m => m.type === 'defusing') ? player.messages.find(m => m.type === 'defusing').value : ''}}</span>
-                                    </template>
-                                    <v-icon
-                                    >
-                                        alarm
-                                    </v-icon>
-                                </v-badge>
-                            </v-list-tile-action>
-                            <v-list-tile-action>
-                                <v-badge
-                                        :color="player.messages.find(m => m.type === 'bomb') && player.messages.find(m => m.type === 'bomb').value ? 'red' : 'grey'"
-                                        left>
-                                    <template v-slot:badge>
-                                        <span>{{player.messages.find(m => m.type === 'bomb') && player.messages.find(m => m.type === 'bomb').value ? '!' : ''}}</span>
-                                    </template>
-                                    <v-icon
-                                            color="grey"
-                                    >
-                                        whatshot
-                                    </v-icon>
-                                </v-badge>
-                            </v-list-tile-action>
-
-                        </v-list-tile>
-                    </template>
-                </v-list>
-
+                                            </v-list-tile-action>
+                                            <v-list-tile-action>
+                                                <v-chip small>
+                                                    <v-avatar
+                                                            v-bind:class="[player.messages.find(m => m.type === 'bomb') && player.messages.find(m => m.type === 'bomb').value ? 'red' : 'primary']"
+                                                    >
+                                                        {{player.messages.find(m => m.type === 'bomb') &&
+                                                        player.messages.find(m => m.type === 'bomb').value ? '!' : ''}}
+                                                    </v-avatar>
+                                                    <v-icon
+                                                    >
+                                                        whatshot
+                                                    </v-icon>
+                                                </v-chip>
+                                            </v-list-tile-action>
+                                        </v-list-tile>
+                                    </v-list>
+                                </v-card-actions>
+                            </v-card>
+                        </v-flex>
+                    </v-layout>
+                </v-container>
             </v-tab-item>
             <v-tab-item>
 
@@ -361,31 +402,50 @@
                 </v-container>
             </v-tab-item>
             <v-tab-item>
-                <v-card flat>
-                    <v-timeline
-                            align-top
-                            dense
-                    >
+                <v-container
+                        fluid
+                        grid-list-lg
+                >
+                    <v-layout row wrap>
+                        <v-flex xs12>
+                            <v-card>
+                                <v-layout row>
+                                    <v-flex xs12>
+                                        <v-card-title primary-title>
+                                            <div>
+                                                <div class="headline">Game History</div>
+                                            </div>
+                                        </v-card-title>
+                                    </v-flex>
+                                </v-layout>
+                                <v-divider light></v-divider>
+                                <v-timeline
+                                        align-top
+                                        dense
+                                >
 
-                        <v-timeline-item v-for="(log, index) in playLog"
-                                         :color="getColor(log)"
-                                         small :key="index"
-                        >
-                            <v-layout wrap pt-3>
-                                <v-flex>
-                                    <div v-if="log.type ==='NEW_ROUND'">
-                                        <strong>Round {{log.roundNumber}}</strong>
-                                    </div>
-                                    <div v-else-if="log.type ==='NEW_PICK'">
-                                        {{log.userFromName}} has taken card {{log.card.label}} from
-                                        {{log.userToName}}
-                                    </div>
-                                </v-flex>
-                            </v-layout>
-                        </v-timeline-item>
+                                    <v-timeline-item v-for="(log, index) in playLog"
+                                                     :color="getColor(log)"
+                                                     small :key="index"
+                                    >
+                                        <v-layout wrap pt-3>
+                                            <v-flex>
+                                                <div v-if="log.type ==='NEW_ROUND'">
+                                                    <strong>Round {{log.roundNumber}}</strong>
+                                                </div>
+                                                <div v-else-if="log.type ==='NEW_PICK'">
+                                                    {{log.userFromName}} has taken card {{log.card.label}} from
+                                                    {{log.userToName}}
+                                                </div>
+                                            </v-flex>
+                                        </v-layout>
+                                    </v-timeline-item>
 
-                    </v-timeline>
-                </v-card>
+                                </v-timeline>
+                            </v-card>
+                        </v-flex>
+                    </v-layout>
+                </v-container>
             </v-tab-item>
         </v-tabs>
         <v-dialog
