@@ -8,9 +8,6 @@
                     :src="require('../assets/img/Time_bomb_regles/Time_bomb_regles-02.jpg')"
             ></v-img>
             <v-img
-                    :src="require('../assets/img/Time_bomb_regles/Time_bomb_regles-02.jpg')"
-            ></v-img>
-            <v-img
                     :src="require('../assets/img/Time_bomb_regles/Time_bomb_regles-03.jpg')"
             ></v-img>
             <v-img
