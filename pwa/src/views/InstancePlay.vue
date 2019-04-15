@@ -166,146 +166,199 @@
 
             </v-tab-item>
             <v-tab-item>
-                <v-card flat>
 
-                    <v-btn
-                            color="info"
-                            @click="toggleDisplayCardAndRole"
-                            :block="true"
-                    >
-                        {{ displayCards ? 'Click here to hide yours cards and your role' :
-                        'Click here to display yours cards and your role'}}
-                    </v-btn>
+                <v-container
+                        fluid
+                        grid-list-lg
+                >
+                    <v-layout row wrap>
+                        <v-flex xs12>
+                            <v-card>
+                                <v-layout row>
+                                    <v-flex xs7>
+                                        <v-card-title primary-title>
+                                            <div>
+                                                <div class="headline">Your information</div>
+                                                <div>{{displayRole && role ? role.label : userName}}</div>
+                                            </div>
+                                        </v-card-title>
+                                    </v-flex>
+                                    <v-flex xs5>
+                                        <v-img
+                                                :src="displayRole && role ? require('../assets/img/' + role.image) : require('../assets/img/back.png')"
+                                                height="125px"
+                                                contain
+                                        ></v-img>
+                                    </v-flex>
+                                </v-layout>
+                                <v-divider light></v-divider>
+                                <v-card-actions class="pa-3">
+                                    <v-btn
+                                            color="info"
+                                            @click="toggleDisplayCardAndRole"
+                                            :block="true"
+                                    >
+                                        {{ displayCards ? 'Hide yours cards and your role' :
+                                        'Display yours cards and your role'}}
+                                    </v-btn>
+                                </v-card-actions>
+                                <v-divider light></v-divider>
+                                <v-card-actions class="pa-3">
+                                    <v-layout justify-center row wrap>
+                                        <v-flex xs2
+                                                v-for="(card, index) in cards" :key="index"
+                                        >
+                                            <v-img
+                                                    :lazy-src="require('../assets/img/back.png')"
+                                                    :src="displayCards ? require(`../assets/img/${getImage(card)}`) : require('../assets/img/back.png')"
+                                            ></v-img>
 
-                    <v-layout v-show="displayRole"
-                              fill-height
-                              align-center
-                              justify-center
-                    >
-                        <v-flex xs2>
-                            <strong>{{displayRole && role ? role.label : ''}}</strong>
+                                        </v-flex>
+                                    </v-layout>
+                                </v-card-actions>
+                            </v-card>
                         </v-flex>
-                        <v-flex xs2>
-                        </v-flex>
-                        <v-flex xs2>
-                            <v-img
-                                    :lazy-src="require('../assets/img/back.png')"
-                                    :src="displayRole && role ? require('../assets/img/' + role.image) : require('../assets/img/back.png')"
-                            ></v-img>
-                        </v-flex>
-                        <v-flex xs4>
-                        </v-flex>
-
-
                     </v-layout>
+                </v-container>
 
-                    <v-layout justify-center row wrap>
-                        <v-flex xs2
-                                v-for="(card, index) in cards" :key="index"
-                        >
-                            <v-img
-                                    :lazy-src="require('../assets/img/back.png')"
-                                    :src="displayCards ? require(`../assets/img/${getImage(card)}`) : require('../assets/img/back.png')"
-                            ></v-img>
+                <v-container
+                        fluid
+                        grid-list-lg
+                        v-show="myTurn"
+                >
+                    <v-layout row wrap>
+                        <v-flex xs12>
+                            <v-card style="border: 3px solid #2196f3">
+                                <v-layout row>
+                                    <v-flex xs7>
+                                        <v-card-title primary-title>
+                                            <div>
+                                                <div class="headline">Your turn !</div>
+                                                <div>Select a player</div>
+                                                <div>then select a card</div>
+                                            </div>
+                                        </v-card-title>
+                                    </v-flex>
+                                    <v-flex xs5>
+                                        <v-img
+                                                :src="require(`../assets/img/pince.png`)"
+                                                height="125px"
+                                                contain
+                                        ></v-img>
+                                    </v-flex>
+                                </v-layout>
+                                <v-divider light></v-divider>
+                                <v-card-actions class="pa-3">
+                                    <v-layout wrap>
+                                        <v-flex v-for="(player, index) in players" :key="index" xs6>
+                                            <v-chip v-on:click="selectPlayer(player)">
+                                                <v-avatar
+                                                        v-bind:class="[selectedPlayer && selectedPlayer.user && player && player.user &&  selectedPlayer.user.uuid === player.user.uuid ? 'teal' : 'primary']"
+                                                >
+                                                    {{player.cardsLength}}
+                                                </v-avatar>
+                                                {{player.user.name}}
+                                            </v-chip>
+                                        </v-flex>
+                                    </v-layout>
+                                </v-card-actions>
+                                <v-divider light v-show="selectedPlayer && selectedPlayer.user"></v-divider>
+                                <v-card-actions class="pa-3" v-show="selectedPlayer && selectedPlayer.user">
+                                    <v-layout justify-center row wrap>
+                                        <v-flex v-for="(i, index) in selectedPlayer.cardsLength" :key="index" xs2>
+                                            <v-img
+                                                    :lazy-src="require('../assets/img/back.png')"
+                                                    :src="require('../assets/img/back.png')"
+                                                    v-on:click="selectCard(index)"
+                                                    class="grey lighten-2"
 
+                                            ></v-img>
+                                        </v-flex>
+                                    </v-layout>
+                                </v-card-actions>
+                            </v-card>
                         </v-flex>
                     </v-layout>
-                    <br/>
-                    <v-divider v-show="playLog && playLog.length > 0"></v-divider>
+                </v-container>
 
-                    <v-timeline
-                            v-show="playLog && playLog.length > 0"
-                            align-top
-                            dense
-                    >
+                <v-container
+                        fluid
+                        grid-list-lg
+                >
+                    <v-layout row wrap>
+                        <v-flex xs12>
+                            <v-card>
+                                <v-layout row>
+                                    <v-flex xs12>
+                                        <v-card-title primary-title>
+                                            <div>
+                                                <div class="headline">Game information</div>
+                                                <div>ROUND {{roundNumber}}</div>
+                                                <div>Waiting for {{currentPlayer}} ...</div>
+                                            </div>
+                                        </v-card-title>
+                                    </v-flex>
+                                    <!--                                        <v-flex xs5>
+                                                                                <v-img
+                                                                                        src="https://cdn.vuetifyjs.com/images/cards/halcyon.png"
+                                                                                        height="125px"
+                                                                                        contain
+                                                                                ></v-img>
+                                                                            </v-flex>-->
+                                </v-layout>
+                                <v-divider light></v-divider>
+                                <v-card-actions class="pa-3">
+                                    Number of defusing found
+                                    <v-spacer></v-spacer>
+                                    <v-icon
+                                            v-for="i in numberOfDefuseToFind" :key="i"
+                                            v-bind:class="{ 'defusing-found': i <= numberOfDefuseFound,
+                                                 'un-defusing-found': i > numberOfDefuseFound}"
 
-                        <v-timeline-item v-for="(log, index) in playLog"
-                                         v-if="index <= 1"
-                                         :color="getColor(log)"
-                                         small :key="index"
-                        >
-                            <v-layout wrap pt-3>
-                                <v-flex>
-                                    <div v-if="log.type ==='NEW_ROUND'">
-                                        <strong>Round {{log.roundNumber}}</strong>
-                                    </div>
-                                    <div v-else-if="log.type ==='NEW_PICK'">
-                                        {{log.userFromName}} has taken card {{log.card.label}} from
-                                        {{log.userToName}}
-                                    </div>
-                                </v-flex>
-                            </v-layout>
-                        </v-timeline-item>
+                                    >alarm
+                                    </v-icon>
+                                </v-card-actions>
+                                <v-divider light></v-divider>
+                                <v-card-actions class="pa-3">
+                                    Number of card picked
+                                    <v-spacer></v-spacer>
+                                    <v-icon
+                                            v-for="i in numberOfCardsToPickThisRound" :key="i"
+                                            v-bind:class="{ 'picked': i <= numberOfCardPickedThisRound ,
+                                                'unpicked': i > numberOfCardPickedThisRound}"
 
-                    </v-timeline>
+                                    >search
+                                    </v-icon>
+                                </v-card-actions>
+                                <v-divider light></v-divider>
+                                <v-timeline
+                                        v-show="playLog && playLog.length > 0"
+                                        align-top
+                                        dense
+                                >
 
-                    <v-divider></v-divider>
-
-
-                    <v-container grid-list-md text-xs-center v-show="myTurn">
-                        <v-layout row wrap>
-                            <v-flex xs12>
-                                <v-card style="    background-color: #2296f3;    color: white;    font-weight: bold;">
-                                    <v-card-text class="px-0">Your turn ! Select one player</v-card-text>
-                                </v-card>
-                            </v-flex>
-                            <v-flex v-for="(player, index) in players" :key="index">
-                                <v-card v-on:click="selectPlayer(player)"
-                                        v-bind:class="{ 'picked': (selectedPlayer && selectedPlayer.user && player && player.user) ? selectedPlayer.user.uuid === player.user.uuid : false }">
-                                    <v-card-text class="px-0">
-                                        {{player.user.name}} ({{ player.cardsLength }})
-                                    </v-card-text>
-                                </v-card>
-                            </v-flex>
-                        </v-layout>
-                        <v-layout justify-center row wrap v-show="selectedPlayer">
-                            <v-flex v-for="(i, index) in selectedPlayer.cardsLength" :key="index" xs2>
-                                <v-img
-                                        :lazy-src="require('../assets/img/back.png')"
-                                        :src="require('../assets/img/back.png')"
-                                        v-on:click="selectCard(index)"
-                                        class="grey lighten-2"
-
-                                ></v-img>
-                            </v-flex>
-                        </v-layout>
-                    </v-container>
-
-                    <v-divider></v-divider>
-
-                    <v-container grid-list-md text-xs-center>
-                        <v-layout row wrap>
-                            <v-flex xs12>
-                                <v-card>
-                                    <v-card-text class="px-0"><strong>ROUND {{roundNumber}}</strong></v-card-text>
-                                </v-card>
-                            </v-flex>
-                            <v-flex v-for="i in numberOfDefuseToFind" :key="i">
-                                <v-card v-bind:class="{ 'defusing-found': i <= numberOfDefuseFound }">
-                                    <v-card-text class="px-0">
-                                        <v-icon>alarm</v-icon>
-                                    </v-card-text>
-                                </v-card>
-                            </v-flex>
-                        </v-layout>
-                        <v-layout row wrap>
-                            <v-flex v-for="i in numberOfCardsToPickThisRound" :key="i">
-                                <v-card v-bind:class="{ 'picked': i <= numberOfCardPickedThisRound }">
-                                    <v-card-text class="px-0">
-                                        <v-icon>search</v-icon>
-                                    </v-card-text>
-                                </v-card>
-                            </v-flex>
-                        </v-layout>
-                    </v-container>
-
-                    <v-divider></v-divider>
-
-                    <div class="text-xs-center">
-                        <span>Waiting for {{currentPlayer}} ...</span>
-                    </div>
-
-                </v-card>
+                                    <v-timeline-item v-for="(log, index) in playLog"
+                                                     v-if="index <= 1"
+                                                     :color="getColor(log)"
+                                                     small :key="index"
+                                    >
+                                        <v-layout wrap pt-3>
+                                            <v-flex>
+                                                <div v-if="log.type ==='NEW_ROUND'">
+                                                    <strong>Round {{log.roundNumber}}</strong>
+                                                </div>
+                                                <div v-else-if="log.type ==='NEW_PICK'">
+                                                    {{log.userFromName}} has taken card {{log.card.label}} from
+                                                    {{log.userToName}}
+                                                </div>
+                                            </v-flex>
+                                        </v-layout>
+                                    </v-timeline-item>
+                                </v-timeline>
+                            </v-card>
+                        </v-flex>
+                    </v-layout>
+                </v-container>
             </v-tab-item>
             <v-tab-item>
                 <v-card flat>
@@ -470,6 +523,9 @@
         this.$socket.emit('game_user_message', JSON.stringify(message));
       }
     }, computed: {
+      userName() {
+        return this.$store.state.user.name;
+      },
       role() {
         return this.$store.state.instanceJoined[this.$route.params.id]
             ? this.$store.state.instanceJoined[this.$route.params.id].role
@@ -572,13 +628,19 @@
   };
 </script>
 <style>
+    .un-defusing-found {
+        color: #D4D4E5 !important;
+    }
+
     .defusing-found {
-        background-color: #a5d6a7 !important;
-        border-color: #a5d6a7 !important;
+        color: #a5d6a7 !important;
     }
 
     .picked {
-        background-color: #D4D4E5 !important;
-        border-color: #D4D4E5 !important;
+        color: rgba(0, 0, 0, 0.54);
+    }
+
+    .unpicked {
+        color: #D4D4E5 !important;
     }
 </style>
