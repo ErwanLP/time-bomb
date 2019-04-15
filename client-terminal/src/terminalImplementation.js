@@ -158,6 +158,10 @@ module.exports.gameEnd = function(data) {
   let info = JSON.parse(data);
   let str = info.teamWin + ' Win - ' + info.cause;
   output.tbGame(str);
+  output.logSuccess('Sherlock team : ' +
+      info.sherlock.reduce((acc, val) => acc + val + ' ', ''));
+  output.logError('Moriarty team : ' +
+      info.moriarty.reduce((acc, val) => acc + val + ' ', ''));
   if (info.teamWin === 'Sherlock') {
     output.figlet('Defused', output.logSuccess).then(() => process.exit());
   } else if (info.teamWin === 'Moriarty') {
