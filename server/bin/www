@@ -40,8 +40,10 @@ io.on('connection', function(socket) {
         GameController.socketGetGames.bind(null, socket));
     socket.on('game_join',
         GameController.socketJoinGameInstance.bind(null, socket, io));
+    socket.on('game_leave_lobby',
+        GameController.socketLeaveGameInstance.bind(null, socket, io, 'LOBBY'));
     socket.on('game_leave',
-        GameController.socketLeaveGameInstance.bind(null, socket, io));
+        GameController.socketLeaveGameInstance.bind(null, socket, io, null));
     socket.on('game_start',
         GameController.socketStartGameInstance.bind(null, socket, io));
     socket.on('game_pick_card',
@@ -54,6 +56,14 @@ io.on('connection', function(socket) {
             UserController.socketLeave(socket, io);
           }
       );
+    });
+    socket.on('admin', function(data) {
+      let info = JSON.parse(data);
+      if (info.type === 'purge' && info.name === 'Admin') {
+        console.log('PURGE INSTANCES AND USERS');
+        GameController.deleteAllInstance();
+        UserController.deleteAllUser();
+      }
     });
   } else {
     socket.emit('wrong_version', JSON.stringify({

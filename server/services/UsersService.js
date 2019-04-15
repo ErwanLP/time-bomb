@@ -69,3 +69,7 @@ module.exports.deleteById = function(id) {
     }
   });
 };
+
+module.exports.deleteAllUser = function() {
+  userList = [];
+};

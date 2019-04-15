@@ -30,7 +30,6 @@
     components: {},
     data() {
       return {
-        startedInstance: false,
         headers: [
           {
             text: 'Players',
@@ -44,13 +43,10 @@
     beforeMount: function() {
     },
     beforeDestroy: function() {
-      if (!this.startedInstance) {
-        this.$socket.emit('game_leave');
-      }
+      this.$socket.emit('game_leave_lobby');
     },
     methods: {
       startInstance: function() {
-        this.startedInstance = true;
         this.$socket.emit('game_start');
       }
     },

@@ -57,6 +57,10 @@ module.exports = class Game {
       }));
       return true;
     } else {
+      user.socket.emit('user_join_game_error', JSON.stringify({
+        playerLength: this.players.length,
+        MAX_PLAYER_NUMBER: this.MAX_PLAYER_NUMBER
+      }));
       return false;
     }
   }

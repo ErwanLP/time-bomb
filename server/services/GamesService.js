@@ -33,11 +33,11 @@ module.exports.readLobbyGames = function() {
   return new Promise((resolve) => {
     resolve(
         gameList.filter(g => g.state === LOBBY || g.state === PAUSE).map(g => {
-      return {
-        name: g.name,
-        uuid: g.uuid,
-        players: g.players.map(p => p.user.name)
-      };
+          return {
+            name: g.name,
+            uuid: g.uuid,
+            players: g.players.map(p => p.user.name)
+          };
         }));
   });
 };
@@ -63,4 +63,8 @@ module.exports.deleteById = function(id) {
       reject();
     }
   });
+};
+
+module.exports.deleteAllInstance = function() {
+  gameList = [];
 };

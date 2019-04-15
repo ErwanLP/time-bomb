@@ -14,6 +14,8 @@ module.exports.socketGetGames = (socket) => {
   );
 };
 
+module.exports.deleteAllInstance = GamesService.deleteAllInstance;
+
 module.exports.socketCreateGameInstance = (socket, io, name) => {
 
   function getHours() {
@@ -72,7 +74,17 @@ module.exports.socketJoinGameInstance = (socket, io, gameId) => {
                           label: 'The instance is now resuming'
                         }));
                   }
+                } else {
+                  socket.emit('user_join_game_error', JSON.stringify({
+                    msg: 'Your are not in the list of player',
+                    player: game.player,
+                    user: user
+                  }));
                 }
+              } else {
+                socket.emit('user_join_game_error', JSON.stringify({
+                  gameState: game.state
+                }));
               }
             } else {
               console.error('ERROR : game or user not found');
@@ -83,7 +95,7 @@ module.exports.socketJoinGameInstance = (socket, io, gameId) => {
       );
 };
 
-module.exports.socketLeaveGameInstance = (socket, io) => {
+module.exports.socketLeaveGameInstance = (socket, io, from) => {
   return Promise.all(
       [
         GamesService.getById(socket.gameId),
@@ -93,7 +105,7 @@ module.exports.socketLeaveGameInstance = (socket, io) => {
             let user = data[1];
             let game = data[0];
             if (user && game) {
-              if (game.state === 'IN_GAME') {
+              if (game.state === 'IN_GAME' && from !== 'LOBBY') {
                 game.setPause();
                 io.sockets.in(game.uuid).
                     emit('game_broadcast_pause', JSON.stringify({

@@ -46,3 +46,5 @@ module.exports.socketLeave = (socket, io) => {
           }
       ).catch(console.error);
 };
+
+module.exports.deleteAllUser = UsersService.deleteAllUser;

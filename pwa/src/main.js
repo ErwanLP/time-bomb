@@ -60,6 +60,9 @@ new Vue({
         this.$router.push('/instance/' + info.gameId + '/lobby');
       }
     },
+    user_join_game_error: function(data) {
+      throw data;
+    },
     game_broadcast_pause: function(data) {
       store.commit('setPause', JSON.parse(data));
     },
