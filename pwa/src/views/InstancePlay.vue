@@ -150,34 +150,42 @@
                                 <v-card-actions class="pa-3">
                                     <v-layout justify-center row wrap>
                                         <v-flex xs3 style="text-align: center; color:rgb(30, 16, 53)"
+                                                v-bind:class="[this.selectedMood === 128519 ? 'selected-mood' : '']"
                                                 @click="sendMessage({type : 'mood', value : 128519 })">
                                             <span style="font-size:50px">&#128519;</span>
                                         </v-flex>
                                         <v-flex xs3 style="text-align: center; color:rgb(30, 16, 53)"
+                                                v-bind:class="[this.selectedMood === 129320 ? 'selected-mood' : '']"
                                                 @click="sendMessage({type : 'mood', value : 129320 })">
                                             <span style="font-size:50px">&#129320;</span>
                                         </v-flex>
                                         <v-flex xs3 style="text-align: center; color:rgb(30, 16, 53)"
+                                                v-bind:class="[this.selectedMood === 128515 ? 'selected-mood' : '']"
                                                 @click="sendMessage({type : 'mood', value : 128515 })">
                                             <span style="font-size:50px">&#128515;</span>
                                         </v-flex>
                                         <v-flex xs3 style="text-align: center; color:rgb(30, 16, 53)"
+                                                v-bind:class="[this.selectedMood === 128564 ? 'selected-mood' : '']"
                                                 @click="sendMessage({type : 'mood', value : 128564 })">
                                             <span style="font-size:50px">&#128564;</span>
                                         </v-flex>
                                         <v-flex xs3 style="text-align: center; color:rgb(30, 16, 53)"
+                                                v-bind:class="[this.selectedMood === 128520 ? 'selected-mood' : '']"
                                                 @click="sendMessage({type : 'mood', value : 128520 })">
                                             <span style="font-size:50px">&#128520;</span>
                                         </v-flex>
                                         <v-flex xs3 style="text-align: center; color:rgb(30, 16, 53)"
+                                                v-bind:class="[this.selectedMood === 129488 ? 'selected-mood' : '']"
                                                 @click="sendMessage({type : 'mood', value : 129488 })">
                                             <span style="font-size:50px">&#129488;</span>
                                         </v-flex>
                                         <v-flex xs3 style="text-align: center; color:rgb(30, 16, 53)"
+                                                v-bind:class="[this.selectedMood === 128526 ? 'selected-mood' : '']"
                                                 @click="sendMessage({type : 'mood', value : 128526 })">
                                             <span style="font-size:50px">&#128526;</span>
                                         </v-flex>
                                         <v-flex xs3 style="text-align: center; color:rgb(30, 16, 53)"
+                                                v-bind:class="[this.selectedMood === 128514 ? 'selected-mood' : '']"
                                                 @click="sendMessage({type : 'mood', value : 128514 })">
                                             <span style="font-size:50px">&#128514;</span>
                                         </v-flex>
@@ -488,6 +496,7 @@
     components: {},
     data() {
       return {
+        selectedMood: null,
         displayRole: false,
         dialog: true,
         tabActive: 0,
@@ -577,6 +586,9 @@
         this.selectedPlayer = {cardsLength: 0};
       },
       sendMessage: function(message) {
+        if (message.type === 'mood') {
+          this.selectedMood = message.value;
+        }
         this.$socket.emit('game_user_message', JSON.stringify(message));
       }
     }, computed: {
@@ -728,5 +740,10 @@
 
     .unpicked {
         color: #D4D4E5 !important;
+    }
+
+    .selected-mood {
+        background-color: #efeded;
+        border-radius: 50%;
     }
 </style>
