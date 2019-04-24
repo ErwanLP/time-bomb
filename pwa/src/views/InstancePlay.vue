@@ -97,7 +97,7 @@
                                     Have some defusing cards ?
                                 </v-card-actions>
                                 <v-card-actions class="pa-3">
-                                    <v-layout justify-center row wrap @click="toggleDisplayCard">
+                                    <v-layout justify-center row wrap>
                                         <v-flex xs2
                                         >
                                             <v-list-tile-avatar @click="sendMessage({type : 'defusing', value : 0})">
@@ -149,29 +149,37 @@
                                 </v-card-actions>
                                 <v-card-actions class="pa-3">
                                     <v-layout justify-center row wrap>
-                                        <v-flex xs2 style="text-align: center; color:rgb(30, 16, 53)"
+                                        <v-flex xs3 style="text-align: center; color:rgb(30, 16, 53)"
                                                 @click="sendMessage({type : 'mood', value : 128519 })">
                                             <span style="font-size:50px">&#128519;</span>
                                         </v-flex>
-                                        <v-flex xs2 style="text-align: center; color:rgb(30, 16, 53)"
+                                        <v-flex xs3 style="text-align: center; color:rgb(30, 16, 53)"
                                                 @click="sendMessage({type : 'mood', value : 129320 })">
                                             <span style="font-size:50px">&#129320;</span>
                                         </v-flex>
-                                        <v-flex xs2 style="text-align: center; color:rgb(30, 16, 53)"
+                                        <v-flex xs3 style="text-align: center; color:rgb(30, 16, 53)"
                                                 @click="sendMessage({type : 'mood', value : 128515 })">
                                             <span style="font-size:50px">&#128515;</span>
                                         </v-flex>
-                                        <v-flex xs2 style="text-align: center; color:rgb(30, 16, 53)"
+                                        <v-flex xs3 style="text-align: center; color:rgb(30, 16, 53)"
                                                 @click="sendMessage({type : 'mood', value : 128564 })">
                                             <span style="font-size:50px">&#128564;</span>
                                         </v-flex>
-                                        <v-flex xs2 style="text-align: center; color:rgb(30, 16, 53)"
+                                        <v-flex xs3 style="text-align: center; color:rgb(30, 16, 53)"
+                                                @click="sendMessage({type : 'mood', value : 128520 })">
+                                            <span style="font-size:50px">&#128520;</span>
+                                        </v-flex>
+                                        <v-flex xs3 style="text-align: center; color:rgb(30, 16, 53)"
                                                 @click="sendMessage({type : 'mood', value : 129488 })">
                                             <span style="font-size:50px">&#129488;</span>
                                         </v-flex>
-                                        <v-flex xs2 style="text-align: center; color:rgb(30, 16, 53)"
-                                                @click="sendMessage({type : 'mood', value : 128520 })">
-                                            <span style="font-size:50px">&#128520;</span>
+                                        <v-flex xs3 style="text-align: center; color:rgb(30, 16, 53)"
+                                                @click="sendMessage({type : 'mood', value : 128526 })">
+                                            <span style="font-size:50px">&#128526;</span>
+                                        </v-flex>
+                                        <v-flex xs3 style="text-align: center; color:rgb(30, 16, 53)"
+                                                @click="sendMessage({type : 'mood', value : 128514 })">
+                                            <span style="font-size:50px">&#128514;</span>
                                         </v-flex>
                                     </v-layout>
                                 </v-card-actions>
