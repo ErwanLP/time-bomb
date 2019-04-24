@@ -243,6 +243,12 @@
                                                 <p style="font-size:30px"
                                                    v-else-if="player.messages.find(m => m.type === 'mood').value === 128520 ">
                                                     &#128520;</p>
+                                                <p style="font-size:30px"
+                                                   v-else-if="player.messages.find(m => m.type === 'mood').value === 128526 ">
+                                                    &#128526;</p>
+                                                <p style="font-size:30px"
+                                                   v-else-if="player.messages.find(m => m.type === 'mood').value === 128514 ">
+                                                    &#128514;</p>
                                                 <p v-else>{{player.messages.find(m => m.type === 'mood').value}}</p>
                                             </v-list-tile-avatar>
 
