@@ -52,16 +52,12 @@ io.on('connection', function(socket) {
     socket.on('game_user_message',
         GameController.socketMessage.bind(null, socket, io));
     socket.on('disconnect', function() {
-      GameController.socketLeaveGameInstance(socket, io).then(
-          () => {
-            UserController.socketLeave(socket, io);
-          }
-      );
+      GameController.socketLeaveGameInstance(socket, io, null);
     });
     socket.on('admin', function(data) {
       let info = JSON.parse(data);
       if (info.type === 'purge' && info.name === 'Admin') {
-        console.log('PURGE INSTANCES AND USERS');
+        console.log(new Date(), 'PURGE INSTANCES AND USERS');
         GameController.deleteAllInstance();
         UserController.deleteAllUser();
       }

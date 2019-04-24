@@ -10,9 +10,6 @@
             <v-tab class="primary--text" ripple>
                 <v-icon>play_arrow</v-icon>
             </v-tab>
-            <v-tab class="primary--text" ripple>
-                <v-icon>list</v-icon>
-            </v-tab>
 
             <v-tab-item
             >
@@ -23,6 +20,49 @@
                     <v-layout row wrap>
                         <v-flex xs12>
                             <v-card>
+                                <v-layout row>
+                                    <v-flex xs7>
+                                        <v-card-title primary-title>
+                                            <div>
+                                                <div class="headline">Your information</div>
+                                                <div>{{displayRole && role ? role.label : userName}}</div>
+                                            </div>
+                                        </v-card-title>
+                                    </v-flex>
+                                    <v-flex xs5>
+                                        <v-img @click="toggleDisplayRole"
+                                               :src="displayRole && role ? require('../assets/img/' + role.image) : require('../assets/img/back.png')"
+                                               height="125px"
+                                               contain
+                                        ></v-img>
+                                    </v-flex>
+                                </v-layout>
+                                <v-divider light></v-divider>
+                                <v-card-actions class="pa-3">
+                                    <v-btn
+                                            color="info"
+                                            @click="toggleDisplayCardAndRole"
+                                            :block="true"
+                                    >
+                                        {{ displayCards ? 'Hide yours cards and your role' :
+                                        'Display yours cards and your role'}}
+                                    </v-btn>
+                                </v-card-actions>
+                                <v-divider light></v-divider>
+                                <v-card-actions class="pa-3">
+                                    <v-layout justify-center row wrap @click="toggleDisplayCard">
+                                        <v-flex xs2
+                                                v-for="(card, index) in cards" :key="index"
+                                        >
+                                            <v-img
+                                                    :lazy-src="require('../assets/img/back.png')"
+                                                    :src="displayCards ? require(`../assets/img/${getImage(card)}`) : require('../assets/img/back.png')"
+                                            ></v-img>
+
+                                        </v-flex>
+                                    </v-layout>
+                                </v-card-actions>
+                                <v-divider light></v-divider>
                                 <v-layout row>
                                     <v-flex xs12>
                                         <v-card-title primary-title>
@@ -57,28 +97,51 @@
                                     Have some defusing cards ?
                                 </v-card-actions>
                                 <v-card-actions class="pa-3">
-                                    <v-list-tile
-                                            avatar
-                                    >
-                                        <v-list-tile-avatar @click="sendMessage({type : 'defusing', value : 0})">
-                                            <v-btn flat small color="error">0</v-btn>
-                                        </v-list-tile-avatar>
-                                        <v-list-tile-avatar @click="sendMessage({type : 'defusing', value : 1})">
-                                            <v-btn flat small>1</v-btn>
-                                        </v-list-tile-avatar>
-                                        <v-list-tile-avatar @click="sendMessage({type : 'defusing', value : 2})">
-                                            <v-btn flat small>2</v-btn>
-                                        </v-list-tile-avatar>
-                                        <v-list-tile-avatar @click="sendMessage({type : 'defusing', value : 3})">
-                                            <v-btn flat small>3</v-btn>
-                                        </v-list-tile-avatar>
-                                        <v-list-tile-avatar @click="sendMessage({type : 'defusing', value : 4})">
-                                            <v-btn flat small>4</v-btn>
-                                        </v-list-tile-avatar>
-                                        <v-list-tile-avatar @click="sendMessage({type : 'defusing', value : 5})">
-                                            <v-btn flat small>5</v-btn>
-                                        </v-list-tile-avatar>
-                                    </v-list-tile>
+                                    <v-layout justify-center row wrap @click="toggleDisplayCard">
+                                        <v-flex xs2
+                                        >
+                                            <v-list-tile-avatar @click="sendMessage({type : 'defusing', value : 0})">
+                                                <v-btn flat small color="error">0</v-btn>
+                                            </v-list-tile-avatar>
+
+                                        </v-flex>
+                                        <v-flex xs2
+                                        >
+                                            <v-list-tile-avatar @click="sendMessage({type : 'defusing', value : 1})">
+                                                <v-btn flat small>1</v-btn>
+                                            </v-list-tile-avatar>
+
+                                        </v-flex>
+                                        <v-flex xs2
+                                        >
+                                            <v-list-tile-avatar @click="sendMessage({type : 'defusing', value : 2})">
+                                                <v-btn flat small>2</v-btn>
+                                            </v-list-tile-avatar>
+
+                                        </v-flex>
+                                        <v-flex xs2
+                                        >
+                                            <v-list-tile-avatar @click="sendMessage({type : 'defusing', value : 3})">
+                                                <v-btn flat small>3</v-btn>
+                                            </v-list-tile-avatar>
+
+                                        </v-flex>
+                                        <v-flex xs2
+                                        >
+                                            <v-list-tile-avatar @click="sendMessage({type : 'defusing', value : 4})">
+                                                <v-btn flat small>4</v-btn>
+                                            </v-list-tile-avatar>
+
+                                        </v-flex>
+                                        <v-flex xs2
+                                        >
+                                            <v-list-tile-avatar @click="sendMessage({type : 'defusing', value : 5})">
+                                                <v-btn flat small>5</v-btn>
+                                            </v-list-tile-avatar>
+
+                                        </v-flex>
+                                    </v-layout>
+
                                 </v-card-actions>
                                 <v-divider light></v-divider>
                                 <v-card-actions class="pa-3">
@@ -116,6 +179,8 @@
                         </v-flex>
                     </v-layout>
                 </v-container>
+            </v-tab-item>
+            <v-tab-item>
 
                 <v-container
                         fluid
@@ -172,7 +237,8 @@
                                             <v-list-tile-action>
                                                 <v-chip small>
                                                     <v-avatar
-                                                            v-bind:class="[player.messages.find(m => m.type === 'defusing') && player.messages.find(m => m.type === 'defusing').value > 0 ? 'teal' : 'primary']"
+                                                            v-if="player.messages.find(m => m.type === 'defusing') && player.messages.find(m => m.type === 'defusing').value !== undefined"
+                                                            v-bind:class="[player.messages.find(m => m.type === 'defusing').value > 0 ? 'teal' : 'primary']"
                                                     >
                                                         {{player.messages.find(m => m.type === 'defusing') ?
                                                         player.messages.find(m => m.type === 'defusing').value : ''}}
@@ -182,12 +248,12 @@
                                                         alarm
                                                     </v-icon>
                                                 </v-chip>
-
                                             </v-list-tile-action>
                                             <v-list-tile-action>
                                                 <v-chip small>
                                                     <v-avatar
-                                                            v-bind:class="[player.messages.find(m => m.type === 'bomb') && player.messages.find(m => m.type === 'bomb').value ? 'red' : 'primary']"
+                                                            v-if="player.messages.find(m => m.type === 'bomb') && player.messages.find(m => m.type === 'bomb') !== undefined"
+                                                            v-bind:class="[player.messages.find(m => m.type === 'bomb') && player.messages.find(m => m.type === 'bomb').value ? 'red' : 'teal']"
                                                     >
                                                         {{player.messages.find(m => m.type === 'bomb') &&
                                                         player.messages.find(m => m.type === 'bomb').value ? '!' : ''}}
@@ -205,62 +271,7 @@
                         </v-flex>
                     </v-layout>
                 </v-container>
-            </v-tab-item>
-            <v-tab-item>
 
-                <v-container
-                        fluid
-                        grid-list-lg
-                >
-                    <v-layout row wrap>
-                        <v-flex xs12>
-                            <v-card>
-                                <v-layout row>
-                                    <v-flex xs7>
-                                        <v-card-title primary-title>
-                                            <div>
-                                                <div class="headline">Your information</div>
-                                                <div>{{displayRole && role ? role.label : userName}}</div>
-                                            </div>
-                                        </v-card-title>
-                                    </v-flex>
-                                    <v-flex xs5>
-                                        <v-img
-                                                :src="displayRole && role ? require('../assets/img/' + role.image) : require('../assets/img/back.png')"
-                                                height="125px"
-                                                contain
-                                        ></v-img>
-                                    </v-flex>
-                                </v-layout>
-                                <v-divider light></v-divider>
-                                <v-card-actions class="pa-3">
-                                    <v-btn
-                                            color="info"
-                                            @click="toggleDisplayCardAndRole"
-                                            :block="true"
-                                    >
-                                        {{ displayCards ? 'Hide yours cards and your role' :
-                                        'Display yours cards and your role'}}
-                                    </v-btn>
-                                </v-card-actions>
-                                <v-divider light></v-divider>
-                                <v-card-actions class="pa-3">
-                                    <v-layout justify-center row wrap>
-                                        <v-flex xs2
-                                                v-for="(card, index) in cards" :key="index"
-                                        >
-                                            <v-img
-                                                    :lazy-src="require('../assets/img/back.png')"
-                                                    :src="displayCards ? require(`../assets/img/${getImage(card)}`) : require('../assets/img/back.png')"
-                                            ></v-img>
-
-                                        </v-flex>
-                                    </v-layout>
-                                </v-card-actions>
-                            </v-card>
-                        </v-flex>
-                    </v-layout>
-                </v-container>
 
                 <v-container
                         fluid
@@ -373,53 +384,6 @@
                                 </v-card-actions>
                                 <v-divider light></v-divider>
                                 <v-timeline
-                                        v-show="playLog && playLog.length > 0"
-                                        align-top
-                                        dense
-                                >
-
-                                    <v-timeline-item v-for="(log, index) in playLog"
-                                                     v-if="index <= 1"
-                                                     :color="getColor(log)"
-                                                     small :key="index"
-                                    >
-                                        <v-layout wrap pt-3>
-                                            <v-flex>
-                                                <div v-if="log.type ==='NEW_ROUND'">
-                                                    <strong>Round {{log.roundNumber}}</strong>
-                                                </div>
-                                                <div v-else-if="log.type ==='NEW_PICK'">
-                                                    {{log.userFromName}} has taken card {{log.card.label}} from
-                                                    {{log.userToName}}
-                                                </div>
-                                            </v-flex>
-                                        </v-layout>
-                                    </v-timeline-item>
-                                </v-timeline>
-                            </v-card>
-                        </v-flex>
-                    </v-layout>
-                </v-container>
-            </v-tab-item>
-            <v-tab-item>
-                <v-container
-                        fluid
-                        grid-list-lg
-                >
-                    <v-layout row wrap>
-                        <v-flex xs12>
-                            <v-card>
-                                <v-layout row>
-                                    <v-flex xs12>
-                                        <v-card-title primary-title>
-                                            <div>
-                                                <div class="headline">Game History</div>
-                                            </div>
-                                        </v-card-title>
-                                    </v-flex>
-                                </v-layout>
-                                <v-divider light></v-divider>
-                                <v-timeline
                                         align-top
                                         dense
                                 >
@@ -427,9 +391,10 @@
                                     <v-timeline-item v-for="(log, index) in playLog"
                                                      :color="getColor(log)"
                                                      small :key="index"
+
                                     >
                                         <v-layout wrap pt-3>
-                                            <v-flex>
+                                            <v-flex @click="toggleShortLog">
                                                 <div v-if="log.type ==='NEW_ROUND'">
                                                     <strong>Round {{log.roundNumber}}</strong>
                                                 </div>
@@ -497,6 +462,14 @@
                 </v-card-text>
             </v-card>
         </v-dialog>
+        <v-dialog
+                v-model="dialogPickCard" width="150"
+        >
+            <v-img
+                    :lazy-src="require('../assets/img/back.png')"
+                    :src="dialogPickCardType ? require(`../assets/img/${getImage(dialogPickCardType)}`) : require('../assets/img/back.png')"
+            ></v-img>
+        </v-dialog>
     </div>
 
 </template>
@@ -509,8 +482,9 @@
       return {
         displayRole: false,
         dialog: true,
-        tabActive: 1,
+        tabActive: 0,
         displayCards: false,
+        shortLog: true,
         readonly: true,
         selectedPlayer: {cardsLength: 0}
       };
@@ -523,8 +497,23 @@
     },
     methods: {
       toggleDisplayCardAndRole: function() {
+        if (this.displayCards) {
+          this.displayCards = false;
+          this.displayRole = false;
+        } else {
+          this.displayCards = true;
+          this.displayRole = true;
+        }
+
+      },
+      toggleDisplayCard: function() {
         this.displayCards = !this.displayCards;
+      },
+      toggleDisplayRole: function() {
         this.displayRole = !this.displayRole;
+      },
+      toggleShortLog: function() {
+        this.shortLog = !this.shortLog;
       },
       backHome: function() {
         this.$router.push('/');
@@ -601,6 +590,28 @@
             ? this.$store.state.instanceJoined[this.$route.params.id].dialogPauseMsg
             : false;
       },
+      dialogPickCard: {
+        // accesseur
+        get: function() {
+          return this.$store.state.instanceJoined[this.$route.params.id]
+              ? this.$store.state.instanceJoined[this.$route.params.id].dialogPickCard
+              : false;
+        },
+        // mutateur
+        set: function(newValue) {
+          if (this.$store.state.instanceJoined[this.$route.params.id]) {
+            this.$store.commit('editDialogPickCard', {
+              gameId: this.$route.params.id,
+              value: newValue
+            });
+          }
+        }
+      },
+      dialogPickCardType() {
+        return this.$store.state.instanceJoined[this.$route.params.id]
+            ? this.$store.state.instanceJoined[this.$route.params.id].dialogPickCardType
+            : false;
+      },
       dialogPause() {
         return this.$store.state.instanceJoined[this.$route.params.id]
             ? this.$store.state.instanceJoined[this.$route.params.id].dialogPause
@@ -612,9 +623,16 @@
             : [];
       },
       playLog() {
-        return this.$store.state.instanceJoined[this.$route.params.id]
-            ? this.$store.state.instanceJoined[this.$route.params.id].playLog
-            : [];
+        if (this.shortLog === false) {
+          return this.$store.state.instanceJoined[this.$route.params.id]
+              ? this.$store.state.instanceJoined[this.$route.params.id].playLog
+              : [];
+        } else {
+          return this.$store.state.instanceJoined[this.$route.params.id]
+              ? this.$store.state.instanceJoined[this.$route.params.id].playLog.filter((v, i) => i < 3)
+              : [];
+        }
+
       },
       roundNumber() {
         return this.$store.state.instanceJoined[this.$route.params.id]

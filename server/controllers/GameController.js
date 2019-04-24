@@ -3,7 +3,7 @@ const UsersService = require('@services/UsersService');
 const uuidv4 = require('uuid/v4');
 
 module.exports.socketGetGames = (socket) => {
-  return GamesService.readLobbyGames().then(
+  return GamesService.read().then(
       (games) => {
         socket.emit('game_list_success', JSON.stringify(games));
       },

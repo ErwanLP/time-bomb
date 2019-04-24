@@ -19,7 +19,7 @@ export default new Vuex.Store({
         },
         cards: [
           {type: 'SECURE_CABLE'},
-          {type: 'DEFUSING'},
+          {type: 'DEFUSING_CABLE'},
           {type: 'SECURE_CABLE'},
           {type: 'BOMB'},
           {type: 'SECURE_CABLE'}
@@ -91,39 +91,48 @@ export default new Vuex.Store({
         numberOfDefuseFound: 2,
         numberOfDefuseToFind: 4,
         roundNumber: 2,
-        currentPlayer: 'toto',
+        currentPlayer: 'Erwan',
         dialogEndGame: false,
         dialogPause: false,
-        dialogPauseMsg: 'toto',
+        dialogPauseMsg: '',
+        dialogPickCard: false,
+        dialogPickCardType: null,
         endGame: {},
         myTurn: true,
         players: [
           {
 
-            user: {name: 'toto', uuid: 11},
+            user: {name: 'Erwan', uuid: 11},
             cardsLength: 5,
             isCurrentPlayer: true
           },
           {
 
-            user: {name: 'toto 1', uuid: 12},
+            user: {name: 'Camille', uuid: 12},
             cardsLength: 3
           },
           {
 
-            user: {name: 'toto 2', uuid: 13},
+            user: {name: 'Nicolas', uuid: 13},
             cardsLength: 4
           },
           {
 
-            user: {name: 'toto 3', uuid: 14},
+            user: {name: 'Paul', uuid: 14},
             cardsLength: 5
           },
           {
 
-            user: {name: 'toto 4', uuid: 15},
+            user: {name: 'Lionel', uuid: 15},
             cardsLength: 6
           }
+        ],
+        playerMessages: [
+          {userId: 11, userName: 'Erwan', type: 'mood', value: 128520},
+          {userId: 11, userName: 'Erwan', type: 'bomb', value: true},
+          {userId: 12, userName: 'Camille', type: 'defusing', value: 0},
+          {userId: 13, userName: 'Nicolas', type: 'defusing', value: 2},
+          {userId: 13, userName: 'Nicolas', type: 'bomb', value: false}
         ]
 
       }
@@ -162,6 +171,8 @@ export default new Vuex.Store({
             playLog: [],
             myTurn: false,
             dialogEndGame: false,
+            dialogPickCard: false,
+            dialogPickCardType: null,
             dialogPause: false,
             dialogPauseMsg: null,
             endGame: false
@@ -200,12 +211,17 @@ export default new Vuex.Store({
       state.instanceJoined[payload.gameId].numberOfDefuseToFind = payload.numberOfDefuseToFind;
       state.instanceJoined[payload.gameId].numberOfCardsToPickThisRound = payload.numberOfCardsToPickThisRound;
       state.instanceJoined[payload.gameId].numberOfCardPickedThisRound = payload.numberOfCardPickedThisRound;
+      state.instanceJoined[payload.gameId].dialogPickCard = true;
+      state.instanceJoined[payload.gameId].dialogPickCardType = payload.card;
       state.instanceJoined[payload.gameId].playLog.unshift({
         type: 'NEW_PICK',
         card: payload.card,
         userFromName: payload.userFromName,
         userToName: payload.userToName
       });
+      setTimeout(function() {
+        state.instanceJoined[payload.gameId].dialogPickCard = false;
+      }, 3000);
 
     },
     myTurn(state, payload) {
@@ -237,6 +253,8 @@ export default new Vuex.Store({
             playLog: [],
             myTurn: false,
             dialogEndGame: false,
+            dialogPickCard: false,
+            dialogPickCardType: null,
             dialogPause: false,
             dialogPauseMsg: null,
             endGame: false
@@ -245,12 +263,17 @@ export default new Vuex.Store({
       }
     },
     unSetPause(state, payload) {
+      state.instanceJoined[payload.gameId].dialogPickCard = false;
       state.instanceJoined[payload.gameId].dialogPause = false;
       state.instanceJoined[payload.gameId].dialogPauseMsg = null;
     },
     endGame(state, payload) {
+      state.instanceJoined[payload.gameId].dialogPickCard = false;
       state.instanceJoined[payload.gameId].dialogEndGame = true;
       state.instanceJoined[payload.gameId].endGame = payload;
+    },
+    editDialogPickCard(state, payload) {
+      state.instanceJoined[payload.gameId].dialogPickCard = payload.value;
     }
   },
   actions: {}

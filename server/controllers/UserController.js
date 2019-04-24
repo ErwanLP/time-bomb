@@ -5,14 +5,14 @@ const pokemon = require('pokemon');
 module.exports.createBySocket = (socket, name) => {
 
   let isNameValid = (name) => !(name === 'undefined' || name === undefined ||
-      name === null);
+      name === null || name === '');
 
   let generatedName = isNameValid(name) ? name : pokemon.random('fr');
 
   return UsersService.getByName(generatedName).then(
       user => {
         if (user) {
-          if (user.isActive()) {
+          if (user.socket && user.socket.connected) {
             return UsersService.create(uuidv4(), generatedName);
           } else {
             return user;
@@ -26,7 +26,6 @@ module.exports.createBySocket = (socket, name) => {
         socket.userId = user.uuid;
         socket.userName = user.name;
         user.setSocket(socket);
-        user.setActive();
         socket.emit('user_create_success', user.stringify());
         return user;
       }
@@ -36,15 +35,5 @@ module.exports.createBySocket = (socket, name) => {
   });
 };
 
-module.exports.socketLeave = (socket, io) => {
-  return UsersService.getById(socket.userId).
-      then(
-          user => {
-            if (user) {
-              user.setInactive();
-            }
-          }
-      ).catch(console.error);
-};
 
 module.exports.deleteAllUser = UsersService.deleteAllUser;

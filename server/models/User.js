@@ -4,29 +4,18 @@ module.exports = class User {
     this.uuid = uuid;
     this.socket = null;
     this.connectionDate = null;
-    this.createdDate = new Date();
-  }
-
-  setActive() {
-    this.connectionDate = new Date();
-  }
-
-  setInactive() {
-    this.connectionDate = null;
-  }
-
-  isActive() {
-    return this.connectionDate !== null;
   }
 
   setSocket(socket) {
     this.socket = socket;
+    this.connectionDate = new Date();
   }
 
   stringify() {
     return JSON.stringify({
       name: this.name,
-      uuid: this.uuid
+      uuid: this.uuid,
+      connectionDate: this.connectionDate
     });
   }
 

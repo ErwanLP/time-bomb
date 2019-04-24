@@ -337,10 +337,10 @@ module.exports = class Game {
   }
 
   iEmpty() {
-    return this.players.every(player => !player.user.isActive());
+    return this.players.every(player => !player.user.socket.connected);
   }
 
   allPlayersAreActives() {
-    return this.players.every(player => player.user.isActive());
+    return this.players.every(player => player.user.socket.connected);
   }
 };

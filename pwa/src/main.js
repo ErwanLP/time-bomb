@@ -46,7 +46,9 @@ new Vue({
       });
     },
     user_create_success: function(data) {
-      store.commit('editUser', JSON.parse(data));
+      let info = JSON.parse(data);
+      store.commit('editUser', info);
+      localforage.setItem('PLAYER_NAME', info.name, (err) => {});
     },
     game_list_success: function(data) {
       store.commit('editListInstance', JSON.parse(data));
@@ -69,7 +71,9 @@ new Vue({
       store.commit('setPause', JSON.parse(data));
     },
     game_user_resume: function(data) {
-      store.commit('userResume', JSON.parse(data));
+      let info = JSON.parse(data);
+      store.commit('userResume', info);
+      this.$router.push('/instance/' + info.gameId + '/play');
     },
     game_broadcast_resume: function(data) {
       let info = JSON.parse(data);

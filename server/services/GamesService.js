@@ -19,24 +19,13 @@ module.exports.create = function(uuid, name, userId) {
 
 module.exports.read = function() {
   return new Promise((resolve) => {
-    resolve(gameList.map(g => {
-      return {
-        name: g.name,
-        uuid: g.uuid,
-        players: g.players.map(p => p.user.name)
-      };
-    }));
-  });
-};
-
-module.exports.readLobbyGames = function() {
-  return new Promise((resolve) => {
     resolve(
         gameList.filter(g => g.state === LOBBY || g.state === PAUSE).map(g => {
           return {
             name: g.name,
             uuid: g.uuid,
-            players: g.players.map(p => p.user.name)
+            players: g.players.map(p => p.user.name),
+            state: g.state
           };
         }));
   });
