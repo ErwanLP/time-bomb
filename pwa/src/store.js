@@ -18,7 +18,7 @@ export default new Vuex.Store({
           label: 'Moriarty'
         },
         cards: [
-          {type: 'SECURE_CABLE'},
+          {type: 'SECURE_CABLE', isPicked: true},
           {type: 'DEFUSING_CABLE'},
           {type: 'SECURE_CABLE'},
           {type: 'BOMB'},
@@ -206,6 +206,7 @@ export default new Vuex.Store({
       });
     },
     newPick(state, payload) {
+      state.instanceJoined[payload.gameId].cards = payload.me.cards;
       state.instanceJoined[payload.gameId].currentPlayer = payload.currentPlayer;
       state.instanceJoined[payload.gameId].numberOfDefuseFound = payload.numberOfDefuseFound;
       state.instanceJoined[payload.gameId].numberOfDefuseToFind = payload.numberOfDefuseToFind;

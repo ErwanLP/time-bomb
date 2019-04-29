@@ -65,6 +65,12 @@ module.exports = class Game {
     }
   }
 
+  shuffledCards(cards) {
+    let _cards = JSON.parse(JSON.stringify(cards));
+    shuffle(_cards);
+    return _cards;
+  }
+
   removePlayer(userId) {
     let index = this.players.findIndex(p => p.user.uuid === userId);
     if (index > -1) {
@@ -129,7 +135,8 @@ module.exports = class Game {
   startRound() {
     if (this.roundNumber !== 0) {
       let cards = [];
-      this.players.forEach(player => cards = cards.concat(player.cards));
+      this.players.forEach(player => cards = cards.concat(
+          player.cards.filter(c => !c.isPicked)));
       shuffle(cards);
       this.giveCardToUser(cards);
       this.playerMessages = [];
@@ -140,7 +147,7 @@ module.exports = class Game {
         me: {
           uuid: player.user.uuid,
           name: player.user.name,
-          cards: player.cards
+          cards: this.shuffledCards(player.cards)
         },
         currentPlayer: this.players[this.currentPlayerIndex].user.name,
         numberOfDefuseFound: this.numberOfDefuseFound,
@@ -150,7 +157,6 @@ module.exports = class Game {
         roundNumber: this.roundNumber,
         gameId: this.uuid
       }));
-      shuffle(player.cards);
     });
     this.startNewPlay();
   }
@@ -174,7 +180,7 @@ module.exports = class Game {
                 name: player.user.name
               },
               isCurrentPlayer: player.isCurrentPlayer,
-              cardsLength: player.cards.length
+              cardsLength: player.cards.filter(c => !c.isPicked).length
             };
           }),
           myUserId: player.user.uuid,
@@ -190,7 +196,7 @@ module.exports = class Game {
       me: {
         uuid: player.user.uuid,
         name: player.user.name,
-        cards: player.cards
+        cards: this.shuffledCards(player.cards)
       },
       role: player.role,
       currentPlayer: this.players[this.currentPlayerIndex].user.name,
@@ -209,16 +215,19 @@ module.exports = class Game {
     let playerTo = this.players.find(p => p.user.uuid === userToId);
     let playerFrom = this.players.find(p => p.user.uuid === userFromId);
     if (playerFrom.isCurrentPlayer && playerTo) {
-      let card = playerTo.cards.splice(index, 1)[0];
-      this.cardPicked.push(card);
-      if (card.type === DEFUSING_CABLE) {
-        this.numberOfDefuseFound++;
+      let card = playerTo.cards.filter(c => !c.isPicked)[index];
+      if (card) {
+        card.isPicked = true;
+        this.cardPicked.push(card);
+        if (card.type === DEFUSING_CABLE) {
+          this.numberOfDefuseFound++;
+        }
+        if (card.type === BOMB) {
+          this.bombExploded = true;
+        }
+        this.setCurrentPlayer(userToId);
+        return card;
       }
-      if (card.type === BOMB) {
-        this.bombExploded = true;
-      }
-      this.setCurrentPlayer(userToId);
-      return card;
     }
   }
 
@@ -314,19 +323,22 @@ module.exports = class Game {
     for (let i = 0; i < nbOfSecured; i++) {
       res.push({
         type: SECURE_CABLE,
-        label: 'Secure'
+        label: 'Secure',
+        isPicked: false
       });
     }
     for (let i = 0; i < nbOfDefusing; i++) {
       res.push({
         type: DEFUSING_CABLE,
-        label: 'Defusing'
+        label: 'Defusing',
+        isPicked: false
       });
     }
     for (let i = 0; i < nbOfBomb; i++) {
       res.push({
         type: BOMB,
-        label: 'Bomb'
+        label: 'Bomb',
+        isPicked: false
       });
     }
     return res;

@@ -68,12 +68,22 @@
                                                 v-for="(card, index) in cards" :key="index"
                                         >
                                             <v-img
+                                                    v-bind:class="[card.isPicked ? 'card-picked' : '']"
                                                     :lazy-src="require('../assets/img/back.png')"
                                                     :src="displayCards ? require(`../assets/img/${getImage(card)}`) : require('../assets/img/back.png')"
                                             ></v-img>
 
                                         </v-flex>
                                     </v-layout>
+                                </v-card-actions>
+                                <v-card-actions class="pa-3" v-show="displayCards">
+                                    <v-layout justify-center row wrap style="font-size: x-small; font-style: italic">
+                                        <div>You have {{cards.filter(c => c.type === 'DEFUSING_CABLE' && c.isPicked !==
+                                            true).length}} defusing cable(s) {{cards.filter(c => c.type ===
+                                            'BOMB').length === 1 ? 'and the bomb ! ' : ''}}
+                                        </div>
+                                    </v-layout>
+
                                 </v-card-actions>
                                 <v-divider light></v-divider>
                                 <v-layout row>
@@ -461,10 +471,10 @@
                     </div>
                     <br/>
                     <strong>Sherlock : </strong> {{endGame.sherlock ? endGame.sherlock.reduce((acc, val) => acc + val +
-                    ' ') : ''}}
+                    ' ', '') : ''}}
                     <br/>
                     <strong>Moriarty : </strong> {{endGame.moriarty ? endGame.moriarty.reduce((acc, val) => acc + val +
-                    ' ') : ''}}
+                    ' ', '') : ''}}
                 </v-card-text>
 
                 <v-card-actions>
@@ -780,9 +790,13 @@
         background-color: #efeded;
         border-radius: 50%;
     }
-
     .dialog-pick-card {
         border: 3px solid #1e1035;
         border-radius: 3%;
+    }
+
+    .card-picked {
+        -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
+        filter: grayscale(100%);
     }
 </style>

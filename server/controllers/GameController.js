@@ -158,19 +158,26 @@ module.exports.socketPickCard = (
                 UsersService.getById(socket.userId),
                 UsersService.getById(userToId)]).
               then(data => {
-                io.sockets.in(socket.gameId).
-                    emit('game_broadcast_info', JSON.stringify({
-                      gameId: game.uuid,
-                      card: card,
-                      userFromName: data[0] ? data[0].name : 'one player',
-                      userToName: data[1] ? data[1].name : 'other player',
-                      currentPlayer: game.players[game.currentPlayerIndex].user.name,
-                      numberOfDefuseFound: game.numberOfDefuseFound,
-                      numberOfDefuseToFind: game.players.length,
-                      numberOfCardsToPickThisRound: game.players.length,
-                      numberOfCardPickedThisRound: game.cardPicked.length -
-                      ((game.roundNumber - 1) * game.players.length)
-                    }));
+                game.players.forEach(player => {
+                  player.user.socket.emit('game_broadcast_info',
+                      JSON.stringify({
+                        me: {
+                          uuid: player.user.uuid,
+                          name: player.user.name,
+                          cards: game.shuffledCards(player.cards)
+                        },
+                        gameId: game.uuid,
+                        card: card,
+                        userFromName: data[0] ? data[0].name : 'one player',
+                        userToName: data[1] ? data[1].name : 'other player',
+                        currentPlayer: game.players[game.currentPlayerIndex].user.name,
+                        numberOfDefuseFound: game.numberOfDefuseFound,
+                        numberOfDefuseToFind: game.players.length,
+                        numberOfCardsToPickThisRound: game.players.length,
+                        numberOfCardPickedThisRound: game.cardPicked.length -
+                        ((game.roundNumber - 1) * game.players.length)
+                      }));
+                });
               }).then(
               () => {
                 if (game.isEndOfGame()) {
