@@ -8,7 +8,20 @@
                 <v-icon>person_pin</v-icon>
             </v-tab>
             <v-tab class="primary--text" ripple>
-                <v-icon>play_arrow</v-icon>
+                <v-badge v-model="myTurn"
+                         overlap
+                         color="red"
+                >
+                    <template v-slot:badge>
+                        <v-icon
+                                dark
+                                small
+                        >
+                            notifications
+                        </v-icon>
+                    </template>
+                    <v-icon>play_arrow</v-icon>
+                </v-badge>
             </v-tab>
 
             <v-tab-item
@@ -485,11 +498,11 @@
             </v-card>
         </v-dialog>
         <v-dialog
-                v-model="dialogPickCard" width="150"
+                v-model="dialogPickCard" width="200"
         >
-            <v-img
-                    :lazy-src="require('../assets/img/back.png')"
-                    :src="dialogPickCardType ? require(`../assets/img/${getImage(dialogPickCardType)}`) : require('../assets/img/back.png')"
+            <v-img class="dialog-pick-card"
+                   :lazy-src="require('../assets/img/back.png')"
+                   :src="dialogPickCardType ? require(`../assets/img/${getBigImage(dialogPickCardType)}`) : require('../assets/img/back.png')"
             ></v-img>
         </v-dialog>
     </div>
@@ -549,6 +562,21 @@
             return 'defusing_cable.png';
           } else if (card.type === 'BOMB') {
             return 'bomb.png';
+          } else {
+            return 'back.png';
+          }
+        } else {
+          return 'back.png';
+        }
+      },
+      getBigImage: function(card) {
+        if (card) {
+          if (card.type === 'SECURE_CABLE') {
+            return 'cable-securise.jpg';
+          } else if (card.type === 'DEFUSING_CABLE') {
+            return 'carte-desamorcage.jpg';
+          } else if (card.type === 'BOMB') {
+            return 'carte-bombe.jpg';
           } else {
             return 'back.png';
           }
@@ -751,5 +779,10 @@
     .selected-mood {
         background-color: #efeded;
         border-radius: 50%;
+    }
+
+    .dialog-pick-card {
+        border: 3px solid #1e1035;
+        border-radius: 3%;
     }
 </style>
