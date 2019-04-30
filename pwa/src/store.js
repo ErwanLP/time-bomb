@@ -206,7 +206,9 @@ export default new Vuex.Store({
         type: 'NEW_ROUND',
         roundNumber: payload.roundNumber
       });
-      state.instanceJoined[payload.gameId].dialogNewRound = true;
+      setTimeout(function() {
+        state.instanceJoined[payload.gameId].dialogNewRound = true;
+      }, 3000);
     },
     newPick(state, payload) {
       state.instanceJoined[payload.gameId].cards = payload.me.cards;
@@ -225,7 +227,7 @@ export default new Vuex.Store({
       });
       setTimeout(function() {
         state.instanceJoined[payload.gameId].dialogPickCard = false;
-      }, 3000);
+      }, 2500);
 
     },
     myTurn(state, payload) {

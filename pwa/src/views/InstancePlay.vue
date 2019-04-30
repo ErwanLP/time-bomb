@@ -492,12 +492,13 @@
                 max-width="290"
         >
             <v-card>
-                <v-card-title class="headline text-xs-center"><span>ROUND {{roundNumber}} !</span></v-card-title>
+                <v-card-title class="headline text-xs-center"><span>ROUND {{roundNumber}}</span></v-card-title>
 
                 <v-card-text>
                     <div class="text-xs-center">
                         <span>
-Your cards have been mixed with the cards of the other players and distributed so that everyone has the same number of new cards at the beginning of each round.</span>
+                            {{ roundNumber === 1 ? 'Look at your role and your cards. If you are Moriarty, your goal is that the bomb card is picked. If you are Sherlock, your goal is to have all defusing cards picked' : 'Your cards have been mixed with the cards of the other players and distributed so that everyone has the same number of new cards at the beginning of each round.'}}
+</span>
                     </div>
                 </v-card-text>
 
@@ -506,7 +507,7 @@ Your cards have been mixed with the cards of the other players and distributed s
                             flat="flat"
                             @click="seeMyNewCard"
                     >
-                        See my news cards
+                        See my cards
                     </v-btn>
                 </v-card-actions>
             </v-card>
