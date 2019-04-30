@@ -97,6 +97,7 @@ export default new Vuex.Store({
         dialogPauseMsg: '',
         dialogPickCard: false,
         dialogPickCardType: null,
+        dialogNewRound: true,
         endGame: {},
         myTurn: true,
         players: [
@@ -175,6 +176,7 @@ export default new Vuex.Store({
             dialogPickCardType: null,
             dialogPause: false,
             dialogPauseMsg: null,
+            dialogNewRound: false,
             endGame: false
           }
         };
@@ -204,6 +206,7 @@ export default new Vuex.Store({
         type: 'NEW_ROUND',
         roundNumber: payload.roundNumber
       });
+      state.instanceJoined[payload.gameId].dialogNewRound = true;
     },
     newPick(state, payload) {
       state.instanceJoined[payload.gameId].cards = payload.me.cards;
@@ -258,6 +261,7 @@ export default new Vuex.Store({
             dialogPickCardType: null,
             dialogPause: false,
             dialogPauseMsg: null,
+            dialogNewRound: false,
             endGame: false
           }
         };
@@ -275,6 +279,12 @@ export default new Vuex.Store({
     },
     editDialogPickCard(state, payload) {
       state.instanceJoined[payload.gameId].dialogPickCard = payload.value;
+    },
+    editDialogNewRound(state, payload) {
+      state.instanceJoined[payload.gameId].dialogNewRound = payload.value;
+    },
+    editDialogEndGame(state, payload) {
+      state.instanceJoined[payload.gameId].dialogNewRound = payload.value;
     }
   },
   actions: {}

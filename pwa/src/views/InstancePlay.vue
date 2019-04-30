@@ -488,6 +488,30 @@
             </v-card>
         </v-dialog>
         <v-dialog
+                v-model="dialogNewRound"
+                max-width="290"
+        >
+            <v-card>
+                <v-card-title class="headline text-xs-center"><span>ROUND {{roundNumber}} !</span></v-card-title>
+
+                <v-card-text>
+                    <div class="text-xs-center">
+                        <span>
+Your cards have been mixed with the cards of the other players and distributed so that everyone has the same number of new cards at the beginning of each round.</span>
+                    </div>
+                </v-card-text>
+
+                <v-card-actions>
+                    <v-btn
+                            flat="flat"
+                            @click="seeMyNewCard"
+                    >
+                        See my news cards
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+        <v-dialog
                 v-model="dialogPause"
                 hide-overlay
                 persistent
@@ -563,6 +587,15 @@
       },
       backHome: function() {
         this.$router.push('/');
+      },
+      seeMyNewCard: function() {
+        this.tabActive = 0;
+        this.displayCards = false;
+        this.displayRole = false;
+        this.$store.commit('editDialogNewRound', {
+          gameId: this.$route.params.id,
+          value: false
+        });
       },
       getImage: function(card) {
         if (card) {
@@ -644,10 +677,22 @@
             ? this.$store.state.instanceJoined[this.$route.params.id].role
             : null;
       },
-      dialogEndGame() {
-        return this.$store.state.instanceJoined[this.$route.params.id]
-            ? this.$store.state.instanceJoined[this.$route.params.id].dialogEndGame
-            : false;
+      dialogEndGame: {
+        // accesseur
+        get: function() {
+          return this.$store.state.instanceJoined[this.$route.params.id]
+              ? this.$store.state.instanceJoined[this.$route.params.id].dialogEndGame
+              : false;
+        },
+        // mutateur
+        set: function(newValue) {
+          if (this.$store.state.instanceJoined[this.$route.params.id]) {
+            this.$store.commit('editDialogEndGame', {
+              gameId: this.$route.params.id,
+              value: newValue
+            });
+          }
+        }
       },
       dialogPauseMsg() {
         return this.$store.state.instanceJoined[this.$route.params.id]
@@ -665,6 +710,23 @@
         set: function(newValue) {
           if (this.$store.state.instanceJoined[this.$route.params.id]) {
             this.$store.commit('editDialogPickCard', {
+              gameId: this.$route.params.id,
+              value: newValue
+            });
+          }
+        }
+      },
+      dialogNewRound: {
+        // accesseur
+        get: function() {
+          return this.$store.state.instanceJoined[this.$route.params.id]
+              ? this.$store.state.instanceJoined[this.$route.params.id].dialogNewRound
+              : false;
+        },
+        // mutateur
+        set: function(newValue) {
+          if (this.$store.state.instanceJoined[this.$route.params.id]) {
+            this.$store.commit('editDialogNewRound', {
               gameId: this.$route.params.id,
               value: newValue
             });
@@ -790,6 +852,7 @@
         background-color: #efeded;
         border-radius: 50%;
     }
+
     .dialog-pick-card {
         border: 3px solid #1e1035;
         border-radius: 3%;
