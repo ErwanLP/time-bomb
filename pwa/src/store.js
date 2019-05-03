@@ -95,8 +95,9 @@ export default new Vuex.Store({
         dialogEndGame: false,
         dialogPause: false,
         dialogPauseMsg: '',
-        dialogPickCard: false,
-        dialogPickCardType: null,
+        dialogPickCard: true,
+        dialogPickCardType: {type: 'DEFUSING_CABLE'},
+        dialogPickCardPlayerName: 'Erwan',
         dialogNewRound: true,
         endGame: {},
         myTurn: true,
@@ -219,6 +220,7 @@ export default new Vuex.Store({
       state.instanceJoined[payload.gameId].numberOfCardPickedThisRound = payload.numberOfCardPickedThisRound;
       state.instanceJoined[payload.gameId].dialogPickCard = true;
       state.instanceJoined[payload.gameId].dialogPickCardType = payload.card;
+      state.instanceJoined[payload.gameId].dialogPickCardPlayerName = payload.userToName;
       state.instanceJoined[payload.gameId].playLog.unshift({
         type: 'NEW_PICK',
         card: payload.card,

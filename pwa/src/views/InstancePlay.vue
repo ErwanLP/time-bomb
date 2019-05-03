@@ -535,10 +535,14 @@
         <v-dialog
                 v-model="dialogPickCard" width="200"
         >
-            <v-img class="dialog-pick-card"
-                   :lazy-src="require('../assets/img/back.png')"
-                   :src="dialogPickCardType ? require(`../assets/img/${getBigImage(dialogPickCardType)}`) : require('../assets/img/back.png')"
-            ></v-img>
+            <v-card
+            >
+                <v-card-title class="headline text-center"><span>{{dialogPickCardPlayerName}}</span></v-card-title>
+                <v-divider light></v-divider>
+                <v-img :lazy-src="require('../assets/img/back.png')"
+                       :src="dialogPickCardType ? require(`../assets/img/${getBigImage(dialogPickCardType)}`) : require('../assets/img/back.png')"
+                ></v-img>
+            </v-card>
         </v-dialog>
     </div>
 
@@ -739,6 +743,11 @@
             ? this.$store.state.instanceJoined[this.$route.params.id].dialogPickCardType
             : false;
       },
+      dialogPickCardPlayerName() {
+        return this.$store.state.instanceJoined[this.$route.params.id]
+            ? this.$store.state.instanceJoined[this.$route.params.id].dialogPickCardPlayerName
+            : false;
+      },
       dialogPause() {
         return this.$store.state.instanceJoined[this.$route.params.id]
             ? this.$store.state.instanceJoined[this.$route.params.id].dialogPause
@@ -852,11 +861,6 @@
     .selected-mood {
         background-color: #efeded;
         border-radius: 50%;
-    }
-
-    .dialog-pick-card {
-        border: 3px solid #1e1035;
-        border-radius: 3%;
     }
 
     .card-picked {
