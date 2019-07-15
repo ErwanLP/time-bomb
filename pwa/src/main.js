@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import Vue from 'vue';
 import './plugins/vuetify';
 import App from './App.vue';
@@ -19,19 +20,22 @@ Vue.use(new VueSocketIO({
   vuex: {
     store,
     actionPrefix: '',
-    mutationPrefix: ''
-  }
+    mutationPrefix: '',
+  },
 }));
 
 new Vue({
   sockets: {
     connect: function() {
+      console.log('connect');
       this.$router.push('/');
     },
     reconnecting: function() {
+      console.log('reconnecting');
       this.$router.push('/');
     },
     disconnect: function() {
+      console.log('disconnect');
       this.$router.push('/');
     },
     connection_success: function(data) {
@@ -48,7 +52,7 @@ new Vue({
     user_create_success: function(data) {
       let info = JSON.parse(data);
       store.commit('editUser', info);
-      localforage.setItem('PLAYER_NAME', info.name, (err) => {});
+      localforage.setItem('PLAYER_NAME', info.name, () => {});
     },
     game_list_success: function(data) {
       store.commit('editListInstance', JSON.parse(data));
@@ -103,7 +107,7 @@ new Vue({
       store.commit('myTurn', {
         gameId: info.gameId,
         b: true,
-        players: info.players
+        players: info.players,
       });
     },
     game_broadcast_message: function(data) {
@@ -117,9 +121,9 @@ new Vue({
     },
     error: function(err) {
       throw err;
-    }
+    },
   },
   router,
   store,
-  render: h => h(App)
+  render: h => h(App),
 }).$mount('#app');
