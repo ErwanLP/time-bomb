@@ -532,17 +532,18 @@
                 </v-card-text>
             </v-card>
         </v-dialog>
-        <v-dialog
-                v-model="dialogPickCard" width="200"
+        <v-dialog style="border-radius: 3%;"
+                  v-model="dialogPickCard" width="200"
         >
-            <v-card
-            >
-                <v-card-title class="headline text-center"><span>{{dialogPickCardPlayerName}}</span></v-card-title>
-                <v-divider light></v-divider>
-                <v-img :lazy-src="require('../assets/img/back.png')"
+            <div class="dialog-pick-card">
+                <v-img class="dialog-pick-card-img"
+                       :lazy-src="require('../assets/img/back.png')"
                        :src="dialogPickCardType ? require(`../assets/img/${getBigImage(dialogPickCardType)}`) : require('../assets/img/back.png')"
                 ></v-img>
-            </v-card>
+                <div class="dialog-pick-card-text">{{dialogPickCardPlayerName}}</div>
+            </div>
+
+
         </v-dialog>
     </div>
 
@@ -561,7 +562,7 @@
         displayCards: false,
         shortLog: true,
         readonly: true,
-        selectedPlayer: {cardsLength: 0}
+        selectedPlayer: {cardsLength: 0},
       };
     },
     beforeMount: function() {
@@ -599,7 +600,7 @@
         this.displayRole = false;
         this.$store.commit('editDialogNewRound', {
           gameId: this.$route.params.id,
-          value: false
+          value: false,
         });
       },
       getImage: function(card) {
@@ -663,7 +664,7 @@
         this.$store.commit('myTurn', {
           gameId: this.$route.params.id,
           b: false,
-          players: []
+          players: [],
         });
         this.selectedPlayer = {cardsLength: 0};
       },
@@ -672,7 +673,7 @@
           this.selectedMood = message.value;
         }
         this.$socket.emit('game_user_message', JSON.stringify(message));
-      }
+      },
     }, computed: {
       userName() {
         return this.$store.state.user.name;
@@ -694,10 +695,10 @@
           if (this.$store.state.instanceJoined[this.$route.params.id]) {
             this.$store.commit('editDialogEndGame', {
               gameId: this.$route.params.id,
-              value: newValue
+              value: newValue,
             });
           }
-        }
+        },
       },
       dialogPauseMsg() {
         return this.$store.state.instanceJoined[this.$route.params.id]
@@ -716,10 +717,10 @@
           if (this.$store.state.instanceJoined[this.$route.params.id]) {
             this.$store.commit('editDialogPickCard', {
               gameId: this.$route.params.id,
-              value: newValue
+              value: newValue,
             });
           }
-        }
+        },
       },
       dialogNewRound: {
         // accesseur
@@ -733,10 +734,10 @@
           if (this.$store.state.instanceJoined[this.$route.params.id]) {
             this.$store.commit('editDialogNewRound', {
               gameId: this.$route.params.id,
-              value: newValue
+              value: newValue,
             });
           }
-        }
+        },
       },
       dialogPickCardType() {
         return this.$store.state.instanceJoined[this.$route.params.id]
@@ -828,7 +829,7 @@
               resumeByPlayer.push({
                 userId: message.userId,
                 userName: message.userName,
-                messages: [message]
+                messages: [message],
               });
             }
           });
@@ -837,8 +838,8 @@
           return [];
         }
 
-      }
-    }
+      },
+    },
   };
 </script>
 <style>
@@ -866,5 +867,20 @@
     .card-picked {
         -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
         filter: grayscale(100%);
+    }
+
+    .dialog-pick-card {
+        border: 3px solid #1e1035;
+        border-radius: 3%;
+        background-color: white;
+    }
+
+    .dialog-pick-card-img {
+        border-radius: 3%;
+    }
+
+    .dialog-pick-card-text {
+        text-align: center;
+        font-weight: bold;
     }
 </style>
