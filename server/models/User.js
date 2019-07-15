@@ -11,6 +11,12 @@ module.exports = class User {
     this.connectionDate = new Date();
   }
 
+  setFakeSocket() {
+    this.socket = {
+      emit: () => {},
+    };
+  }
+
   stringify() {
     return JSON.stringify({
       name: this.name,

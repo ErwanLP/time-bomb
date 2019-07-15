@@ -15,76 +15,76 @@ export default new Vuex.Store({
         role: {
           type: 'MORIARTY',
           image: 'moriarty_0.png',
-          label: 'Moriarty'
+          label: 'Moriarty',
         },
         cards: [
           {type: 'SECURE_CABLE', isPicked: true},
           {type: 'DEFUSING_CABLE'},
           {type: 'SECURE_CABLE'},
           {type: 'BOMB'},
-          {type: 'SECURE_CABLE'}
+          {type: 'SECURE_CABLE'},
         ],
         playLog: [
           {
             type: 'NEW_ROUND',
-            roundNumber: 1
+            roundNumber: 1,
           },
           {
             type: 'NEW_PICK',
             userFromName: 'tata',
             userToName: 'toto',
-            card: {type: 'DEFUSING_CABLE'}
+            card: {type: 'DEFUSING_CABLE'},
           },
           {
             type: 'NEW_PICK',
             userFromName: 'tata',
             userToName: 'toto',
-            card: {type: 'SECURE_CABLE'}
+            card: {type: 'SECURE_CABLE'},
           },
           {
             type: 'NEW_PICK',
             userFromName: 'tata',
             userToName: 'toto',
-            card: {type: 'DEFUSING_CABLE'}
+            card: {type: 'DEFUSING_CABLE'},
           },
           {
             type: 'NEW_ROUND',
-            roundNumber: 2
+            roundNumber: 2,
           },
           {
             type: 'NEW_PICK',
             userFromName: 'tata',
             userToName: 'toto',
-            card: {type: 'SECURE_CABLE'}
+            card: {type: 'SECURE_CABLE'},
           },
           {
             type: 'NEW_PICK',
             userFromName: 'tata',
             userToName: 'toto',
-            card: {type: 'DEFUSING_CABLE'}
+            card: {type: 'DEFUSING_CABLE'},
           },
           {
             type: 'NEW_PICK',
             userFromName: 'tata',
             userToName: 'toto',
-            card: {type: 'DEFUSING_CABLE'}
+            card: {type: 'DEFUSING_CABLE'},
           },
           {
             type: 'NEW_PICK',
             userFromName: 'tata',
             userToName: 'toto',
-            card: {type: 'SECURE_CABLE'}
+            card: {type: 'SECURE_CABLE'},
           },
           {
             type: 'NEW_ROUND',
-            roundNumber: 3
+            roundNumber: 3,
           },
           {
             type: 'NEW_PICK',
             userFromName: 'toto',
             userToName: 'toto',
-            card: {type: 'BOMB'}
-          }
+            card: {type: 'BOMB'},
+          },
         ],
         numberOfCardPickedThisRound: 4,
         numberOfCardsToPickThisRound: 6,
@@ -106,39 +106,39 @@ export default new Vuex.Store({
 
             user: {name: 'Erwan', uuid: 11},
             cardsLength: 5,
-            isCurrentPlayer: true
+            isCurrentPlayer: true,
           },
           {
 
             user: {name: 'Camille', uuid: 12},
-            cardsLength: 3
+            cardsLength: 3,
           },
           {
 
             user: {name: 'Nicolas', uuid: 13},
-            cardsLength: 4
+            cardsLength: 4,
           },
           {
 
             user: {name: 'Paul', uuid: 14},
-            cardsLength: 5
+            cardsLength: 5,
           },
           {
 
             user: {name: 'Lionel', uuid: 15},
-            cardsLength: 6
-          }
+            cardsLength: 6,
+          },
         ],
         playerMessages: [
           {userId: 11, userName: 'Erwan', type: 'mood', value: 128520},
           {userId: 11, userName: 'Erwan', type: 'bomb', value: true},
           {userId: 12, userName: 'Camille', type: 'defusing', value: 0},
           {userId: 13, userName: 'Nicolas', type: 'defusing', value: 2},
-          {userId: 13, userName: 'Nicolas', type: 'bomb', value: false}
-        ]
+          {userId: 13, userName: 'Nicolas', type: 'bomb', value: false},
+        ],
 
-      }
-    }
+      },
+    },
   },
   mutations: {
     setVersion(state, payload) {
@@ -178,8 +178,8 @@ export default new Vuex.Store({
             dialogPause: false,
             dialogPauseMsg: null,
             dialogNewRound: false,
-            endGame: false
-          }
+            endGame: false,
+          },
         };
       }
     },
@@ -205,11 +205,16 @@ export default new Vuex.Store({
       state.instanceJoined[payload.gameId].numberOfCardPickedThisRound = payload.numberOfCardPickedThisRound;
       state.instanceJoined[payload.gameId].playLog.unshift({
         type: 'NEW_ROUND',
-        roundNumber: payload.roundNumber
+        roundNumber: payload.roundNumber,
       });
-      setTimeout(function() {
+      if (payload.roundNumber > 1) {
+        setTimeout(function() {
+          state.instanceJoined[payload.gameId].dialogNewRound = true;
+        }, 3000);
+      } else {
         state.instanceJoined[payload.gameId].dialogNewRound = true;
-      }, 3000);
+      }
+
     },
     newPick(state, payload) {
       state.instanceJoined[payload.gameId].cards = payload.me.cards;
@@ -225,7 +230,7 @@ export default new Vuex.Store({
         type: 'NEW_PICK',
         card: payload.card,
         userFromName: payload.userFromName,
-        userToName: payload.userToName
+        userToName: payload.userToName,
       });
       setTimeout(function() {
         state.instanceJoined[payload.gameId].dialogPickCard = false;
@@ -266,8 +271,8 @@ export default new Vuex.Store({
             dialogPause: false,
             dialogPauseMsg: null,
             dialogNewRound: false,
-            endGame: false
-          }
+            endGame: false,
+          },
         };
       }
     },
@@ -289,7 +294,7 @@ export default new Vuex.Store({
     },
     editDialogEndGame(state, payload) {
       state.instanceJoined[payload.gameId].dialogNewRound = payload.value;
-    }
+    },
   },
-  actions: {}
+  actions: {},
 });
