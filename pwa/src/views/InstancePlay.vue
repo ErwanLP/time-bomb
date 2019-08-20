@@ -106,14 +106,16 @@
                                 </v-layout>
                                 <v-divider light></v-divider>
                                 <v-card-actions class="pa-3">
+                                    <v-btn @click="sendMessage({type : 'bomb', value : false})" flat small
+                                           color="error">No
+                                    </v-btn>
+                                    <v-spacer></v-spacer>
                                     Have the bomb ?
                                     <v-spacer></v-spacer>
-                                    <v-list-tile-avatar @click="sendMessage({type : 'bomb', value : false})">
-                                        <v-btn flat small color="error">No</v-btn>
-                                    </v-list-tile-avatar>
-                                    <v-list-tile-avatar @click="sendMessage({type : 'bomb', value : true})">
-                                        <v-btn flat small color="primary">Yes</v-btn>
-                                    </v-list-tile-avatar>
+
+                                    <v-btn @click="sendMessage({type : 'bomb', value : true})" flat small
+                                           color="primary">Yes
+                                    </v-btn>
                                 </v-card-actions>
                                 <v-divider light></v-divider>
                                 <v-card-actions class="pa-3">
@@ -121,46 +123,42 @@
                                 </v-card-actions>
                                 <v-card-actions class="pa-3">
                                     <v-layout justify-center row wrap>
-                                        <v-flex xs2
+                                        <v-flex xs4
                                         >
-                                            <v-list-tile-avatar @click="sendMessage({type : 'defusing', value : 0})">
-                                                <v-btn flat small color="error">0</v-btn>
-                                            </v-list-tile-avatar>
+                                            <v-btn @click="sendMessage({type : 'defusing', value : 0})" flat small
+                                                   color="error">0
+                                            </v-btn>
 
                                         </v-flex>
-                                        <v-flex xs2
+                                        <v-flex xs4
                                         >
-                                            <v-list-tile-avatar @click="sendMessage({type : 'defusing', value : 1})">
-                                                <v-btn flat small>1</v-btn>
-                                            </v-list-tile-avatar>
+                                            <v-btn @click="sendMessage({type : 'defusing', value : 1})" flat small>1
+                                            </v-btn>
 
                                         </v-flex>
-                                        <v-flex xs2
+                                        <v-flex xs4
                                         >
-                                            <v-list-tile-avatar @click="sendMessage({type : 'defusing', value : 2})">
-                                                <v-btn flat small>2</v-btn>
-                                            </v-list-tile-avatar>
+                                            <v-btn @click="sendMessage({type : 'defusing', value : 2})" flat small>
+                                                2
+                                            </v-btn>
 
                                         </v-flex>
-                                        <v-flex xs2
+                                        <v-flex xs4
                                         >
-                                            <v-list-tile-avatar @click="sendMessage({type : 'defusing', value : 3})">
-                                                <v-btn flat small>3</v-btn>
-                                            </v-list-tile-avatar>
+                                            <v-btn @click="sendMessage({type : 'defusing', value : 3})" flat small>3
+                                            </v-btn>
 
                                         </v-flex>
-                                        <v-flex xs2
+                                        <v-flex xs4
                                         >
-                                            <v-list-tile-avatar @click="sendMessage({type : 'defusing', value : 4})">
-                                                <v-btn flat small>4</v-btn>
-                                            </v-list-tile-avatar>
+                                            <v-btn @click="sendMessage({type : 'defusing', value : 4})" flat small>4
+                                            </v-btn>
 
                                         </v-flex>
-                                        <v-flex xs2
+                                        <v-flex xs4
                                         >
-                                            <v-list-tile-avatar @click="sendMessage({type : 'defusing', value : 5})">
-                                                <v-btn flat small>5</v-btn>
-                                            </v-list-tile-avatar>
+                                            <v-btn @click="sendMessage({type : 'defusing', value : 5})" flat small>5
+                                            </v-btn>
 
                                         </v-flex>
                                     </v-layout>
@@ -279,6 +277,7 @@
                                                 <v-list-tile-title v-html="player.userName"></v-list-tile-title>
                                             </v-list-tile-content>
 
+
                                             <v-list-tile-action>
                                                 <v-chip small>
                                                     <v-avatar
@@ -302,6 +301,58 @@
                                                     >
                                                         {{player.messages.find(m => m.type === 'bomb') &&
                                                         player.messages.find(m => m.type === 'bomb').value ? '!' : ''}}
+                                                    </v-avatar>
+                                                    <v-icon
+                                                    >
+                                                        whatshot
+                                                    </v-icon>
+                                                </v-chip>
+                                            </v-list-tile-action>
+                                        </v-list-tile>
+                                        <v-divider
+                                        ></v-divider>
+
+                                        <v-list-tile avatar
+                                        >
+                                            <v-list-tile-avatar>
+                                                <p style="font-size:30px"
+                                                >
+                                                    &#128172;</p>
+
+                                            </v-list-tile-avatar>
+
+                                            <v-list-tile-content>
+                                                <v-list-tile-title>Total</v-list-tile-title>
+                                            </v-list-tile-content>
+
+                                            <v-list-tile-action>
+                                                <v-chip small>
+                                                    <v-avatar
+                                                            v-bind:class="[playersMessages.reduce((acc, player) => player.messages.find(m => m.type === 'defusing') ?
+                                                        acc + player.messages.find(m => m.type === 'defusing').value : acc, 0) === (numberOfDefuseToFind - numberOfDefuseFound) ? 'teal' : 'red']">
+
+                                                        {{playersMessages.reduce((acc, player) =>
+                                                        player.messages.find((m) => m.type === 'defusing') ?
+                                                        acc + player.messages.find(m => m.type === 'defusing').value :
+                                                        acc, 0)}}
+                                                    </v-avatar>
+                                                    <v-icon
+                                                    >
+                                                        alarm
+                                                    </v-icon>
+                                                </v-chip>
+                                            </v-list-tile-action>
+                                            <v-list-tile-action>
+                                                <v-chip small>
+                                                    <v-avatar
+                                                            v-bind:class="[playersMessages.reduce((acc, player) => player.messages.find(m => m.type === 'bomb') ?
+                                                        acc + player.messages.find(m => m.type === 'bomb').value : acc, 0) === 1 ? 'teal' : 'red']"
+                                                    >
+
+                                                        {{playersMessages.reduce((acc, player) =>
+                                                        player.messages.find((m) => m.type === 'bomb') ?
+                                                        acc + player.messages.find(m => m.type === 'bomb').value : acc,
+                                                        0)}}
                                                     </v-avatar>
                                                     <v-icon
                                                     >
@@ -395,13 +446,6 @@
                                             </div>
                                         </v-card-title>
                                     </v-flex>
-                                    <!--                                        <v-flex xs5>
-                                                                                <v-img
-                                                                                        src="https://cdn.vuetifyjs.com/images/cards/halcyon.png"
-                                                                                        height="125px"
-                                                                                        contain
-                                                                                ></v-img>
-                                                                            </v-flex>-->
                                 </v-layout>
                                 <v-divider light></v-divider>
                                 <v-card-actions class="pa-3">

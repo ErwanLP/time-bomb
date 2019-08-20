@@ -27,7 +27,8 @@
     components: {},
     data() {
       return {
-        name: ''
+        name: '',
+        uuid: null,
       };
     },
     beforeMount: function() {
@@ -38,6 +39,13 @@
           this.name = value || '';
         }
       });
+      localforage.getItem('PLAYER_UUID', (err, value) => {
+        if (err) {
+          throw err;
+        } else {
+          this.uuid = value || null;
+        }
+      });
     },
     methods: {
       saveSettings: function() {
@@ -45,11 +53,14 @@
           if (err) {
             throw err;
           } else {
-            this.$socket.emit('user_create', this.name);
+            this.$socket.emit('user_create', JSON.stringify({
+              name: this.name,
+              uuid: this.uuid,
+            }));
           }
           this.$router.push('/');
         });
-      }
-    }
+      },
+    },
   };
 </script>

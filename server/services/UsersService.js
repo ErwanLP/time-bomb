@@ -2,29 +2,13 @@ const User = require('@models/User');
 
 let userList = [];
 
-module.exports.create = function(uuid, name) {
+module.exports.create = function(name) {
   return new Promise((resolve, reject) => {
-    try {
-      let suffix = '';
-      while (nameAlreadyExist(name + suffix)) {
-        if (suffix === '') {
-          suffix = 2;
-        } else {
-          suffix++;
-        }
-      }
-      let u = new User(uuid, suffix === '' ? name : name + ' ' + suffix);
-      userList.push(u);
-      resolve(u);
-    } catch (e) {
-      reject(e);
-    }
+    let u = new User(name);
+    userList.push(u);
+    resolve(u);
   });
 };
-
-function nameAlreadyExist(name) {
-  return userList.find(user => user.name === name) !== undefined;
-}
 
 module.exports.read = function() {
   return new Promise((resolve) => {

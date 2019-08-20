@@ -27,32 +27,40 @@ Vue.use(new VueSocketIO({
 new Vue({
   sockets: {
     connect: function() {
-      console.log('connect');
+      //console.log('connect');
       this.$router.push('/');
     },
     reconnecting: function() {
-      console.log('reconnecting');
-      this.$router.push('/');
+      //console.log('reconnecting');
     },
     disconnect: function() {
-      console.log('disconnect');
-      this.$router.push('/');
+      //console.log('disconnect');
     },
     connection_success: function(data) {
       let info = JSON.parse(data);
       store.commit('setVersion', info.version);
-      localforage.getItem('PLAYER_NAME', (err, value) => {
-        if (err || !value) {
-          this.$socket.emit('user_create');
+      localforage.getItem('PLAYER_NAME', (getNameErr, name) => {
+        if (getNameErr || !name) {
+          this.$socket.emit('user_create', JSON.stringify({}));
         } else {
-          this.$socket.emit('user_create', value);
+          localforage.getItem('PLAYER_UUID', (getUuidErr, uuid) => {
+            if (getUuidErr || !uuid) {
+              this.$socket.emit('user_create', JSON.stringify({}));
+            } else {
+              this.$socket.emit('user_create',
+                  JSON.stringify({name: name, uuid: uuid}));
+            }
+          });
         }
       });
     },
     user_create_success: function(data) {
       let info = JSON.parse(data);
       store.commit('editUser', info);
-      localforage.setItem('PLAYER_NAME', info.name, () => {});
+      localforage.setItem('PLAYER_NAME', info.name, () => {
+      });
+      localforage.setItem('PLAYER_UUID', info.uuid, () => {
+      });
     },
     game_list_success: function(data) {
       store.commit('editListInstance', JSON.parse(data));
@@ -121,6 +129,9 @@ new Vue({
     },
     error: function(err) {
       throw err;
+    },
+    create_user_error: function() {
+      this.$router.push('/settings');
     },
   },
   router,

@@ -1,10 +1,12 @@
 const UsersService = require('@services/UsersService');
-const uuidv4 = require('uuid/v4');
 const pokemon = require('pokemon');
 
-module.exports.createBySocket = (socket, name) => {
+module.exports.createBySocket = (socket, userData) => {
+  let userDataJson = JSON.parse(userData);
+  let name = userDataJson.name;
 
-  let isNameValid = (name) => !(name === 'undefined' || name === undefined ||
+  let isNameValid = (name) => !(name === 'undefined' || name ===
+      undefined ||
       name === null || name === '');
 
   let generatedName = isNameValid(name) ? name : pokemon.random('fr');
@@ -13,14 +15,18 @@ module.exports.createBySocket = (socket, name) => {
       user => {
         if (user) {
           if (user.socket && user.socket.connected) {
-            return UsersService.create(uuidv4(), generatedName);
+            if (userDataJson.uuid === user.uuid) {
+              return user;
+            } else {
+              throw 'user name already exist : ' + generatedName;
+            }
           } else {
             return user;
           }
         } else {
-          return UsersService.create(uuidv4(), generatedName);
+          return UsersService.create(generatedName);
         }
-      }
+      },
   ).then(
       user => {
         socket.userId = user.uuid;
@@ -28,12 +34,11 @@ module.exports.createBySocket = (socket, name) => {
         user.setSocket(socket);
         socket.emit('user_create_success', user.stringify());
         return user;
-      }
+      },
   ).catch((err) => {
     console.error(err);
-    socket.emit('custom_error', JSON.stringify(err));
+    socket.emit('create_user_error', JSON.stringify(err));
   });
 };
-
 
 module.exports.deleteAllUser = UsersService.deleteAllUser;

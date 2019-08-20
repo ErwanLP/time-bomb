@@ -9,9 +9,11 @@ module.exports = function(config, io, implementation) {
   socket.on('connection_success',
       implementation.connectionSuccess.bind(
           {
-            userCreate: () => socket.emit('user_create', config.name)
-          }
-      )
+            userCreate: () => socket.emit('user_create', JSON.stringify({
+              name: config.name,
+            })),
+          },
+      ),
   );
 
   /**
@@ -20,15 +22,15 @@ module.exports = function(config, io, implementation) {
   let createOrListInstance = implementation.createOrListInstance.bind(
       {
         gameCreate: newGameName => socket.emit('game_create', newGameName),
-        gameList: () => socket.emit('game_list')
-      }
+        gameList: () => socket.emit('game_list'),
+      },
   );
 
   /**
    * Socket on user create success
    */
   socket.on('user_create_success', implementation.displayUser.bind({
-    createOrListInstance: createOrListInstance
+    createOrListInstance: createOrListInstance,
   }));
 
   /**
@@ -37,9 +39,9 @@ module.exports = function(config, io, implementation) {
   socket.on('game_create_success',
       implementation.joinGameFromCreate.bind(
           {
-            gameJoin: (gameId) => socket.emit('game_join', gameId)
-          }
-      )
+            gameJoin: (gameId) => socket.emit('game_join', gameId),
+          },
+      ),
   );
 
   /**
@@ -50,16 +52,16 @@ module.exports = function(config, io, implementation) {
           {
             gameJoin: (gameId) => socket.emit('game_join', gameId),
             gameList: () => socket.emit('game_list'),
-            createOrListInstance: createOrListInstance
-          }
-      )
+            createOrListInstance: createOrListInstance,
+          },
+      ),
   );
 
   /**
    * Socket user join game success
    */
   socket.on('user_join_game_success',
-      implementation.userJoinGameSuccess
+      implementation.userJoinGameSuccess,
   );
 
   /**
@@ -78,9 +80,9 @@ module.exports = function(config, io, implementation) {
   socket.on('game_ask_start',
       implementation.gameAskStart.bind(
           {
-            gameStart: () => socket.emit('game_start')
-          }
-      )
+            gameStart: () => socket.emit('game_start'),
+          },
+      ),
   );
 
   /**
@@ -103,7 +105,7 @@ module.exports = function(config, io, implementation) {
    */
   socket.on('game_user_play', implementation.gameUserPlay.bind({
     gamePickCard: (userId, index) => socket.emit('game_pick_card', userId,
-        index)
+        index),
   }, config.bot));
 
   /**

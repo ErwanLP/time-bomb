@@ -1,7 +1,9 @@
+const uuidv4 = require('uuid/v4');
+
 module.exports = class User {
-  constructor(uuid, name) {
+  constructor(name) {
     this.name = name;
-    this.uuid = uuid;
+    this.uuid = uuidv4();
     this.socket = null;
     this.connectionDate = null;
   }

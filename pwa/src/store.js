@@ -133,7 +133,8 @@ export default new Vuex.Store({
           {userId: 11, userName: 'Erwan', type: 'mood', value: 128520},
           {userId: 11, userName: 'Erwan', type: 'bomb', value: true},
           {userId: 12, userName: 'Camille', type: 'defusing', value: 0},
-          {userId: 13, userName: 'Nicolas', type: 'defusing', value: 2},
+          {userId: 12, userName: 'Camille', type: 'bomb', value: true},
+          {userId: 13, userName: 'Nicolas', type: 'defusing', value: 3},
           {userId: 13, userName: 'Nicolas', type: 'bomb', value: false},
         ],
 
@@ -210,7 +211,7 @@ export default new Vuex.Store({
       if (payload.roundNumber > 1) {
         setTimeout(function() {
           state.instanceJoined[payload.gameId].dialogNewRound = true;
-        }, 3000);
+        }, 2500);
       } else {
         state.instanceJoined[payload.gameId].dialogNewRound = true;
       }
@@ -234,7 +235,7 @@ export default new Vuex.Store({
       });
       setTimeout(function() {
         state.instanceJoined[payload.gameId].dialogPickCard = false;
-      }, 2500);
+      }, 2000);
 
     },
     myTurn(state, payload) {
