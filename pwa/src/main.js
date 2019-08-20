@@ -54,6 +54,12 @@ new Vue({
         }
       });
     },
+    admin_user_list_success: function(data) {
+      store.commit('editListUser', JSON.parse(data));
+    },
+    admin_user_delete_success: function(data) {
+      this.$router.push('/admin/users');
+    },
     user_create_success: function(data) {
       let info = JSON.parse(data);
       store.commit('editUser', info);

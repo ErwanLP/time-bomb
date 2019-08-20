@@ -9,6 +9,7 @@ export default new Vuex.Store({
     host: null,
     version: null,
     instanceList: [],
+    userList: [],
     error: null,
     instanceJoined: {
       '0': {
@@ -153,6 +154,9 @@ export default new Vuex.Store({
     },
     editListInstance(state, payload) {
       state.instanceList = payload;
+    },
+    editListUser(state, payload) {
+      state.userList = payload;
     },
     createJoinedInstance(state, payload) {
       if (!state.instanceJoined[payload]) {
