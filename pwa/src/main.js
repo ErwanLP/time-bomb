@@ -54,10 +54,10 @@ new Vue({
         }
       });
     },
-    admin_user_list_success: function(data) {
+    user_list_success: function(data) {
       store.commit('editListUser', JSON.parse(data));
     },
-    admin_user_delete_success: function(data) {
+    user_delete_success: function() {
       this.$router.push('/admin/users');
     },
     user_create_success: function(data) {
@@ -70,6 +70,9 @@ new Vue({
     },
     game_list_success: function(data) {
       store.commit('editListInstance', JSON.parse(data));
+    },
+    game_delete_success: function() {
+      this.$router.push('/admin/games');
     },
     game_create_success: function(data) {
       let info = JSON.parse(data);

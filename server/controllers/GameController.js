@@ -52,10 +52,18 @@ module.exports.socketJoinGameInstance = (socket, io, gameId) => {
             [user, game] = data;
             if (user && game) {
               if (game.state === 'LOBBY') {
-                if (game.addPlayer(user)) {
-                  socket.gameId = gameId;
-                  user.socket.join(game.uuid);
-                  askStartGame(game, io);
+                if (game.hasUser(user)) {
+                  socket.emit('user_join_game_error', JSON.stringify({
+                    msg: 'Your are already in the instance',
+                    player: game.player,
+                    user: user.json(),
+                  }));
+                } else {
+                  if (game.addPlayer(user)) {
+                    socket.gameId = gameId;
+                    user.socket.join(game.uuid);
+                    askStartGame(game, io);
+                  }
                 }
               } else if (game.state === 'PAUSE') {
                 if (game.hasUser(user)) {
@@ -210,4 +218,15 @@ module.exports.socketMessage = (
         }
 
       });
+};
+
+module.exports.socketDeleteGame = (socket, uuid) => {
+  return GamesService.deleteById(uuid).then(
+      () => {
+        socket.emit('game_delete_success');
+      },
+  ).catch((err) => {
+    console.error(err);
+    socket.emit('custom_error', JSON.stringify(err));
+  });
 };

@@ -44,7 +44,7 @@ module.exports.createBySocket = (socket, userData) => {
 module.exports.socketGetUsers = (socket) => {
   return UsersService.read().then(
       users => {
-        socket.emit('admin_user_list_success',
+        socket.emit('user_list_success',
             JSON.stringify(users.map(u => u.json())));
       },
   ).catch((err) => {
@@ -56,7 +56,7 @@ module.exports.socketGetUsers = (socket) => {
 module.exports.socketDeleteUser = (socket, uuid) => {
   return UsersService.deleteById(uuid).then(
       () => {
-        socket.emit('admin_user_delete_success');
+        socket.emit('user_delete_success');
       },
   ).catch((err) => {
     console.error(err);

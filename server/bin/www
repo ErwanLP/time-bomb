@@ -35,14 +35,16 @@ io.on('connection', function(socket) {
         JSON.stringify({version: clientTerminalVersion}));
     socket.on('user_create',
         UserController.createBySocket.bind(null, socket));
-    socket.on('admin_user_list',
+    socket.on('user_list',
         UserController.socketGetUsers.bind(null, socket));
-    socket.on('admin_user_delete',
+    socket.on('user_delete',
         UserController.socketDeleteUser.bind(null, socket));
     socket.on('game_create',
         GameController.socketCreateGameInstance.bind(null, socket, io));
     socket.on('game_list',
         GameController.socketGetGames.bind(null, socket));
+    socket.on('game_delete',
+        GameController.socketDeleteGame.bind(null, socket));
     socket.on('game_join',
         GameController.socketJoinGameInstance.bind(null, socket, io));
     socket.on('game_leave_lobby',
