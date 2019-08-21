@@ -103,12 +103,13 @@
             <v-toolbar-title>Time Bomb</v-toolbar-title>
         </v-toolbar>
         <v-content>
-            <!--            <v-alert
-                                :value="error !== null"
-                                type="error"
-                        >
-                            {{error}}
-                        </v-alert>-->
+            <v-alert
+                    :value="errorDisplay"
+                    type="error"
+                    transition="scale-transition"
+            >
+                {{errorMsg}}
+            </v-alert>
             <router-view></router-view>
         </v-content>
     </v-app>
@@ -127,6 +128,12 @@
       userName() {
         return this.$store.state.user.name;
       },
+      errorDisplay() {
+        return this.$store.state.error.displayed;
+      },
+      errorMsg() {
+        return this.$store.state.error.msg;
+      },
       isAdmin() {
         return this.$store.state.user.isAdmin;
       },
@@ -135,9 +142,6 @@
       },
       version() {
         return this.$store.state.version;
-      },
-      error() {
-        return this.$store.state.error;
       }
     }
 

@@ -85,8 +85,9 @@ new Vue({
         this.$router.push('/instance/' + info.gameId + '/lobby');
       }
     },
-    user_join_game_error: function(data) {
-      throw data;
+    user_join_game_error: function(err) {
+      store.commit('displayError', JSON.parse(err));
+
     },
     game_broadcast_pause: function(data) {
       store.commit('setPause', JSON.parse(data));
@@ -137,9 +138,10 @@ new Vue({
       throw err;
     },
     error: function(err) {
-      throw err;
+      store.commit('displayError', JSON.parse(err));
     },
-    create_user_error: function() {
+    create_user_error: function(err) {
+      store.commit('displayError', JSON.parse(err));
       this.$router.push('/settings');
     },
   },

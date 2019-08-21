@@ -10,7 +10,10 @@ export default new Vuex.Store({
     version: null,
     instanceList: [],
     userList: [],
-    error: null,
+    error: {
+      displayed: false,
+      msg: '',
+    },
     instanceJoined: {
       '0': {
         role: {
@@ -157,6 +160,14 @@ export default new Vuex.Store({
     },
     editListUser(state, payload) {
       state.userList = payload;
+    },
+    displayError(state, payload) {
+      state.error.msg = payload.msg;
+      state.error.displayed = true;
+      setTimeout(function() {
+        state.error.displayed = false;
+      }, 2000);
+
     },
     createJoinedInstance(state, payload) {
       if (!state.instanceJoined[payload]) {
