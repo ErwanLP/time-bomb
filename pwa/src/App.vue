@@ -22,7 +22,7 @@
                     </v-list-tile-action>
                     <v-list-tile-content>
                         <v-list-tile-title>
-                            <router-link to="/list-instance">List Instance</router-link>
+                            <router-link to="/list-instance">List Game</router-link>
                         </v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
@@ -43,6 +43,26 @@
                     <v-list-tile-content>
                         <v-list-tile-title>
                             <router-link to="/settings">Settings</router-link>
+                        </v-list-tile-title>
+                    </v-list-tile-content>
+                </v-list-tile>
+                <v-list-tile v-if="isAdmin">
+                    <v-list-tile-action>
+                        <v-icon>people</v-icon>
+                    </v-list-tile-action>
+                    <v-list-tile-content>
+                        <v-list-tile-title>
+                            <router-link to="/admin/users">Admin User</router-link>
+                        </v-list-tile-title>
+                    </v-list-tile-content>
+                </v-list-tile>
+                <v-list-tile v-if="isAdmin">
+                    <v-list-tile-action>
+                        <v-icon>view_list</v-icon>
+                    </v-list-tile-action>
+                    <v-list-tile-content>
+                        <v-list-tile-title>
+                            <router-link to="/admin/games">Admin Game</router-link>
                         </v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
@@ -106,6 +126,9 @@
     computed: {
       userName() {
         return this.$store.state.user.name;
+      },
+      isAdmin() {
+        return this.$store.state.user.isAdmin;
       },
       host() {
         return this.$store.state.host;

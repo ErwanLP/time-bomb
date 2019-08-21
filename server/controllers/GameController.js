@@ -86,7 +86,7 @@ module.exports.socketJoinGameInstance = (socket, io, gameId) => {
                   socket.emit('user_join_game_error', JSON.stringify({
                     msg: 'Your are not in the list of player',
                     player: game.player,
-                    user: user.stringify(),
+                    user: user.json(),
                   }));
                 }
               } else {

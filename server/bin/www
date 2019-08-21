@@ -39,6 +39,8 @@ io.on('connection', function(socket) {
         UserController.socketGetUsers.bind(null, socket));
     socket.on('user_delete',
         UserController.socketDeleteUser.bind(null, socket));
+    socket.on('user_set_admin',
+        UserController.socketSetUserAdmin.bind(null, socket));
     socket.on('game_create',
         GameController.socketCreateGameInstance.bind(null, socket, io));
     socket.on('game_list',

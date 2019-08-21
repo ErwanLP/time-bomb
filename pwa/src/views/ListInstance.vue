@@ -12,7 +12,7 @@
                         </v-list-tile-avatar>
 
                         <v-list-tile-content>
-                            <v-list-tile-title>Create new instance</v-list-tile-title>
+                            <v-list-tile-title>Create new game</v-list-tile-title>
                         </v-list-tile-content>
                     </v-list-tile>
                 </template>
@@ -78,7 +78,7 @@
     computed: mapState({
       instances: state => {
         let items = [
-          {header: 'List Instance'}
+          {header: 'List Game'},
         ];
         state.instanceList.forEach((i, idx, array) => {
           items.push({

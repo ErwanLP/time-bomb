@@ -32,7 +32,7 @@ module.exports.createBySocket = (socket, userData) => {
         socket.userId = user.uuid;
         socket.userName = user.name;
         user.setSocket(socket);
-        socket.emit('user_create_success', user.stringify());
+        socket.emit('user_create_success', JSON.stringify(user.json()));
         return user;
       },
   ).catch((err) => {
@@ -57,6 +57,18 @@ module.exports.socketDeleteUser = (socket, uuid) => {
   return UsersService.deleteById(uuid).then(
       () => {
         socket.emit('user_delete_success');
+      },
+  ).catch((err) => {
+    console.error(err);
+    socket.emit('custom_error', JSON.stringify(err));
+  });
+};
+
+module.exports.socketSetUserAdmin = (socket, data) => {
+  let dataJson = JSON.parse(data);
+  return UsersService.getById(dataJson.uuid).then(
+      (user) => {
+        user.isAdmin = dataJson.isAdmin;
       },
   ).catch((err) => {
     console.error(err);

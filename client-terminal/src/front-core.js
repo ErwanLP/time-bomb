@@ -17,7 +17,7 @@ module.exports = function(config, io, implementation) {
   );
 
   /**
-   * Internal state create or list instance
+   * Internal state create or list game
    */
   let createOrListInstance = implementation.createOrListInstance.bind(
       {

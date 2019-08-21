@@ -18,7 +18,7 @@
                             avatar
                     >
                         <v-list-tile-avatar>
-                            <v-icon>{{item.avatar}}</v-icon>
+                            <v-icon v-on:click="setUserAdmin(item.uuid, !item.isAdmin)">{{item.avatar}}</v-icon>
                         </v-list-tile-avatar>
 
                         <v-list-tile-content>
@@ -26,6 +26,9 @@
                             <v-list-tile-sub-title v-html="item.subtitle"></v-list-tile-sub-title>
                         </v-list-tile-content>
 
+                        <v-list-tile-avatar v-if="item.isAdmin">
+                            <v-icon>how_to_reg</v-icon>
+                        </v-list-tile-avatar>
                         <v-list-tile-avatar>
                             <v-icon v-on:click="deleteUser(item.uuid)">delete_forever</v-icon>
                         </v-list-tile-avatar>
@@ -54,6 +57,12 @@
       deleteUser: function(uuid) {
         this.$socket.emit('user_delete', uuid);
       },
+      setUserAdmin: function(uuid, isAdmin) {
+        this.$socket.emit('user_set_admin', JSON.stringify({
+          uuid: uuid,
+          isAdmin: isAdmin,
+        }));
+      },
     },
     computed: mapState({
       users: state => {
@@ -66,6 +75,7 @@
             uuid: u.uuid,
             name: u.name,
             subtitle: u.connected ? 'Connected' : '',
+            isAdmin: u.isAdmin,
           });
         });
         return items;

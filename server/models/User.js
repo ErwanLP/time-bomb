@@ -6,6 +6,7 @@ module.exports = class User {
     this.uuid = uuidv4();
     this.socket = null;
     this.connectionDate = null;
+    this.isAdmin = false;
   }
 
   setSocket(socket) {
@@ -20,21 +21,13 @@ module.exports = class User {
     };
   }
 
-  stringify() {
-    return JSON.stringify({
-      name: this.name,
-      uuid: this.uuid,
-      connectionDate: this.connectionDate,
-      connected: this.socket ? this.socket.connected : false,
-    });
-  }
-
   json() {
     return ({
       name: this.name,
       uuid: this.uuid,
       connectionDate: this.connectionDate,
       connected: this.socket ? this.socket.connected : false,
+      isAdmin: this.isAdmin,
     });
   }
 
