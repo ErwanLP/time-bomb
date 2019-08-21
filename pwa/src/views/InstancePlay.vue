@@ -329,7 +329,7 @@
                                                 <v-chip small>
                                                     <v-avatar
                                                             v-bind:class="[playersMessages.reduce((acc, player) => player.messages.find(m => m.type === 'defusing') ?
-                                                        acc + player.messages.find(m => m.type === 'defusing').value : acc, 0) === (numberOfDefuseToFind - numberOfDefuseFound) ? 'teal' : 'red']">
+                                                        acc + player.messages.find(m => m.type === 'defusing').value : acc, 0) === (numberOfDefuseToFind - numberOfDefuseFound) ? 'teal' : 'orange']">
 
                                                         {{playersMessages.reduce((acc, player) =>
                                                         player.messages.find((m) => m.type === 'defusing') ?
@@ -346,7 +346,7 @@
                                                 <v-chip small>
                                                     <v-avatar
                                                             v-bind:class="[playersMessages.reduce((acc, player) => player.messages.find(m => m.type === 'bomb') ?
-                                                        acc + player.messages.find(m => m.type === 'bomb').value : acc, 0) === 1 ? 'teal' : 'red']"
+                                                        acc + player.messages.find(m => m.type === 'bomb').value : acc, 0) === 1 ? 'teal' : 'orange']"
                                                     >
 
                                                         {{playersMessages.reduce((acc, player) =>
