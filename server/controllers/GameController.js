@@ -8,9 +8,8 @@ module.exports.socketGetGames = (socket) => {
         socket.emit('game_list_success', JSON.stringify(games));
       },
       (err) => {
-        console.error(err);
         socket.emit('error', JSON.stringify(err));
-      }
+      },
   );
 };
 
@@ -39,9 +38,8 @@ module.exports.socketCreateGameInstance = (socket, io, name) => {
         socket.emit('game_create_success', JSON.stringify(game));
       },
       (err) => {
-        console.error(err);
         socket.emit('error', JSON.stringify(err));
-      }
+      },
   );
 };
 
@@ -79,7 +77,7 @@ module.exports.socketJoinGameInstance = (socket, io, gameId) => {
                     io.sockets.in(game.uuid).
                         emit('game_broadcast_resume', JSON.stringify({
                           gameId: game.uuid,
-                          label: 'The instance is now resuming'
+                          label: 'The instance is now resuming',
                         }));
                   }
                 } else {
@@ -91,15 +89,19 @@ module.exports.socketJoinGameInstance = (socket, io, gameId) => {
                 }
               } else {
                 socket.emit('user_join_game_error', JSON.stringify({
-                  gameState: game.state
+                  gameState: game.state,
+                  msg: 'Can not join game in current state : ' + game.state,
                 }));
               }
             } else {
-              console.error('ERROR : game or user not found');
-              console.error(game, user);
+              socket.emit('user_join_game_error', JSON.stringify({
+                user: user ? user.json() : undefined,
+                game: game ? game.json() : undefined,
+                msg: 'User or game not found',
+              }));
             }
 
-          }
+          },
       );
 };
 
@@ -119,7 +121,7 @@ module.exports.socketLeaveGameInstance = (socket, io, from) => {
                     emit('game_broadcast_pause', JSON.stringify({
                       gameId: game.uuid,
                       label: 'Pause because ' + user.name +
-                      ' left the instance'
+                      ' left the instance',
                     }));
               } else if (game.state === 'LOBBY') {
                 game.removePlayer(socket.userId);
@@ -127,25 +129,25 @@ module.exports.socketLeaveGameInstance = (socket, io, from) => {
                 askStartGame(game, io);
               }
               if (game && game.iEmpty()) {
-                GamesService.deleteById(socket.gameId).catch(
-                    console.error
-                );
+                GamesService.deleteById(socket.gameId).catch(() => {
+                });
               }
             }
-          }
-      ).catch(console.error);
+          },
+      ).catch(() => {
+      });
 };
 
 function askStartGame(game, io) {
   io.sockets.in(game.uuid).
       emit('game_broadcast_list_player', JSON.stringify({
         playerList: game.players.map(player => player.user.name),
-        gameId: game.uuid
+        gameId: game.uuid,
       }));
   if (game.hasEnoughPlayer()) {
     game.creator.socket.emit('game_ask_start', JSON.stringify({
       numberOfPlayer: game.players.length,
-      gameId: game.uuid
+      gameId: game.uuid,
     }));
   }
 }
@@ -172,7 +174,7 @@ module.exports.socketPickCard = (
                         me: {
                           uuid: player.user.uuid,
                           name: player.user.name,
-                          cards: game.shuffledCards(player.cards)
+                          cards: game.shuffledCards(player.cards),
                         },
                         gameId: game.uuid,
                         card: card,
@@ -183,7 +185,7 @@ module.exports.socketPickCard = (
                         numberOfDefuseToFind: game.players.length,
                         numberOfCardsToPickThisRound: game.players.length,
                         numberOfCardPickedThisRound: game.cardPicked.length -
-                        ((game.roundNumber - 1) * game.players.length)
+                        ((game.roundNumber - 1) * game.players.length),
                       }));
                 });
               }).then(
@@ -197,7 +199,7 @@ module.exports.socketPickCard = (
                 } else {
                   game.startNewPlay();
                 }
-              }
+              },
           );
         }
 
@@ -213,7 +215,7 @@ module.exports.socketMessage = (
           io.sockets.in(socket.gameId).
               emit('game_broadcast_message', JSON.stringify({
                 gameId: socket.gameId,
-                playerMessages: game.getMessages()
+                playerMessages: game.getMessages(),
               }));
         }
 

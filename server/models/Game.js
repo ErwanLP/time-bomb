@@ -33,6 +33,15 @@ module.exports = class Game {
     this.state = LOBBY;
   }
 
+  json() {
+    return ({
+      name: this.name,
+      uuid: this.uuid,
+      state: this.state,
+      createdDate: this.createdDate,
+    });
+  }
+
   addPlayer(user) {
 
     let playerCanAccess = () => {

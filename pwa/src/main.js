@@ -140,6 +140,9 @@ new Vue({
     error: function(err) {
       store.commit('displayError', JSON.parse(err));
     },
+    custom_error: function(err) {
+      store.commit('displayError', JSON.parse(err));
+    },
     create_user_error: function(err) {
       store.commit('displayError', JSON.parse(err));
       this.$router.push('/settings');

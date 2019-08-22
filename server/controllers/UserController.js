@@ -2,7 +2,13 @@ const UsersService = require('@services/UsersService');
 const pokemon = require('pokemon');
 
 module.exports.createBySocket = (socket, userData) => {
-  let userDataJson = JSON.parse(userData);
+
+  let userDataJson;
+  try {
+    userDataJson = JSON.parse(userData);
+  } catch (e) {
+    userDataJson = {};
+  }
   let name = userDataJson.name;
 
   let isNameValid = (name) => !(name === 'undefined' || name ===
