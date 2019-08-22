@@ -44,7 +44,10 @@
 
                         <v-list-tile-content>
                             <v-list-tile-title v-html="item.title"></v-list-tile-title>
-                            <v-list-tile-sub-title v-html="item.subtitle"></v-list-tile-sub-title>
+                            <v-list-tile-sub-title>
+                                <span v-for="(player,index) in item.players" :key="index"
+                                      v-bind:class="{ 'player-connected': player.user.connected }">{{((player && player.user) ? player.user.name : 'Guest') + ' '}}</span>
+                            </v-list-tile-sub-title>
                         </v-list-tile-content>
                     </v-list-tile>
                 </template>
@@ -73,7 +76,7 @@
       },
       updateInstanceList: function() {
         this.$socket.emit('game_list');
-      }
+      },
     },
     computed: mapState({
       instances: state => {
@@ -85,14 +88,21 @@
             avatar: 'games',
             id: i.uuid,
             title: i.name,
-            subtitle: i.players.reduce((val, acc) => acc + ' ' + val)
+            players: i.players,
           });
           if (idx !== array.length - 1) {
             items.push({divider: true, inset: true});
           }
         });
         return items;
-      }
-    })
+      },
+    }),
   };
 </script>
+
+<style>
+    .player-connected {
+        color: #a5d6a7 !important;
+    }
+
+</style>

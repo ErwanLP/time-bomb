@@ -24,7 +24,7 @@ module.exports.read = function() {
           return {
             name: g.name,
             uuid: g.uuid,
-            players: g.players.map(p => p.user.name),
+            players: g.players.map(p => ({user: p.user.json()})),
             state: g.state
           };
         }));

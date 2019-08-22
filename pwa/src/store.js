@@ -194,6 +194,7 @@ export default new Vuex.Store({
             dialogPause: false,
             dialogPauseMsg: null,
             dialogNewRound: false,
+            dialogPickCardPlayerName: '',
             endGame: false,
           },
         };
@@ -239,9 +240,9 @@ export default new Vuex.Store({
       state.instanceJoined[payload.gameId].numberOfDefuseToFind = payload.numberOfDefuseToFind;
       state.instanceJoined[payload.gameId].numberOfCardsToPickThisRound = payload.numberOfCardsToPickThisRound;
       state.instanceJoined[payload.gameId].numberOfCardPickedThisRound = payload.numberOfCardPickedThisRound;
-      state.instanceJoined[payload.gameId].dialogPickCard = true;
       state.instanceJoined[payload.gameId].dialogPickCardType = payload.card;
       state.instanceJoined[payload.gameId].dialogPickCardPlayerName = payload.userToName;
+      state.instanceJoined[payload.gameId].dialogPickCard = true;
       state.instanceJoined[payload.gameId].playLog.unshift({
         type: 'NEW_PICK',
         card: payload.card,
