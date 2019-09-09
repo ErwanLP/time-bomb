@@ -161,8 +161,9 @@ export default new Vuex.Store({
     editListUser(state, payload) {
       state.userList = payload;
     },
-    displayError(state, payload) {
+    displayAlert(state, payload) {
       state.error.msg = payload.msg;
+      state.error.type = payload.type || 'error';
       state.error.displayed = true;
       setTimeout(function() {
         state.error.displayed = false;

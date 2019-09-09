@@ -24,6 +24,7 @@
                     >
                         {{ item.header }}
                         <v-btn color="primary" flat small v-on:click="updateInstanceList">Refresh</v-btn>
+                        <v-btn color="white" flat small v-on:click="lightVersion = !lightVersion">lightVersion</v-btn>
                     </v-subheader>
 
                     <v-divider
@@ -52,6 +53,13 @@
                     </v-list-tile>
                 </template>
             </v-list>
+            <div v-if="lightVersion">
+                <v-divider></v-divider>
+                <div v-for="(item, index) in instances" v-bind:key="index" @click="joinInstance(item.id)"
+                     style="font-size: large; margin: 20px">
+                    <span>{{item.title}}</span>
+                </div>
+            </div>
         </v-flex>
     </v-layout>
 </template>
@@ -62,7 +70,9 @@
     name: 'ListInstance',
     components: {},
     data() {
-      return {};
+      return {
+        lightVersion: false,
+      };
     },
     beforeMount: function() {
       this.$socket.emit('game_list');

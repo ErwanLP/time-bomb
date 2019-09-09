@@ -105,7 +105,7 @@
         <v-content>
             <v-alert
                     :value="errorDisplay"
-                    type="error"
+                    :type="errorType"
                     transition="scale-transition"
             >
                 {{errorMsg}}
@@ -134,6 +134,9 @@
       errorMsg() {
         return this.$store.state.error.msg;
       },
+      errorType() {
+        return this.$store.state.error.type;
+      },
       isAdmin() {
         return this.$store.state.user.isAdmin;
       },
@@ -147,3 +150,4 @@
 
   };
 </script>
+

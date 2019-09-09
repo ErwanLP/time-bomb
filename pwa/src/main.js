@@ -27,14 +27,23 @@ Vue.use(new VueSocketIO({
 new Vue({
   sockets: {
     connect: function() {
-      //console.log('connect');
+      store.commit('displayAlert', {
+        msg: 'Connected',
+        type: 'success',
+      });
       this.$router.push('/');
     },
-    reconnecting: function() {
-      //console.log('reconnecting');
-    },
+    /*    reconnecting: function() {
+          store.commit('displayAlert', {
+            msg : 'Reconnecting',
+            type : "warning"
+          });
+        },*/
     disconnect: function() {
-      //console.log('disconnect');
+      store.commit('displayAlert', {
+        msg: 'Disconnect',
+        type: 'error',
+      });
     },
     connection_success: function(data) {
       let info = JSON.parse(data);
@@ -86,7 +95,7 @@ new Vue({
       }
     },
     user_join_game_error: function(err) {
-      store.commit('displayError', JSON.parse(err));
+      store.commit('displayAlert', JSON.parse(err));
 
     },
     game_broadcast_pause: function(data) {
@@ -138,13 +147,13 @@ new Vue({
       throw err;
     },
     error: function(err) {
-      store.commit('displayError', JSON.parse(err));
+      store.commit('displayAlert', JSON.parse(err));
     },
     custom_error: function(err) {
-      store.commit('displayError', JSON.parse(err));
+      store.commit('displayAlert', JSON.parse(err));
     },
     create_user_error: function(err) {
-      store.commit('displayError', JSON.parse(err));
+      store.commit('displayAlert', JSON.parse(err));
       this.$router.push('/settings');
     },
   },
