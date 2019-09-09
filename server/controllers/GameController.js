@@ -196,8 +196,18 @@ module.exports.socketPickCard = (
                       emit('game_broadcast_end', JSON.stringify(res));
                 } else if (game.isEndOfRound()) {
                   game.startRound();
+                  io.sockets.in(socket.gameId).
+                      emit('game_broadcast_message', JSON.stringify({
+                        gameId: socket.gameId,
+                        playerMessages: game.getMessages(),
+                      }));
                 } else {
                   game.startNewPlay();
+                  io.sockets.in(socket.gameId).
+                      emit('game_broadcast_message', JSON.stringify({
+                        gameId: socket.gameId,
+                        playerMessages: game.getMessages(),
+                      }));
                 }
               },
           );

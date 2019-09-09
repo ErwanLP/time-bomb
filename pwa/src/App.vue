@@ -151,7 +151,7 @@
       isConnected() {
         switch (this.$store.state.isConnected) {
           case'connect':
-            return 'sync';
+            return '';
           case'reconnecting':
             return 'sync_problem';
           case'disconnect':

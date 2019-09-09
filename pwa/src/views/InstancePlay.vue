@@ -239,10 +239,11 @@
                                 <v-card-actions>
                                     <v-list style="width: 100%">
                                         <v-list-tile v-for="(player) in playersMessages"
-                                                     :key="player.userId"
+                                                     :key="player.userId" two-line
                                                      avatar
                                         >
-                                            <v-list-tile-avatar>
+                                            <v-list-tile-avatar
+                                                    v-on:click="sendMessage({type : 'charge', value : player.userId })">
                                                 <p style="font-size:30px"
                                                    v-if="!player.messages.find(m => m.type === 'mood')">
                                                     &#128578;</p>
@@ -275,9 +276,21 @@
 
                                             <v-list-tile-content>
                                                 <v-list-tile-title v-html="player.userName"></v-list-tile-title>
+                                                <v-list-tile-sub-title>{{player.messages.find(m => m.type === 'nbCard')
+                                                    ?
+                                                    player.messages.find(m => m.type === 'nbCard').value + ' card(s)':
+                                                    ''}}
+                                                </v-list-tile-sub-title>
                                             </v-list-tile-content>
-
-
+                                            <v-list-tile-action
+                                                    v-if="player.messages.find(m => m.type === 'charge')">
+                                                <v-chip small>
+                                                    <v-icon :color="player.messages.filter(m => m.type === 'charge').length > 3 ? 'red' : (player.messages.filter(m => m.type === 'charge').length === 3 ? 'orange' : (player.messages.filter(m => m.type === 'charge').length === 2 ? '' : 'grey'))"
+                                                    >
+                                                        warning
+                                                    </v-icon>
+                                                </v-chip>
+                                            </v-list-tile-action>
                                             <v-list-tile-action>
                                                 <v-chip small>
                                                     <v-avatar
@@ -507,13 +520,34 @@
                 max-width="290"
         >
             <v-card v-if="endGame">
-                <v-card-title class="headline">{{endGame.teamWin}} Win !</v-card-title>
+                <v-card-title class="headline">{{endGame.teamWin}} Win</v-card-title>
 
                 <v-card-text>
                     <div class="text-xs-center">
-                        <span> {{endGame.cause}}</span>
+                        <span> {{endGame.msg}}</span>
                     </div>
-                    <br/>
+                    <v-img height="115"
+                           width="77"
+                           v-if="endGame.cause === 'NOT_DEFUSED'"
+                           :lazy-src="require('../assets/img/back.png')"
+                           :src="require('../assets/img/cable-securise.jpg')"
+                           style="  display: block;  margin-left: auto;  margin-right: auto;"
+                    ></v-img>
+                    <v-img height="115"
+                           width="77"
+                           v-if="endGame.cause === 'DEFUSED'"
+                           :lazy-src="require('../assets/img/back.png')"
+                           :src="require('../assets/img/carte-desamorcage.jpg')"
+                           style="  display: block;  margin-left: auto;  margin-right: auto;"
+                    ></v-img>
+                    <v-img height="115"
+                           width="77"
+                           v-if="endGame.cause === 'BOMB'"
+                           :lazy-src="require('../assets/img/back.png')"
+                           :src="require('../assets/img/carte-bombe.jpg')"
+                           style="  display: block;  margin-left: auto;  margin-right: auto;"
+                    ></v-img>
+
                     <strong>Sherlock : </strong> {{endGame.sherlock ? endGame.sherlock.reduce((acc, val) => acc + val +
                     ' ', '') : ''}}
                     <br/>
@@ -866,15 +900,27 @@
             this.$store.state.instanceJoined[this.$route.params.id].playerMessages) {
           let resumeByPlayer = [];
           this.$store.state.instanceJoined[this.$route.params.id].playerMessages.forEach(message => {
-            let p = resumeByPlayer.find(r => r.userId === message.userId);
-            if (p) {
-              p.messages.push(message);
-            } else {
-              resumeByPlayer.push({
-                userId: message.userId,
-                userName: message.userName,
-                messages: [message],
-              });
+            let p;
+            switch (message.type) {
+              case'charge':
+                p = resumeByPlayer.find(r => r.userId === message.value);
+                if (p) {
+                  p.messages.push(message);
+                } else {
+                  //not possible
+                }
+                break;
+              default:
+                p = resumeByPlayer.find(r => r.userId === message.userId);
+                if (p) {
+                  p.messages.push(message);
+                } else {
+                  resumeByPlayer.push({
+                    userId: message.userId,
+                    userName: message.userName,
+                    messages: [message],
+                  });
+                }
             }
           });
           return resumeByPlayer;

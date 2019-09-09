@@ -17,7 +17,7 @@ module.exports = class Game {
     this.uuid = uuid;
     this.createdDate = new Date();
     this.creator = {
-      uuid: userId
+      uuid: userId,
     };
     this.players = [];
     this.playerMessages = [];
@@ -45,7 +45,7 @@ module.exports = class Game {
   addPlayer(user) {
 
     let playerCanAccess = () => {
-      return this.players.length <= this.MAX_PLAYER_NUMBER;
+      return this.players.length < this.MAX_PLAYER_NUMBER;
     };
 
     if (playerCanAccess()) {
@@ -53,7 +53,7 @@ module.exports = class Game {
         user: user,
         role: null,
         isCreator: this.creator.uuid === user.uuid,
-        cards: []
+        cards: [],
       });
       if (this.creator.uuid === user.uuid) {
         this.creator = user;
@@ -62,13 +62,13 @@ module.exports = class Game {
       user.socket.emit('user_join_game_success', JSON.stringify({
         as: this.creator.uuid === user.uuid ? 'creator' : 'player',
         gameId: this.uuid,
-        state: this.state
+        state: this.state,
       }));
       return true;
     } else {
       user.socket.emit('user_join_game_error', JSON.stringify({
         playerLength: this.players.length,
-        MAX_PLAYER_NUMBER: this.MAX_PLAYER_NUMBER
+        MAX_PLAYER_NUMBER: this.MAX_PLAYER_NUMBER,
       }));
       return false;
     }
@@ -131,7 +131,7 @@ module.exports = class Game {
         player.role = roles[index];
         player.user.socket.emit('game_user_start', JSON.stringify({
           role: player.role,
-          gameId: this.uuid
+          gameId: this.uuid,
         }));
       });
       let cards = this.createCards(this.players.length);
@@ -152,11 +152,13 @@ module.exports = class Game {
     }
     this.roundNumber++;
     this.players.forEach(player => {
+      this.setMessage(player.user.uuid,
+          {type: 'nbCard', value: player.cards.length});
       player.user.socket.emit('game_user_new_round', JSON.stringify({
         me: {
           uuid: player.user.uuid,
           name: player.user.name,
-          cards: this.shuffledCards(player.cards)
+          cards: this.shuffledCards(player.cards),
         },
         currentPlayer: this.players[this.currentPlayerIndex].user.name,
         numberOfDefuseFound: this.numberOfDefuseFound,
@@ -164,7 +166,7 @@ module.exports = class Game {
         numberOfCardsToPickThisRound: this.players.length,
         numberOfCardPickedThisRound: 0,
         roundNumber: this.roundNumber,
-        gameId: this.uuid
+        gameId: this.uuid,
       }));
     });
     this.startNewPlay();
@@ -186,14 +188,14 @@ module.exports = class Game {
             return {
               user: {
                 uuid: player.user.uuid,
-                name: player.user.name
+                name: player.user.name,
               },
               isCurrentPlayer: player.isCurrentPlayer,
-              cardsLength: player.cards.filter(c => !c.isPicked).length
+              cardsLength: player.cards.filter(c => !c.isPicked).length,
             };
           }),
           myUserId: player.user.uuid,
-          gameId: this.uuid
+          gameId: this.uuid,
         }));
       }
     });
@@ -205,7 +207,7 @@ module.exports = class Game {
       me: {
         uuid: player.user.uuid,
         name: player.user.name,
-        cards: this.shuffledCards(player.cards)
+        cards: this.shuffledCards(player.cards),
       },
       role: player.role,
       currentPlayer: this.players[this.currentPlayerIndex].user.name,
@@ -216,7 +218,7 @@ module.exports = class Game {
       ((this.roundNumber - 1) * this.players.length),
       roundNumber: this.roundNumber,
       gameId: this.uuid,
-      playerMessages: this.playerMessages
+      playerMessages: this.playerMessages,
     };
   }
 
@@ -227,6 +229,10 @@ module.exports = class Game {
       let card = playerTo.cards.filter(c => !c.isPicked)[index];
       if (card) {
         card.isPicked = true;
+        this.setMessage(userToId, {
+          type: 'nbCard',
+          value: playerTo.cards.filter(c => !c.isPicked).length,
+        });
         this.cardPicked.push(card);
         if (card.type === DEFUSING_CABLE) {
           this.numberOfDefuseFound++;
@@ -249,7 +255,7 @@ module.exports = class Game {
         userId: userId,
         userName: player.user.name,
         type: message.type,
-        value: message.value
+        value: message.value,
       });
     } else {
       playerMessage.value = message.value;
@@ -267,17 +273,20 @@ module.exports = class Game {
       sherlock: this.players.filter(p => p.role.type === SHERLOCK).
           map(p => p.user.name),
       moriarty: this.players.filter(p => p.role.type === MORIARTY).
-          map(p => p.user.name)
+          map(p => p.user.name),
     };
     if (this.numberOfDefuseFound === this.players.length) {
       res.teamWin = 'Sherlock';
-      res.cause = 'The bomb has been defused';
+      res.cause = 'DEFUSED';
+      res.msg = 'The bomb has been defused !';
     } else if (this.roundNumber === 4 && this.isEndOfRound()) {
       res.teamWin = 'Moriarty';
-      res.cause = 'The bomb has been not defused';
+      res.cause = 'NOT_DEFUSED';
+      res.msg = 'The bomb has been not defused';
     } else if (this.bombExploded === true) {
       res.teamWin = 'Moriarty';
-      res.cause = 'The bomb exploded';
+      res.cause = 'BOMB';
+      res.msg = 'The bomb exploded !';
     }
     return res;
   }
@@ -304,14 +313,14 @@ module.exports = class Game {
       res.push({
         type: SHERLOCK,
         image: 'sherlock_' + i + '.png',
-        label: 'Sherlock'
+        label: 'Sherlock',
       });
     }
     for (let i = 0; i < nbOfMoriarty; i++) {
       res.push({
         type: MORIARTY,
         image: 'moriarty_' + i + '.png',
-        label: 'Moriarty'
+        label: 'Moriarty',
       });
     }
     shuffle(res);
@@ -333,21 +342,21 @@ module.exports = class Game {
       res.push({
         type: SECURE_CABLE,
         label: 'Secure',
-        isPicked: false
+        isPicked: false,
       });
     }
     for (let i = 0; i < nbOfDefusing; i++) {
       res.push({
         type: DEFUSING_CABLE,
         label: 'Defusing',
-        isPicked: false
+        isPicked: false,
       });
     }
     for (let i = 0; i < nbOfBomb; i++) {
       res.push({
         type: BOMB,
         label: 'Bomb',
-        isPicked: false
+        isPicked: false,
       });
     }
     return res;

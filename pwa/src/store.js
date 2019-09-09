@@ -98,14 +98,18 @@ export default new Vuex.Store({
         numberOfDefuseToFind: 4,
         roundNumber: 2,
         currentPlayer: 'Erwan',
-        dialogEndGame: false,
+        dialogEndGame: true,
         dialogPause: false,
         dialogPauseMsg: '',
         dialogPickCard: false,
         dialogPickCardType: {type: 'DEFUSING_CABLE'},
         dialogPickCardPlayerName: 'Erwan',
         dialogNewRound: false,
-        endGame: {},
+        endGame: {
+          teamWin : 'Sherlock',
+          cause : 'DEFUSED',
+          msg : 'The bomb has been defused',
+        },
         myTurn: true,
         players: [
           {
@@ -316,7 +320,7 @@ export default new Vuex.Store({
       state.instanceJoined[payload.gameId].dialogNewRound = payload.value;
     },
     editDialogEndGame(state, payload) {
-      state.instanceJoined[payload.gameId].dialogNewRound = payload.value;
+      state.instanceJoined[payload.gameId].dialogEndGame = payload.value;
     },
   },
   actions: {},
