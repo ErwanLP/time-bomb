@@ -27,23 +27,15 @@ Vue.use(new VueSocketIO({
 new Vue({
   sockets: {
     connect: function() {
-      store.commit('displayAlert', {
-        msg: 'Connected',
-        type: 'success',
-      });
+      store.commit('setConnected', 'connect');
       this.$router.push('/');
     },
-    /*    reconnecting: function() {
-          store.commit('displayAlert', {
-            msg : 'Reconnecting',
-            type : "warning"
-          });
-        },*/
+    reconnecting: function() {
+      store.commit('setConnected', 'reconnecting');
+
+    },
     disconnect: function() {
-      store.commit('displayAlert', {
-        msg: 'Disconnect',
-        type: 'error',
-      });
+      store.commit('setConnected', 'disconnect');
     },
     connection_success: function(data) {
       let info = JSON.parse(data);

@@ -101,6 +101,8 @@
         <v-toolbar color="#1e1035" dark fixed app>
             <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
             <v-toolbar-title>Time Bomb</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-icon>{{ isConnected}}</v-icon>
         </v-toolbar>
         <v-content>
             <v-alert
@@ -120,7 +122,7 @@
     components: {},
     data() {
       return {
-        drawer: null
+        drawer: null,
       };
     },
     methods: {},
@@ -145,8 +147,21 @@
       },
       version() {
         return this.$store.state.version;
-      }
-    }
+      },
+      isConnected() {
+        switch (this.$store.state.isConnected) {
+          case'connect':
+            return 'sync';
+          case'reconnecting':
+            return 'sync_problem';
+          case'disconnect':
+            return 'sync_disabled';
+          default:
+            return 'sync_disabled';
+        }
+
+      },
+    },
 
   };
 </script>

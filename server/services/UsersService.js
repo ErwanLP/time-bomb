@@ -12,7 +12,7 @@ module.exports.create = function(name) {
 
 module.exports.read = function() {
   return new Promise((resolve) => {
-    resolve(userList);
+    resolve(userList.sort((a, b) => b.connectionDate - a.connectionDate));
   });
 };
 

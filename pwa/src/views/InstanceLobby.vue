@@ -7,7 +7,7 @@
                 :block="true"
                 :disabled="lockStartGame"
         >
-            Start Instance
+            Start Instance ({{players.length}})
         </v-btn>
         <v-data-table
                 :headers="headers"

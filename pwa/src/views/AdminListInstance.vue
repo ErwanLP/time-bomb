@@ -23,7 +23,9 @@
 
                         <v-list-tile-content>
                             <v-list-tile-title v-html="item.name"></v-list-tile-title>
-                            <v-list-tile-sub-title>{{item.state}} - {{item.players}}</v-list-tile-sub-title>
+                            <v-list-tile-sub-title>{{item.state}} - {{item.players ? item.players.map(p => p.user.name)
+                                : 'Empty'}}
+                            </v-list-tile-sub-title>
                         </v-list-tile-content>
 
                         <v-list-tile-avatar>

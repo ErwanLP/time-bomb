@@ -7,10 +7,12 @@ export default new Vuex.Store({
   state: {
     user: {},
     host: null,
+    isConnected: 'disconnect',
     version: null,
     instanceList: [],
     userList: [],
     error: {
+      type: 'info',
       displayed: false,
       msg: '',
     },
@@ -148,6 +150,9 @@ export default new Vuex.Store({
   mutations: {
     setVersion(state, payload) {
       state.version = payload;
+    },
+    setConnected(state, payload) {
+      state.isConnected = payload;
     },
     editUser(state, payload) {
       state.user = payload;
