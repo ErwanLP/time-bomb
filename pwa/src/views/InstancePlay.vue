@@ -237,7 +237,7 @@
                                 </v-layout>
                                 <v-divider light></v-divider>
                                 <v-card-actions>
-                                    <v-list>
+                                    <v-list style="width: 100%">
                                         <v-list-tile v-for="(player) in playersMessages"
                                                      :key="player.userId"
                                                      avatar

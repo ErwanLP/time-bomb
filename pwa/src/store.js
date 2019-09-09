@@ -101,10 +101,10 @@ export default new Vuex.Store({
         dialogEndGame: false,
         dialogPause: false,
         dialogPauseMsg: '',
-        dialogPickCard: true,
+        dialogPickCard: false,
         dialogPickCardType: {type: 'DEFUSING_CABLE'},
         dialogPickCardPlayerName: 'Erwan',
-        dialogNewRound: true,
+        dialogNewRound: false,
         endGame: {},
         myTurn: true,
         players: [
