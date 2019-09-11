@@ -279,6 +279,7 @@
                                                 <v-list-tile-sub-title>
                                                     <v-icon small
                                                             v-for="i in player.messages.find(m => m.type === 'nbDefuseFound') ? player.messages.find(m => m.type === 'nbDefuseFound').value : 0"
+                                                            :key="i"
                                                     >
                                                         alarm
                                                     </v-icon>
