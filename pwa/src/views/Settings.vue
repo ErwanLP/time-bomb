@@ -7,6 +7,7 @@
                         v-model="name"
                         label="Your name"
                         required
+                        maxlength="10"
                 ></v-text-field>
             </v-flex>
         </v-layout>
@@ -49,17 +50,13 @@
     },
     methods: {
       saveSettings: function() {
-        localforage.setItem('PLAYER_NAME', this.name, (err) => {
-          if (err) {
-            throw err;
-          } else {
-            this.$socket.emit('user_create', JSON.stringify({
-              name: this.name,
-              uuid: this.uuid,
-            }));
-          }
+        if (this.name && this.name.length <= 10) {
+          this.$socket.emit('user_create', JSON.stringify({
+            name: this.name,
+            uuid: this.uuid,
+          }));
           this.$router.push('/');
-        });
+        }
       },
     },
   };
