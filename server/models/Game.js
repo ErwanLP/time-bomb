@@ -236,6 +236,14 @@ module.exports = class Game {
         this.cardPicked.push(card);
         if (card.type === DEFUSING_CABLE) {
           this.numberOfDefuseFound++;
+          let nbDefuseFound = this.playerMessages.find(
+              m => m.userId === playerTo.user.uuid && m.type ==='nbDefuseFound');
+          if (nbDefuseFound) {
+            nbDefuseFound.value++;
+          } else {
+            this.setMessage(userToId,
+                {type: 'nbDefuseFound', value: 1});
+          }
         }
         if (card.type === BOMB) {
           this.bombExploded = true;
@@ -256,9 +264,11 @@ module.exports = class Game {
         userName: player.user.name,
         type: message.type,
         value: message.value,
+        date: new Date(),
       });
     } else {
       playerMessage.value = message.value;
+      playerMessage.date = new Date();
     }
   }
 

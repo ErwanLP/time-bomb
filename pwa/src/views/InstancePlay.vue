@@ -276,7 +276,13 @@
 
                                             <v-list-tile-content>
                                                 <v-list-tile-title v-html="player.userName"></v-list-tile-title>
-                                                <v-list-tile-sub-title>{{player.messages.find(m => m.type === 'nbCard')
+                                                <v-list-tile-sub-title>
+                                                    <v-icon small
+                                                            v-for="i in player.messages.find(m => m.type === 'nbDefuseFound') ? player.messages.find(m => m.type === 'nbDefuseFound').value : 0"
+                                                    >
+                                                        alarm
+                                                    </v-icon>
+                                                    {{player.messages.find(m => m.type === 'nbCard')
                                                     ?
                                                     player.messages.find(m => m.type === 'nbCard').value + ' card(s)':
                                                     ''}}
@@ -295,10 +301,25 @@
                                                 <v-chip small>
                                                     <v-avatar
                                                             v-if="player.messages.find(m => m.type === 'defusing') && player.messages.find(m => m.type === 'defusing').value !== undefined"
-                                                            v-bind:class="[player.messages.find(m => m.type === 'defusing').value > 0 ? 'teal' : 'primary']"
+                                                            v-bind:class="{primary : (player.messages.find(m => m.type === 'defusing') ?
+                                                        (player.messages.find(m => m.type === 'defusing').value -
+                                                        (player.messages.find(m => m.type === 'nbDefuseFound') ?
+                                                        player.messages.find(m => m.type === 'nbDefuseFound').value :
+                                                        0)) : 0) === 0, teal : (player.messages.find(m => m.type === 'defusing') ?
+                                                        (player.messages.find(m => m.type === 'defusing').value -
+                                                        (player.messages.find(m => m.type === 'nbDefuseFound') ?
+                                                        player.messages.find(m => m.type === 'nbDefuseFound').value :
+                                                        0)) : 0) > 0,red : (player.messages.find(m => m.type === 'defusing') ?
+                                                        (player.messages.find(m => m.type === 'defusing').value -
+                                                        (player.messages.find(m => m.type === 'nbDefuseFound') ?
+                                                        player.messages.find(m => m.type === 'nbDefuseFound').value :
+                                                        0)) : 0) < 0 }"
                                                     >
                                                         {{player.messages.find(m => m.type === 'defusing') ?
-                                                        player.messages.find(m => m.type === 'defusing').value : ''}}
+                                                        (player.messages.find(m => m.type === 'defusing').value -
+                                                        (player.messages.find(m => m.type === 'nbDefuseFound') ?
+                                                        player.messages.find(m => m.type === 'nbDefuseFound').value :
+                                                        0)) : ''}}
                                                     </v-avatar>
                                                     <v-icon
                                                     >
@@ -341,18 +362,24 @@
                                             <v-list-tile-action>
                                                 <v-chip small>
                                                     <v-avatar
-                                                            v-bind:class="[playersMessages.reduce((acc, player) => player.messages.find(m => m.type === 'defusing') ?
-                                                        acc + player.messages.find(m => m.type === 'defusing').value : acc, 0) === (numberOfDefuseToFind - numberOfDefuseFound) ? 'teal' : 'orange']">
+                                                            v-bind:class="[playersMessages.reduce((acc, player) =>
+                                                        player.messages.find((m) => m.type === 'defusing') ?
+                                                        acc + player.messages.find(m => m.type === 'defusing').value :
+                                                        acc, 0) - playersMessages.reduce((acc, player) =>
+                                                        player.messages.find((m) => m.type === 'nbDefuseFound') ?
+                                                        acc + player.messages.find(m => m.type === 'nbDefuseFound').value :
+                                                        acc, 0) === (numberOfDefuseToFind - numberOfDefuseFound) ? 'teal' : 'orange']">
 
                                                         {{playersMessages.reduce((acc, player) =>
                                                         player.messages.find((m) => m.type === 'defusing') ?
                                                         acc + player.messages.find(m => m.type === 'defusing').value :
+                                                        acc, 0) - playersMessages.reduce((acc, player) =>
+                                                        player.messages.find((m) => m.type === 'nbDefuseFound') ?
+                                                        acc + player.messages.find(m => m.type ===
+                                                        'nbDefuseFound').value :
                                                         acc, 0)}}
                                                     </v-avatar>
-                                                    <v-icon
-                                                    >
-                                                        alarm
-                                                    </v-icon>
+                                                    <v-icon>alarm</v-icon>
                                                 </v-chip>
                                             </v-list-tile-action>
                                             <v-list-tile-action>
@@ -923,7 +950,25 @@
                 }
             }
           });
-          return resumeByPlayer;
+          return resumeByPlayer.sort((a, b) => {
+            if (
+                a.messages.find(m => m.type === 'defusing') &&
+                a.messages.find(m => m.type === 'bomb') &&
+                b.messages.find(m => m.type === 'defusing') &&
+                b.messages.find(m => m.type === 'bomb')
+            ) {
+              return Math.max(Date.parse(a.messages.find(m => m.type === 'defusing').date), Date.parse(a.messages.find(m => m.type === 'bomb').date)) -
+                  Math.max(Date.parse(b.messages.find(m => m.type === 'defusing').date), Date.parse(b.messages.find(m => m.type === 'bomb').date));
+            } else if (a.messages.find(m => m.type === 'defusing') &&
+                a.messages.find(m => m.type === 'bomb')) {
+              return -1;
+            } else if (b.messages.find(m => m.type === 'defusing') &&
+                b.messages.find(m => m.type === 'bomb')) {
+              return 1;
+            } else {
+              return 0;
+            }
+          });
         } else {
           return [];
         }

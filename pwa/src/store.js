@@ -142,9 +142,10 @@ export default new Vuex.Store({
         playerMessages: [
           {userId: 11, userName: 'Erwan', type: 'mood', value: 128520},
           {userId: 11, userName: 'Erwan', type: 'bomb', value: true},
-          {userId: 12, userName: 'Camille', type: 'defusing', value: 0},
+          {userId: 11, userName: 'Erwan', type: 'defusing', value: 0},
+          {userId: 12, userName: 'Camille', type: 'defusing', value: 2},
           {userId: 12, userName: 'Camille', type: 'bomb', value: true},
-          {userId: 13, userName: 'Nicolas', type: 'defusing', value: 3},
+          {userId: 13, userName: 'Nicolas', type: 'defusing', value: 2},
           {userId: 13, userName: 'Nicolas', type: 'bomb', value: false},
           {userId: 11, userName: 'Erwan', type: 'nbCard', value: 5},
           {userId: 12, userName: 'Camille', type: 'nbCard', value: 3},
